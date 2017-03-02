@@ -40,6 +40,10 @@ const renderPage = (html, defaultState) => {
 
 // Define routes for the server
 const serverRoutes = app => {
+	// Inject the tap event plugin to enable usage of onTouchTap
+	// More information: http://stackoverflow.com/a/34015469/988941
+	injectTapEventPlugin()
+	
 	app.get('/api/bookings/:date', (req, res) => {
 		res.sendStatus(403)
 	})
@@ -64,10 +68,6 @@ const serverRoutes = app => {
 			} else if (redirectLocation) {
 				res.redirect(302, redirectLocation.pathname + redirectLocation.search)
 			} else if (renderProps) {
-				// Inject the tap event plugin to enable usage of onTouchTap
-				// More information: http://stackoverflow.com/a/34015469/988941
-				injectTapEventPlugin()
-
 				// Generate the default state
 				const defaultState = {}
 
