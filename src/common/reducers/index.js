@@ -1,6 +1,37 @@
 import { combineReducers } from 'redux'
 import moment from 'moment'
-import { SELECT_DATE, REQUEST_BOOKINGS, RECEIVE_BOOKINGS, INVALIDATE_BOOKINGS, ADD_BOOKING, DELETE_BOOKING } from '../actions'
+import { TOGGLE_DRAWER_OPEN, TOGGLE_DRAWER_DOCKED, SELECT_DATE, REQUEST_BOOKINGS, RECEIVE_BOOKINGS, INVALIDATE_BOOKINGS, ADD_BOOKING, DELETE_BOOKING } from '../actions'
+
+// Reducer for side drawer-related actions
+const sideDrawerState = (state = {
+	isOpen: false,
+	isDocked: false
+}, action) => {
+	switch (action.type) {
+		case TOGGLE_DRAWER_OPEN:
+			return {
+				...state,
+				isOpen: !state.isOpen
+			}
+		case TOGGLE_DRAWER_DOCKED:
+			return {
+				...state,
+				isDocked: !state.isDocked
+			}
+		default:
+			return state
+	}
+}
+
+// Reducer for the selected date action
+const selectedDate = (state = moment().format('YYYY/M/D'), action) => {
+	switch (action.type) {
+		case SELECT_DATE:
+			return action.date
+		default:
+			return state
+	}
+}
 
 // Helper function for bookings reducer
 const handleBookings = (state = {
@@ -43,16 +74,6 @@ const handleBookings = (state = {
 	}
 }
 
-// Reducer for the selected date
-const selectedDate = (state = moment().format('YYYY/M/D'), action) => {
-	switch (action.type) {
-		case SELECT_DATE:
-			return action.date
-		default:
-			return state
-	}
-}
-
 // Reducer for booking-related actions
 const bookingsByDate = (state = {}, action) => {
 	switch (action.type) {
@@ -72,8 +93,9 @@ const bookingsByDate = (state = {}, action) => {
 
 // Combine all reducers into a singular root reducer
 const rootReducer = combineReducers({
-	bookingsByDate,
-	selectedDate
+	sideDrawerState,
+	selectedDate,
+	bookingsByDate
 })
 
 export default rootReducer

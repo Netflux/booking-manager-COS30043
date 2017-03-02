@@ -1,3 +1,19 @@
+// Action when the user opens/closes the side drawer
+export const TOGGLE_DRAWER_OPEN = 'TOGGLE_DRAWER_OPEN'
+export const toggleDrawerOpen = () => {
+	return {
+		type: TOGGLE_DRAWER_OPEN
+	}
+}
+
+// Action when the user docks/undocks the side drawer
+export const TOGGLE_DRAWER_DOCKED = 'TOGGLE_DRAWER_DOCKED'
+export const toggleDrawerDocked = () => {
+	return {
+		type: TOGGLE_DRAWER_DOCKED
+	}
+}
+
 // Action when the user selects a specific date to show
 export const SELECT_DATE = 'SELECT_DATE'
 export const selectDate = date => {

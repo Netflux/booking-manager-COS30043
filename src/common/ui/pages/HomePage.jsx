@@ -4,20 +4,18 @@ import Helmet from 'react-helmet'
 
 import Menubar from '../components/Menubar'
 
-export default class HomePage extends React.Component {
-	render() {
-		return (
-			<main>
-				<Helmet
-					title="Booking Manager | Home"
-				/>
+const HomePage = () => (
+	<main>
+		<Helmet
+			title="Booking Manager | Home"
+		/>
 
-				<Menubar />
+		<Menubar title="Home" />
 
-				<section>
-					<h1>Home Page</h1>
-				</section>
-			</main>
-		)
-	}
-}
+		<section>
+			<h1>Home Page</h1>
+		</section>
+	</main>
+)
+
+export default HomePage

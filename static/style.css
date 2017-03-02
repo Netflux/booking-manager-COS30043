@@ -1,0 +1,22 @@
+/* ===== General CSS Start ===== */
+* {
+	font-family: Roboto, sans-serif;
+}
+.menu-icon {
+	margin-right: 24px;
+	padding-left: 0 !important;
+}
+.side-drawer a {
+	text-decoration: none;
+}
+/* ===== General CSS End ===== */
+
+/* ===== Login Page CSS Start ===== */
+.form {
+	margin-top: 16px;
+	padding: 16px;
+}
+.form-input {
+	margin-bottom: 8px;
+}
+/* ===== Login Page CSS End ===== */

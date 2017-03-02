@@ -1,12 +1,15 @@
 import React from 'react'
-import { IndexLink } from 'react-router'
 import Helmet from 'react-helmet'
+
+import Menubar from '../components/Menubar'
 
 const NotFoundPage = () => (
 	<main>
 		<Helmet
 			title={"Booking Manager | Not Found"}
 		/>
+
+		<Menubar title="Not Found" />
 
 		<section>
 			<h1>Not Found Page</h1>
