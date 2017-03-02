@@ -4,6 +4,11 @@ import Helmet from 'react-helmet'
 import { renderToString } from 'react-dom/server'
 import { match, RouterContext } from 'react-router'
 import { Provider } from 'react-redux'
+import injectTapEventPlugin from 'react-tap-event-plugin'
+
+import theme from '../common/ui/theme'
+import getMuiTheme from 'material-ui/styles/getMuiTheme'
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 
 import configureStore from '../common/store/configureStore'
 import routes from '../common/routes'
@@ -47,8 +52,8 @@ const serverRoutes = app => {
 		res.sendStatus(403)
 	})
 
-	app.get('/static/bundle.js', (req, res) => {
-		res.sendFile('bundle.js', { root: path.join(__dirname, '../../static') })
+	app.get('/static/*', (req, res) => {
+		res.sendFile(req.originalUrl, { root: path.join(__dirname, '../../') })
 	})
 
 	// For any route besides the API, serve the web application
@@ -59,16 +64,28 @@ const serverRoutes = app => {
 			} else if (redirectLocation) {
 				res.redirect(302, redirectLocation.pathname + redirectLocation.search)
 			} else if (renderProps) {
+				// Inject the tap event plugin to enable usage of onTouchTap
+				// More information: http://stackoverflow.com/a/34015469/988941
+				injectTapEventPlugin()
+
 				// Generate the default state
 				const defaultState = {}
 
 				// Create a new Redux store instance
 				const store = configureStore(defaultState)
 
+				// Create the default theme (store the user agent when using SSR)
+				const muiTheme = getMuiTheme({
+					...theme,
+					userAgent: req.get('user-agent')
+				})
+
 				// Get the React components as a string
 				const html = renderToString(
 					<Provider store={store}>
-						<RouterContext {...renderProps} />
+						<MuiThemeProvider muiTheme={muiTheme}>
+							<RouterContext {...renderProps} />
+						</MuiThemeProvider>
 					</Provider>
 				)
 

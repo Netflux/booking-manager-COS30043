@@ -1,7 +1,7 @@
 import React from 'react'
 import Helmet from 'react-helmet'
 
-import { Drawer } from 'material-ui'
+import SideDrawer from '../components/SideDrawer'
 
 export default class BasePage extends React.Component {
 	render() {
@@ -9,11 +9,14 @@ export default class BasePage extends React.Component {
 			<div id="content">
 				<Helmet
 					htmlAttributes={{"lang": "en"}}
+					link={[
+						{rel: "stylesheet", href: "/static/normalize.css"},
+					]}
 				/>
 
 				{this.props.children}
 
-
+				<SideDrawer />
 			</div>
 		)
 	}
