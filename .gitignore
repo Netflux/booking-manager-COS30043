@@ -1,6 +1,6 @@
-# Distribution and Static files
+# Compiled code and Static bundle
 dist
-static
+static/bundle.js
 
 # Logs
 logs
