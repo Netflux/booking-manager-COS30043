@@ -5,6 +5,7 @@ import { renderToString } from 'react-dom/server'
 import { match, RouterContext } from 'react-router'
 import { Provider } from 'react-redux'
 import injectTapEventPlugin from 'react-tap-event-plugin'
+import Passport from 'passport'
 
 import theme from '../common/ui/theme'
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
@@ -43,16 +44,16 @@ const serverRoutes = app => {
 	// Inject the tap event plugin to enable usage of onTouchTap
 	// More information: http://stackoverflow.com/a/34015469/988941
 	injectTapEventPlugin()
-	
+
+	app.post('/api/login', Passport.authenticate('local', { failureRedirect: '/login' }), (req, res) => {
+		res.redirect('/')
+	})
+
 	app.get('/api/bookings/:date', (req, res) => {
 		res.sendStatus(403)
 	})
 
 	app.get('/api/bookings', (req, res) => {
-		res.sendStatus(403)
-	})
-
-	app.post('/api/login', (req, res) => {
 		res.sendStatus(403)
 	})
 

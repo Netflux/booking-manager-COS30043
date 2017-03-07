@@ -7,7 +7,7 @@ const LoginForm = () => (
 			<TextField id="username" className="form-input" floatingLabelText="Username" floatingLabelFixed={true} /><br />
 			<TextField id="password" className="form-input" floatingLabelText="Password" floatingLabelFixed={true} /><br />
 
-			<RaisedButton label="Log In" />
+			<RaisedButton label="Log In" type="submit" />
 		</form>
 	</Paper>
 )
