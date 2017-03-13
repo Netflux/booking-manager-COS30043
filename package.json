@@ -5,6 +5,7 @@
   "main": "dist/server/server.js",
   "scripts": {
     "test": "nodemon src/server/server.js --exec babel-node",
+    "clean": "rm -rf ./dist ./static/bundle.js",
     "build-dev": "babel src -d dist; webpack",
     "build": "babel src -d dist; webpack -p",
     "start": "node dist/server/server.js"
