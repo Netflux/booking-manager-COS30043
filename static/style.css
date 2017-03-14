@@ -2,12 +2,21 @@
 * {
 	font-family: Roboto, sans-serif;
 }
+body {
+	overflow: hidden;
+}
+main {
+	transition: margin-left 450ms cubic-bezier(0.23, 1, 0.32, 1);
+}
 .menu-icon {
 	margin-right: 24px;
 	padding-left: 0 !important;
 }
 .side-drawer a {
 	text-decoration: none;
+}
+.content-offset > main {
+	margin-left: 256px;
 }
 /* ===== General CSS End ===== */
 
