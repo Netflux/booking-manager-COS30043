@@ -3,6 +3,7 @@ import { Link } from 'react-router'
 import Helmet from 'react-helmet'
 
 import Menubar from '../components/Menubar'
+import BookingTable from '../components/BookingTable'
 
 const HomePage = () => (
 	<main>
@@ -10,10 +11,10 @@ const HomePage = () => (
 			title="Booking Manager | Home"
 		/>
 
-		<Menubar title="Home" />
+		<Menubar title="Booking Manager | Home" />
 
 		<section>
-			<h1>Home Page</h1>
+			<BookingTable />
 		</section>
 	</main>
 )

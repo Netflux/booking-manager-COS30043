@@ -10,7 +10,7 @@ const LoginPage = () => (
 			title="Booking Manager | Login"
 		/>
 
-		<Menubar title="Login" />
+		<Menubar title="Booking Manager | Login" />
 
 		<section className="row center-xs">
 			<LoginForm />

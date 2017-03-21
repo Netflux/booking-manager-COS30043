@@ -1,0 +1,17 @@
+@media (max-width: 640px) {
+	.booking-table > .row > div:first-of-type {
+		display: none;
+	}
+}
+
+@media (max-width: 768px) {
+	.paper {
+		padding: 8px;
+	}
+}
+
+@media (max-width: 1366px) {
+	section {
+		padding: 0 5%;
+	}
+}

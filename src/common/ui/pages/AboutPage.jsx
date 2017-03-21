@@ -9,7 +9,7 @@ const AboutPage = () => (
 			title="Booking Manager | About"
 		/>
 
-		<Menubar title="About" />
+		<Menubar title="Booking Manager | About" />
 
 		<section>
 			<h1>About Page</h1>
