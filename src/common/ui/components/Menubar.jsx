@@ -23,7 +23,7 @@ const mapDispatchToProps = dispatch => {
 const MenubarComponent = ({title, onToggleMenu}) => (
 	<Toolbar>
 		<ToolbarGroup>
-			<FontIcon className="material-icons menu-icon" onTouchTap={() => onToggleMenu()} color={white} hoverColor={white}>Toggle Menu</FontIcon>
+			<FontIcon className="material-icons menu-icon" onTouchTap={() => onToggleMenu()} color={white} hoverColor={white}>menu</FontIcon>
 			<ToolbarTitle text={title} style={{color: white}} />
 		</ToolbarGroup>
 	</Toolbar>
