@@ -33,6 +33,19 @@ const selectedDate = (state = moment().format('YYYY/M/D'), action) => {
 	}
 }
 
+// Reducer for the selected date history list
+const selectedDateHistory = (state = [moment().format('YYYY/M/D')], action) => {
+	switch (action.type) {
+		case SELECT_DATE:
+			return [
+				action.date,
+				...state
+			]
+		default:
+			return state
+	}
+}
+
 // Helper function for bookings reducer
 const handleBookings = (state = {
 	isFetching: false,
@@ -95,6 +108,7 @@ const bookingsByDate = (state = {}, action) => {
 const rootReducer = combineReducers({
 	sideDrawerState,
 	selectedDate,
+	selectedDateHistory,
 	bookingsByDate
 })
 

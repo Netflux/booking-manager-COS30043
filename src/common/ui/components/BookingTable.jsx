@@ -14,6 +14,23 @@ const mapDispatchToProps = dispatch => {
 	}
 }
 
+// Define the timeslots available for booking
+const timeSlots = [
+	"10.30am",
+	"11.30am",
+	"12.30pm",
+	"1.30pm",
+	"2.30pm",
+	"3.30pm",
+	"4.30pm",
+	"5.30pm",
+	"6.30pm",
+	"7.30pm",
+	"8.30pm",
+	"9.30pm",
+	"10.30pm"
+]
+
 // Define the Booking Table component
 const BookingTableComponent = ({bookingsByDate}) => (
 	<Paper className="booking-table paper text-center">
@@ -41,29 +58,21 @@ const BookingTableComponent = ({bookingsByDate}) => (
 			</div>
 		</div>
 
-		<div className="row">
-			<div className="col-xs">
-				<strong>10.30am</strong>
-			</div>
-			<div className="col-xs">
-
-			</div>
-			<div className="col-xs">
-
-			</div>
-			<div className="col-xs">
-
-			</div>
-			<div className="col-xs">
-
-			</div>
-			<div className="col-xs">
-
-			</div>
-			<div className="col-xs">
-
-			</div>
-		</div>
+		{
+			timeSlots.map((time) => (
+				<div className="row" key={time}>
+					<div className="col-xs">
+						<strong>{time}</strong>
+					</div>
+					<div className="col-xs"></div>
+					<div className="col-xs"></div>
+					<div className="col-xs"></div>
+					<div className="col-xs"></div>
+					<div className="col-xs"></div>
+					<div className="col-xs"></div>
+				</div>
+			))
+		}
 	</Paper>
 )
 

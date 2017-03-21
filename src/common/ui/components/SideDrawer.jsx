@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react'
 import { Link } from 'react-router'
 import { connect } from 'react-redux'
-import { Drawer, MenuItem, Toolbar, ToolbarTitle } from 'material-ui'
+import { Divider, Drawer, MenuItem, Subheader, Toolbar, ToolbarTitle } from 'material-ui'
 import { white } from 'material-ui/styles/colors'
 
 import { toggleDrawerOpen, toggleDrawerDocked } from '../../actions'
@@ -9,7 +9,8 @@ import { toggleDrawerOpen, toggleDrawerDocked } from '../../actions'
 const mapStateToProps = state => {
 	return {
 		isOpen: state.sideDrawerState.isOpen,
-		isDocked: state.sideDrawerState.isDocked
+		isDocked: state.sideDrawerState.isDocked,
+		selectedDateHistory: state.selectedDateHistory
 	}
 }
 
@@ -70,6 +71,22 @@ class SideDrawerComponent extends React.Component {
 				<Link to="/" onTouchTap={() => this.props.onToggleMenu(!this.props.isDocked)}><MenuItem>Home</MenuItem></Link>
 				<Link to="/about" onTouchTap={() => this.props.onToggleMenu(!this.props.isDocked)}><MenuItem>About</MenuItem></Link>
 				<Link to="/login" onTouchTap={() => this.props.onToggleMenu(!this.props.isDocked)}><MenuItem>Login</MenuItem></Link>
+
+				{
+					// Only render history list if there are entries to display
+					this.props.selectedDateHistory.length > 0 && (
+						<div>
+							<Divider />
+							<Subheader>Recently Viewed Dates</Subheader>
+							
+							{
+								this.props.selectedDateHistory.map((date) => (
+									<Link to={`/bookings/${date}`} onTouchTap={() => this.props.onToggleMenu(!this.props.isDocked)} key={date}><MenuItem>{date}</MenuItem></Link>
+								))
+							}
+						</div>
+					)
+				}
 			</Drawer>
 		)
 	}
@@ -79,6 +96,7 @@ class SideDrawerComponent extends React.Component {
 SideDrawerComponent.propTypes = {
 	isOpen: PropTypes.bool.isRequired,
 	isDocked: PropTypes.bool.isRequired,
+	selectedDateHistory: PropTypes.array.isRequired,
 	onToggleMenu: PropTypes.func.isRequired,
 	onWindowResize: PropTypes.func.isRequired
 }
