@@ -1,10 +1,14 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
-import { Paper } from 'material-ui'
+import { Paper, Tabs, Tab } from 'material-ui'
+
+import Booking from './Booking'
 
 const mapStateToProps = state => {
 	return {
-		bookingsByDate: state.bookingsByDate
+		selectedDate: state.selectedDate,
+		bookingsByDate: state.bookingsByDate,
+		rooms: state.rooms
 	}
 }
 
@@ -32,53 +36,112 @@ const timeSlots = [
 ]
 
 // Define the Booking Table component
-const BookingTableComponent = ({bookingsByDate}) => (
-	<Paper className="booking-table paper text-center">
-		<div className="row">
-			<div className="col-xs">
-				<strong>Time</strong>
-			</div>
-			<div className="col-xs">
-				<strong>Mon</strong>
-			</div>
-			<div className="col-xs">
-				<strong>Tue</strong>
-			</div>
-			<div className="col-xs">
-				<strong>Wed</strong>
-			</div>
-			<div className="col-xs">
-				<strong>Thu</strong>
-			</div>
-			<div className="col-xs">
-				<strong>Fri</strong>
-			</div>
-			<div className="col-xs">
-				<strong>Sat</strong>
-			</div>
-		</div>
+const BookingTableComponent = ({selectedDate, bookingsByDate, rooms}) => (
+	<Tabs className="tabbar">
+		<Tab label="Room View">
+			<section>
+				{
+					rooms.items.length > 0 ? (
+						<Paper className="booking-table paper text-center">
+							<div className="row">
+								<div className="col-xs">
+									<strong>Time</strong>
+								</div>
 
-		{
-			timeSlots.map((time) => (
-				<div className="row" key={time}>
-					<div className="col-xs">
-						<strong>{time}</strong>
+								{
+									rooms.items.filter((room) => room.isAvailable).map((room) => (
+										<div className="col-xs" key={room.roomId}>
+											<strong>{room.roomName}</strong>
+										</div>
+									))
+								}
+							</div>
+
+							{
+								timeSlots.map((time, index) => (
+									<div className="row" key={time}>
+										<div className="col-xs">
+											<strong>{time}</strong>
+										</div>
+
+										{
+											rooms.items.filter((room) => room.isAvailable).map((room) => (
+												<div className={"col-xs" + (bookingsByDate[selectedDate].items.filter((booking) => booking.roomId == room.roomId && booking.timeSlot == index + 1).length == 0 ? " selectable" : "")} data-row={index + 1} data-roomId={room.roomId} key={room.roomId}>
+													{
+														bookingsByDate[selectedDate].items.filter((booking) => booking.roomId == room.roomId && booking.timeSlot == index + 1).map((booking) => (
+															<Booking booking={booking} key={booking.bookingId} />
+														))
+													}
+												</div>
+											))
+										}
+									</div>
+								))
+							}
+						</Paper>
+					) : (
+						<Paper className="booking-table paper text-center">
+							<h1>No rooms available!</h1>
+							<p>If you're seeing this message, please contact the system administrator.</p>
+						</Paper>
+					)
+				}
+			</section>
+		</Tab>
+
+		<Tab label="Weekly View">
+			<section>
+				<Paper className="booking-table paper text-center">
+					<div className="row">
+						<div className="col-xs">
+							<strong>Time</strong>
+						</div>
+						<div className="col-xs">
+							<strong>Mon</strong>
+						</div>
+						<div className="col-xs">
+							<strong>Tue</strong>
+						</div>
+						<div className="col-xs">
+							<strong>Wed</strong>
+						</div>
+						<div className="col-xs">
+							<strong>Thu</strong>
+						</div>
+						<div className="col-xs">
+							<strong>Fri</strong>
+						</div>
+						<div className="col-xs">
+							<strong>Sat</strong>
+						</div>
 					</div>
-					<div className="col-xs selectable"></div>
-					<div className="col-xs selectable"></div>
-					<div className="col-xs selectable"></div>
-					<div className="col-xs selectable"></div>
-					<div className="col-xs selectable"></div>
-					<div className="col-xs selectable"></div>
-				</div>
-			))
-		}
-	</Paper>
+
+					{
+						timeSlots.map((time) => (
+							<div className="row" key={time}>
+								<div className="col-xs">
+									<strong>{time}</strong>
+								</div>
+								<div className="col-xs selectable"></div>
+								<div className="col-xs selectable"></div>
+								<div className="col-xs selectable"></div>
+								<div className="col-xs selectable"></div>
+								<div className="col-xs selectable"></div>
+								<div className="col-xs selectable"></div>
+							</div>
+						))
+					}
+				</Paper>
+			</section>
+		</Tab>
+	</Tabs>
 )
 
 // Define the property types that the component expects to receive
 BookingTableComponent.propTypes = {
-	bookingsByDate: PropTypes.object.isRequired
+	selectedDate: PropTypes.string.isRequired,
+	bookingsByDate: PropTypes.object.isRequired,
+	rooms: PropTypes.object.isRequired
 }
 
 // Define the container for the Booking Table component (maps state and dispatchers)

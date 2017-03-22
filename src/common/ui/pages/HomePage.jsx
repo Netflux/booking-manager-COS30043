@@ -13,9 +13,7 @@ const HomePage = () => (
 
 		<Menubar title="Booking Manager | Home" />
 
-		<section>
-			<BookingTable />
-		</section>
+		<BookingTable />
 	</main>
 )
 

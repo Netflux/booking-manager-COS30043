@@ -10,8 +10,13 @@ const userSchema = new Schema({
 
 // Schema for the Booking details
 const bookingSchema = new Schema({
-	userId: [String],
+	bookingId: String,
+	bookingTitle: String,
+	bookingDesc: String,
+	userId: String,
+	roomId: String,
 	date: Date,
+	timeSlot: Number,
 	duration: Number
 })
 
@@ -19,8 +24,7 @@ const bookingSchema = new Schema({
 const roomSchema = new Schema({
 	roomId: String,
 	roomName: String,
-	isAvailable: Boolean,
-	bookings: Array
+	isAvailable: Boolean
 })
 
 export { userSchema, bookingSchema, roomSchema }
