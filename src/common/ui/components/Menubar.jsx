@@ -1,7 +1,8 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { FontIcon, Toolbar, ToolbarGroup, ToolbarTitle } from 'material-ui'
-import { white } from 'material-ui/styles/colors'
+
+import theme from '../theme'
 
 import { toggleDrawerOpen } from '../../actions'
 
@@ -21,10 +22,10 @@ const mapDispatchToProps = dispatch => {
 
 // Define the Menubar component
 const MenubarComponent = ({title, onToggleMenu}) => (
-	<Toolbar>
+	<Toolbar className="toolbar">
 		<ToolbarGroup>
-			<FontIcon className="material-icons menu-icon" onTouchTap={() => onToggleMenu()} color={white} hoverColor={white}>menu</FontIcon>
-			<ToolbarTitle text={title} style={{color: white}} />
+			<FontIcon className="material-icons menu-icon" onTouchTap={() => onToggleMenu()} color={theme.palette.alternateTextColor} hoverColor={theme.palette.alternateTextColor}>menu</FontIcon>
+			<ToolbarTitle text={title} style={{color: theme.palette.alternateTextColor}} />
 		</ToolbarGroup>
 	</Toolbar>
 )

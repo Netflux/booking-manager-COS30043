@@ -15,7 +15,7 @@ const mapDispatchToProps = dispatch => ({})
 
 // Define the Base Page component
 const BasePageComponent = ({children, isOpen, isDocked}) => (
-	<div id="content" className={isOpen && isDocked ? "content-offset" : ""}>
+	<div id="content" className={isOpen && isDocked ? "content-offset" : null}>
 		<Helmet
 			htmlAttributes={{"lang": "en"}}
 			link={[

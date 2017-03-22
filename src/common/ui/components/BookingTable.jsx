@@ -64,12 +64,12 @@ const BookingTableComponent = ({bookingsByDate}) => (
 					<div className="col-xs">
 						<strong>{time}</strong>
 					</div>
-					<div className="col-xs"></div>
-					<div className="col-xs"></div>
-					<div className="col-xs"></div>
-					<div className="col-xs"></div>
-					<div className="col-xs"></div>
-					<div className="col-xs"></div>
+					<div className="col-xs selectable"></div>
+					<div className="col-xs selectable"></div>
+					<div className="col-xs selectable"></div>
+					<div className="col-xs selectable"></div>
+					<div className="col-xs selectable"></div>
+					<div className="col-xs selectable"></div>
 				</div>
 			))
 		}

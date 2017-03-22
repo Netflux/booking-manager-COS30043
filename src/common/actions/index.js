@@ -24,7 +24,7 @@ export const selectDate = date => {
 }
 
 // Helper function to determine whether booking entries need to be fetched for a specific date
-const shouldFetchPosts = (state, date) => {
+const shouldFetchBookings = (state, date) => {
 	const bookings = state.bookings[date]
 
 	if (!bookings) {
@@ -40,7 +40,7 @@ const shouldFetchPosts = (state, date) => {
 export const fetchBookingsIfNeeded = date => {
 	return (dispatch, getState) => {
 		// Fetch booking entries if not in memory, else return a resolved promise
-		if (shouldFetchPosts(getState(), date)) {
+		if (shouldFetchBookings(getState(), date)) {
 			return dispatch(fetchBookings(date))
 		} else {
 			return Promise.resolve()

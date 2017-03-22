@@ -1,14 +1,16 @@
-import { greenA400, greenA700, orange500 } from 'material-ui/styles/colors'
+import { blueGrey500, blueGrey700, orange500, grey800, white } from 'material-ui/styles/colors'
 
 const theme = {
 	palette: {
-		primary1Color: greenA400,
-		primary2Color: greenA700,
+		primary1Color: blueGrey500,
+		primary2Color: blueGrey700,
 		accent1Color: orange500,
-    	pickerHeaderColor: greenA700
+    	pickerHeaderColor: blueGrey500,
+		textColor: grey800,
+		alternateTextColor: white
 	},
 	toolbar: {
-		backgroundColor: greenA700
+		backgroundColor: blueGrey500
 	}
 }
 

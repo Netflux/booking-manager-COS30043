@@ -1,10 +1,11 @@
 import React, { PropTypes } from 'react'
 import { Link } from 'react-router'
 import { connect } from 'react-redux'
-import { Divider, Drawer, MenuItem, Subheader, Toolbar, ToolbarTitle } from 'material-ui'
-import { white } from 'material-ui/styles/colors'
+import { Divider, Drawer, FontIcon, MenuItem, Subheader, Toolbar, ToolbarTitle } from 'material-ui'
 
-import { toggleDrawerOpen, toggleDrawerDocked } from '../../actions'
+import theme from '../theme'
+
+import { toggleDrawerOpen, toggleDrawerDocked, selectDate } from '../../actions'
 
 const mapStateToProps = state => {
 	return {
@@ -20,6 +21,9 @@ const mapDispatchToProps = dispatch => {
 			if (shouldToggle) {
 				dispatch(toggleDrawerOpen())
 			}
+		},
+		onSelectDate: (date) => {
+			dispatch(selectDate(date))
 		},
 		onWindowResize: (isOpen, isDocked) => {
 			if (window.innerWidth >= 1024) {
@@ -63,14 +67,15 @@ class SideDrawerComponent extends React.Component {
 
 	render() {
 		return (
-			<Drawer className="side-drawer" open={this.props.isOpen} docked={this.props.isDocked} onRequestChange={() => this.props.onToggleMenu(true)}>
+			<Drawer className="side-drawer" open={this.props.isOpen} docked={this.props.isDocked} onRequestChange={() => this.props.onToggleMenu(true)} containerStyle={!(this.props.isOpen && this.props.isDocked) ? {transition: "transform 550ms cubic-bezier(0.23, 1, 0.32, 1) 10ms"} : null}>
 				<Toolbar className="menu-bar">
-					<ToolbarTitle text="Navigation" style={{color: white}} />
+					<ToolbarTitle text="Navigation" style={{color: theme.palette.alternateTextColor}} />
 				</Toolbar>
 
-				<Link to="/" onTouchTap={() => this.props.onToggleMenu(!this.props.isDocked)}><MenuItem>Home</MenuItem></Link>
-				<Link to="/about" onTouchTap={() => this.props.onToggleMenu(!this.props.isDocked)}><MenuItem>About</MenuItem></Link>
-				<Link to="/login" onTouchTap={() => this.props.onToggleMenu(!this.props.isDocked)}><MenuItem>Login</MenuItem></Link>
+				<Link to="/" onTouchTap={() => this.props.onToggleMenu(!this.props.isDocked)}><MenuItem leftIcon={<FontIcon className="material-icons">home</FontIcon>}>Home</MenuItem></Link>
+				<Link to="/about" onTouchTap={() => this.props.onToggleMenu(!this.props.isDocked)}><MenuItem leftIcon={<FontIcon className="material-icons">info</FontIcon>}>About</MenuItem></Link>
+				<Link to="/login" onTouchTap={() => this.props.onToggleMenu(!this.props.isDocked)}><MenuItem leftIcon={<FontIcon className="material-icons">account_circle</FontIcon>}>Login</MenuItem></Link>
+				<Link to="/logout" onTouchTap={() => this.props.onToggleMenu(!this.props.isDocked)}><MenuItem leftIcon={<FontIcon className="material-icons">power_settings_new</FontIcon>}>Logout</MenuItem></Link>
 
 				{
 					// Only render history list if there are entries to display
@@ -78,10 +83,13 @@ class SideDrawerComponent extends React.Component {
 						<div>
 							<Divider />
 							<Subheader>Recently Viewed Dates</Subheader>
-							
+
 							{
 								this.props.selectedDateHistory.map((date) => (
-									<Link to={`/bookings/${date}`} onTouchTap={() => this.props.onToggleMenu(!this.props.isDocked)} key={date}><MenuItem>{date}</MenuItem></Link>
+									<Link to="/" onTouchTap={() => {
+											this.props.onToggleMenu(!this.props.isDocked)
+											this.props.onSelectDate(date)
+										}} key={date}><MenuItem>{date}</MenuItem></Link>
 								))
 							}
 						</div>
@@ -98,6 +106,7 @@ SideDrawerComponent.propTypes = {
 	isDocked: PropTypes.bool.isRequired,
 	selectedDateHistory: PropTypes.array.isRequired,
 	onToggleMenu: PropTypes.func.isRequired,
+	onSelectDate: PropTypes.func.isRequired,
 	onWindowResize: PropTypes.func.isRequired
 }
 
