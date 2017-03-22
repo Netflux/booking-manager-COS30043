@@ -109,3 +109,86 @@ export const deleteBooking = (date, bookingId) => {
 		bookingId
 	}
 }
+
+// Helper function to determine whether room entries need to be fetched
+const shouldFetchRooms = (state) => {
+	const rooms = state.rooms
+
+	if (!rooms) {
+		return true;
+	} else if (rooms.isFetching) {
+		return false
+	} else {
+		return rooms.didInvalidate
+	}
+}
+
+// Action when the user needs to fetch room entries
+export const fetchRoomsIfNeeded = () => {
+	return (dispatch, getState) => {
+		// Fetch room entries if not in memory, else return a resolved promise
+		if (shouldFetchRooms(getState())) {
+			return dispatch(fetchRooms())
+		} else {
+			return Promise.resolve()
+		}
+	}
+}
+
+// Action when the user is fetching room entries
+export const fetchRooms = () => {
+	return dispatch => {
+		// Dispatch a request rooms action
+		dispatch(requestRooms())
+
+		// Fetch the room entries and dispatch a receive rooms action
+		return fetch(`/api/rooms/`)
+			.then(response => response.json())
+			.then(json => dispatch(receiveRooms(json)))
+	}
+}
+
+// Action when the user requests room entries
+export const REQUEST_ROOMS = 'REQUEST_ROOMS'
+export const requestRooms = () => {
+	return {
+		type: REQUEST_ROOMS
+	}
+}
+
+// Action when the user receives room entries
+export const RECEIVE_ROOMS = 'RECEIVE_ROOMS'
+export const receiveRooms = (json) => {
+	return {
+		type: RECEIVE_ROOMS,
+		rooms: json,
+		receivedAt: Date.now()
+	}
+}
+
+// Action when the room entries have become invalid (after add/delete)
+export const INVALIDATE_ROOMS = 'INVALIDATE_ROOMS'
+export const invalidateRooms = () => {
+	return {
+		type: INVALIDATE_ROOMS
+	}
+}
+
+// Action when the user adds a room entry
+export const ADD_ROOM = 'ADD_ROOM'
+export const addRoom = (room) => {
+	return {
+		type: ADD_ROOM,
+		date,
+		booking
+	}
+}
+
+// Action when the user deletes a room entry
+export const DELETE_ROOM = 'DELETE_ROOM'
+export const deleteRoom = (roomId) => {
+	return {
+		type: DELETE_ROOM,
+		roomId
+	}
+}

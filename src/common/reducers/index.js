@@ -1,6 +1,8 @@
 import { combineReducers } from 'redux'
 import moment from 'moment'
-import { TOGGLE_DRAWER_OPEN, TOGGLE_DRAWER_DOCKED, SELECT_DATE, REQUEST_BOOKINGS, RECEIVE_BOOKINGS, INVALIDATE_BOOKINGS, ADD_BOOKING, DELETE_BOOKING } from '../actions'
+import { TOGGLE_DRAWER_OPEN, TOGGLE_DRAWER_DOCKED, SELECT_DATE,
+	REQUEST_BOOKINGS, RECEIVE_BOOKINGS, INVALIDATE_BOOKINGS, ADD_BOOKING, DELETE_BOOKING,
+	REQUEST_ROOMS, RECEIVE_ROOMS, INVALIDATE_ROOMS, ADD_ROOM, DELETE_ROOM } from '../actions'
 
 // Reducer for side drawer-related actions
 const sideDrawerState = (state = {
@@ -103,12 +105,54 @@ const bookingsByDate = (state = {}, action) => {
 	}
 }
 
+// Reducer for room-related actions
+const rooms = (state = {
+	isFetching: false,
+	didInvalidate: false,
+	items: []
+}, action) => {
+	switch (action.type) {
+		case REQUEST_ROOMS:
+			return {
+				...state,
+				isFetching: true
+			}
+		case RECEIVE_ROOMS:
+			return {
+				...state,
+				isFetching: false,
+				items: action.rooms,
+				lastUpdated: action.receivedAt
+			}
+		case INVALIDATE_ROOMS:
+			return {
+				...state,
+				didInvalidate: true
+			}
+		case ADD_ROOM:
+			return {
+				...state,
+				items: [...state.items, action.room]
+			}
+		case DELETE_ROOM:
+			return {
+				...state,
+				items: state.items.filter((room) => {
+					room._id != action.roomId
+				})
+			}
+		default:
+			return state
+	}
+}
+
 // Combine all reducers into a singular root reducer
 const rootReducer = combineReducers({
 	sideDrawerState,
 	selectedDate,
 	selectedDateHistory,
-	bookingsByDate
+	bookingsByDate,
+	rooms
 })
 
 export default rootReducer

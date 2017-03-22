@@ -8,6 +8,13 @@ const userSchema = new Schema({
 	authLevel: Number
 })
 
+// Schema for the Booking details
+const bookingSchema = new Schema({
+	userId: [String],
+	date: Date,
+	duration: Number
+})
+
 // Schema for the Room details
 const roomSchema = new Schema({
 	roomId: String,
@@ -16,11 +23,4 @@ const roomSchema = new Schema({
 	bookings: Array
 })
 
-// Schema for the Booking details
-const bookingSchema = new Schema({
-	userId: [String],
-	date: Date,
-	duration: Number
-})
-
-export { userSchema, roomSchema, bookingSchema }
+export { userSchema, bookingSchema, roomSchema }

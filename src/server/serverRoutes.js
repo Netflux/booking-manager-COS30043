@@ -57,6 +57,10 @@ const serverRoutes = app => {
 		res.sendStatus(403)
 	})
 
+	app.get('/api/rooms', (req, res) => {
+		res.sendStatus(403)
+	})
+
 	app.get('/static/*', (req, res) => {
 		res.sendFile(req.originalUrl, { root: path.join(__dirname, '../../') })
 	})
