@@ -7,9 +7,9 @@ import BookingTable from '../components/BookingTable'
 
 const HomePage = () => (
 	<main>
-		<Helmet
-			title="Booking Manager | Home"
-		/>
+		<Helmet>
+			<title>Booking Manager | Home</title>
+		</Helmet>
 
 		<Menubar title="Booking Manager | Home" />
 

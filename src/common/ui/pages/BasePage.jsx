@@ -16,16 +16,17 @@ const mapDispatchToProps = dispatch => ({})
 // Define the Base Page component
 const BasePageComponent = ({children, isOpen, isDocked}) => (
 	<div id="content" className={isOpen && isDocked ? "content-offset" : null}>
-		<Helmet
-			htmlAttributes={{"lang": "en"}}
-			link={[
-				{rel: "stylesheet", href: "https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css"},
-				{rel: "stylesheet", href: "https://cdnjs.cloudflare.com/ajax/libs/flexboxgrid/6.3.1/flexboxgrid.min.css"},
-				{rel: "stylesheet", href: "https://fonts.googleapis.com/icon?family=Roboto|Material+Icons"},
-				{rel: "stylesheet", href: "/static/style.css"},
-				{rel: "stylesheet", href: "/static/style-mobile.css"}
-			]}
-		/>
+		<Helmet>
+			<html lang="en" />
+			<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+			<meta charSet="utf-8" />
+
+			<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css" />
+			<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flexboxgrid/6.3.1/flexboxgrid.min.css" />
+			<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Roboto|Material+Icons" />
+			<link rel="stylesheet" href="/static/style.css" />
+			<link rel="stylesheet" href="/static/style-mobile.css" />
+		</Helmet>
 
 		{children}
 

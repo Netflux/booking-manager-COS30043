@@ -5,9 +5,9 @@ import Menubar from '../components/Menubar'
 
 const NotFoundPage = () => (
 	<main>
-		<Helmet
-			title={"Booking Manager | Not Found"}
-		/>
+		<Helmet>
+			<title>Booking Manager | Not Found</title>
+		</Helmet>
 
 		<Menubar title="Booking Manager | Not Found" />
 

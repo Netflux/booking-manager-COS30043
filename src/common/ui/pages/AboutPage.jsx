@@ -5,9 +5,9 @@ import Menubar from '../components/Menubar'
 
 const AboutPage = () => (
 	<main>
-		<Helmet
-			title="Booking Manager | About"
-		/>
+		<Helmet>
+			<title>Booking Manager | About</title>
+		</Helmet>
 
 		<Menubar title="Booking Manager | About" />
 
