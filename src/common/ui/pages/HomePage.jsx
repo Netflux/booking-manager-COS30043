@@ -11,7 +11,7 @@ const HomePage = () => (
 			<title>Booking Manager | Home</title>
 		</Helmet>
 
-		<Menubar title="Booking Manager | Home" />
+		<Menubar title="Booking Manager" />
 
 		<BookingTable />
 	</main>

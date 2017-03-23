@@ -95,7 +95,7 @@ section {
 	padding: 0;
 }
 .selectable {
-	transition: background-color 0.3s;
+	transition: background-color 0.2s;
 }
 .selectable:hover {
 	background-color: #ECEFF1;

@@ -9,7 +9,7 @@ const NotFoundPage = () => (
 			<title>Booking Manager | Not Found</title>
 		</Helmet>
 
-		<Menubar title="Booking Manager | Not Found" />
+		<Menubar title="Booking Manager" />
 
 		<section>
 			<h1>Not Found Page</h1>

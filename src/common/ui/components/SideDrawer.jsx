@@ -1,6 +1,7 @@
 import React, { PropTypes } from 'react'
 import { Link } from 'react-router'
 import { connect } from 'react-redux'
+import moment from 'moment'
 import { Divider, Drawer, FontIcon, MenuItem, Subheader, Toolbar, ToolbarTitle } from 'material-ui'
 
 import theme from '../theme'
@@ -89,7 +90,7 @@ class SideDrawerComponent extends React.Component {
 									<Link to="/" onTouchTap={() => {
 											this.props.onToggleMenu(!this.props.isDocked)
 											this.props.onSelectDate(date)
-										}} key={date}><MenuItem>{date}</MenuItem></Link>
+										}} key={date}><MenuItem>{moment(date, 'YYYY/M/D').format('D/M/YYYY')}</MenuItem></Link>
 								))
 							}
 						</div>
