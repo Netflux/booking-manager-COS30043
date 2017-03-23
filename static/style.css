@@ -3,6 +3,7 @@
 	font-family: Roboto, sans-serif;
 }
 main {
+	color: #424242;
 	transition: margin-left 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms;
 }
 section {
@@ -42,6 +43,11 @@ section {
 .text-center {
 	text-align: center;
 }
+.vertical-center, .booking > .paper {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
 /* ===== Utility CSS End ===== */
 
 
@@ -74,9 +80,6 @@ section {
 	z-index: 5;
 }
 .booking > .paper {
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
 	position: absolute;
 	top: 8px;
 	left: 8px;
@@ -91,15 +94,31 @@ section {
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
+.booking-date-picker {
+	margin-top: 16px;
+}
+.booking-date-picker > h1, .booking-date-picker > p, .selectable {
+	cursor: pointer;
+}
+.booking-date-picker > h1, .booking-date-picker > p {
+	height: 56px;
+	margin: 0;
+}
+.booking-date-picker > h1 {
+	line-height: 56px;
+}
+.booking-date-picker > p {
+	width: 56px;
+}
 .col-xs {
 	padding: 0;
-}
-.selectable {
 	transition: background-color 0.2s;
 }
 .selectable:hover {
 	background-color: #ECEFF1;
-	cursor: pointer;
+}
+.selected-date {
+	background-color: #FFF3E0;
 }
 /* ===== Home Page CSS End ===== */
 

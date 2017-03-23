@@ -1,7 +1,9 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
+import moment from 'moment'
 import { Paper, Tabs, Tab } from 'material-ui'
 
+import BookingDatePicker from './BookingDatePicker'
 import Booking from './Booking'
 
 const mapStateToProps = state => {
@@ -18,8 +20,9 @@ const mapDispatchToProps = dispatch => {
 	}
 }
 
-// Define the timeslots available for booking
+// Define the time slots available for booking (including header)
 const timeSlots = [
+	"Time",
 	"10.30am",
 	"11.30am",
 	"12.30pm",
@@ -35,28 +38,28 @@ const timeSlots = [
 	"10.30pm"
 ]
 
+// Define the days available for booking
+const bookingDays = [
+	"Mon",
+	"Tue",
+	"Wed",
+	"Thu",
+	"Fri",
+	"Sat"
+]
+
 // Define the Booking Table component
 const BookingTableComponent = ({selectedDate, bookingsByDate, rooms}) => (
 	<Tabs className="tabbar">
 		<Tab label="Room View">
-			<section>
-				{
-					rooms.items.length > 0 ? (
+			{
+				// If at least 1 room is available, display the booking table
+				// Else, display a message indicating that no rooms are available
+				rooms.items.length > 0 ? (
+					<section>
+						<BookingDatePicker />
+
 						<Paper className="booking-table paper text-center">
-							<div className="row">
-								<div className="col-xs">
-									<strong>Time</strong>
-								</div>
-
-								{
-									rooms.items.filter((room) => room.isAvailable).map((room) => (
-										<div className="col-xs" key={room.roomId}>
-											<strong>{room.roomName}</strong>
-										</div>
-									))
-								}
-							</div>
-
 							{
 								timeSlots.map((time, index) => (
 									<div className="row" key={time}>
@@ -66,11 +69,17 @@ const BookingTableComponent = ({selectedDate, bookingsByDate, rooms}) => (
 
 										{
 											rooms.items.filter((room) => room.isAvailable).map((room) => (
-												<div className={"col-xs" + (bookingsByDate[selectedDate].items.filter((booking) => booking.roomId == room.roomId && booking.timeSlot == index + 1).length == 0 ? " selectable" : "")} data-row={index + 1} data-roomId={room.roomId} key={room.roomId}>
+												<div className={"col-xs" + (index != 0 && bookingsByDate[selectedDate].items.filter((booking) => booking.roomId == room.roomId && booking.timeSlot == index).length == 0 ? " selectable" : "")} data-row={index} data-roomId={room.roomId} key={room.roomId}>
 													{
-														bookingsByDate[selectedDate].items.filter((booking) => booking.roomId == room.roomId && booking.timeSlot == index + 1).map((booking) => (
-															<Booking booking={booking} key={booking.bookingId} />
-														))
+														// If displaying the first row of the table, simply display it as a header
+														// Else, check if any bookings exist for the time slot and display it
+														index == 0 ? (
+															<strong>{room.roomName}</strong>
+														) : (
+															bookingsByDate[selectedDate].items.filter((booking) => booking.roomId == room.roomId && booking.timeSlot == index).map((booking) => (
+																<Booking booking={booking} key={booking.bookingId} />
+															))
+														)
 													}
 												</div>
 											))
@@ -79,55 +88,42 @@ const BookingTableComponent = ({selectedDate, bookingsByDate, rooms}) => (
 								))
 							}
 						</Paper>
-					) : (
+					</section>
+				) : (
+					<section>
 						<Paper className="booking-table paper text-center">
 							<h1>No rooms available!</h1>
 							<p>If you're seeing this message, please contact the system administrator.</p>
 						</Paper>
-					)
-				}
-			</section>
+					</section>
+				)
+			}
 		</Tab>
 
 		<Tab label="Weekly View">
 			<section>
-				<Paper className="booking-table paper text-center">
-					<div className="row">
-						<div className="col-xs">
-							<strong>Time</strong>
-						</div>
-						<div className="col-xs">
-							<strong>Mon</strong>
-						</div>
-						<div className="col-xs">
-							<strong>Tue</strong>
-						</div>
-						<div className="col-xs">
-							<strong>Wed</strong>
-						</div>
-						<div className="col-xs">
-							<strong>Thu</strong>
-						</div>
-						<div className="col-xs">
-							<strong>Fri</strong>
-						</div>
-						<div className="col-xs">
-							<strong>Sat</strong>
-						</div>
-					</div>
+				<BookingDatePicker />
 
+				<Paper className="booking-table paper text-center">
 					{
-						timeSlots.map((time) => (
+						timeSlots.map((time, index) => (
 							<div className="row" key={time}>
 								<div className="col-xs">
 									<strong>{time}</strong>
 								</div>
-								<div className="col-xs selectable"></div>
-								<div className="col-xs selectable"></div>
-								<div className="col-xs selectable"></div>
-								<div className="col-xs selectable"></div>
-								<div className="col-xs selectable"></div>
-								<div className="col-xs selectable"></div>
+
+								{
+									bookingDays.map((day, dayIndex) => (
+										<div className={"col-xs" + (dayIndex + 1 == moment(selectedDate, 'YYYY/M/D').isoWeekday() ? " selected-date" : "")} key={dayIndex}>
+											{
+												// If displaying the first row of the table, simply display it as a header
+												index == 0 && (
+													<strong>{day}</strong>
+												)
+											}
+										</div>
+									))
+								}
 							</div>
 						))
 					}
