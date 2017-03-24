@@ -1,5 +1,7 @@
 import React from 'react'
+import { Link } from 'react-router'
 import Helmet from 'react-helmet'
+import { Paper } from 'material-ui'
 
 import Menubar from '../components/Menubar'
 
@@ -12,7 +14,10 @@ const NotFoundPage = () => (
 		<Menubar title="Booking Manager" />
 
 		<section>
-			<h1>Not Found Page</h1>
+			<Paper className="paper text-center">
+				<h1>Error 404 - Page not found!</h1>
+				<p><Link to="/" className="text-color-dark">Lost? Click here to return home.</Link></p>
+			</Paper>
 		</section>
 	</main>
 )

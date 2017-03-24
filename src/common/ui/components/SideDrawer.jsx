@@ -1,4 +1,4 @@
-import React, { PropTypes } from 'react'
+import React, { Component, PropTypes } from 'react'
 import { Link } from 'react-router'
 import { connect } from 'react-redux'
 import moment from 'moment'
@@ -38,7 +38,7 @@ const mapDispatchToProps = dispatch => {
 	}
 }
 
-class SideDrawerComponent extends React.Component {
+class SideDrawerComponent extends Component {
 	constructor(props) {
 		super(props)
 

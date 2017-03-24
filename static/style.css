@@ -3,7 +3,6 @@
 	font-family: Roboto, sans-serif;
 }
 main {
-	color: #424242;
 	transition: margin-left 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms;
 }
 section {
@@ -47,6 +46,9 @@ section {
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
+}
+.text-color-dark, main {
+	color: #424242;
 }
 /* ===== Utility CSS End ===== */
 
@@ -103,6 +105,7 @@ section {
 .booking-date-picker > h1, .booking-date-picker > p {
 	height: 56px;
 	margin: 0;
+	transition: background-color 0.2s;
 }
 .booking-date-picker > h1 {
 	line-height: 56px;
@@ -115,7 +118,7 @@ section {
 	transition: background-color 0.2s;
 }
 .selectable:hover {
-	background-color: #ECEFF1;
+	background-color: rgba(66, 66, 66, 0.1);
 }
 .selected-date {
 	background-color: #FFF3E0;
