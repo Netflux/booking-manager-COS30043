@@ -25,7 +25,7 @@ export const selectDate = date => {
 
 // Helper function to determine whether booking entries need to be fetched for a specific date
 const shouldFetchBookings = (state, date) => {
-	const bookings = state.bookings[date]
+	const bookings = state.bookingsByDate[date]
 
 	if (!bookings) {
 		return true;

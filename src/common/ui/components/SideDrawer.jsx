@@ -38,6 +38,7 @@ const mapDispatchToProps = dispatch => {
 	}
 }
 
+// Define the Side Drawer component
 class SideDrawerComponent extends Component {
 	constructor(props) {
 		super(props)

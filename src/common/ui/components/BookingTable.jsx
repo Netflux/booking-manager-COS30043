@@ -1,10 +1,12 @@
-import React, { PropTypes } from 'react'
+import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
 import moment from 'moment'
 import { Paper, Tabs, Tab } from 'material-ui'
 
 import BookingDatePicker from './BookingDatePicker'
 import Booking from './Booking'
+
+import { fetchBookingsIfNeeded, fetchRoomsIfNeeded } from '../../actions'
 
 const mapStateToProps = state => {
 	return {
@@ -16,7 +18,20 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
 	return {
+		fetchBookings: (date) => {
+			// Fetch the bookings for the entire week of the selected date
+			const startOfWeek = moment(date, 'YYYY/M/D').startOf('isoWeek')
+			const endOfWeek = moment(date, 'YYYY/M/D').endOf('isoWeek')
+			let day = startOfWeek
 
+			while (day <= endOfWeek) {
+				dispatch(fetchBookingsIfNeeded(day.format('YYYY/M/D')))
+				day = day.clone().add(1, 'days')
+			}
+		},
+		fetchRooms: () => {
+			dispatch(fetchRoomsIfNeeded())
+		}
 	}
 }
 
@@ -49,13 +64,73 @@ const bookingDays = [
 ]
 
 // Define the Booking Table component
-const BookingTableComponent = ({selectedDate, bookingsByDate, rooms}) => (
-	<Tabs className="tabbar">
-		<Tab label="Room View">
-			{
-				// If at least 1 room is available, display the booking table
-				// Else, display a message indicating that no rooms are available
-				rooms.items.length > 0 ? (
+class BookingTableComponent extends Component {
+	componentDidMount() {
+		// Fetch the bookings and rooms
+		this.props.fetchBookings(this.props.selectedDate)
+		this.props.fetchRooms()
+	}
+
+	componentDidUpdate(prevProps) {
+		// If the new date is on a different week, fetch the bookings
+		if (moment(this.props.selectedDate, 'YYYY/M/D').isoWeek() !== moment(prevProps.selectedDate, 'YYYY/M/D').isoWeek()) {
+			this.props.fetchBookings(this.props.selectedDate)
+		}
+	}
+
+	render() {
+		return (
+			<Tabs className="tabbar">
+				<Tab label="Room View">
+					{
+						// If at least 1 room is available, display the booking table
+						// Else, display a message indicating that no rooms are available
+						this.props.rooms.items.length > 0 ? (
+							<section>
+								<BookingDatePicker />
+
+								<Paper className="booking-table paper text-center">
+									{
+										timeSlots.map((time, index) => (
+											<div className="row" key={time}>
+												<div className="col-xs">
+													<strong>{time}</strong>
+												</div>
+
+												{
+													this.props.rooms.items.filter((room) => room.isAvailable).map((room) => (
+														<div className={"col-xs" + (index != 0 && this.props.bookingsByDate[this.props.selectedDate] && this.props.bookingsByDate[this.props.selectedDate].items.filter((booking) => booking.roomId == room.roomId && booking.timeSlot == index).length == 0 ? " selectable" : "")} data-row={index} data-roomId={room.roomId} key={room.roomId}>
+															{
+																// If displaying the first row of the table, simply display it as a header
+																// Else, check if any bookings exist for the time slot and display it
+																index == 0 ? (
+																	<strong>{room.roomName}</strong>
+																) : (
+																	this.props.bookingsByDate[this.props.selectedDate] && this.props.bookingsByDate[this.props.selectedDate].items.filter((booking) => booking.roomId == room.roomId && booking.timeSlot == index).map((booking) => (
+																		<Booking booking={booking} key={booking.bookingId} />
+																	))
+																)
+															}
+														</div>
+													))
+												}
+											</div>
+										))
+									}
+								</Paper>
+							</section>
+						) : (
+							<section>
+								<Paper className="booking-table paper text-center">
+									<h1>No rooms available!</h1>
+									<p>If you're seeing this message, please contact the system administrator.</p>
+								</Paper>
+							</section>
+						)
+					}
+				</Tab>
+
+				<Tab label="Weekly View">
 					<section>
 						<BookingDatePicker />
 
@@ -68,17 +143,12 @@ const BookingTableComponent = ({selectedDate, bookingsByDate, rooms}) => (
 										</div>
 
 										{
-											rooms.items.filter((room) => room.isAvailable).map((room) => (
-												<div className={"col-xs" + (index != 0 && bookingsByDate[selectedDate].items.filter((booking) => booking.roomId == room.roomId && booking.timeSlot == index).length == 0 ? " selectable" : "")} data-row={index} data-roomId={room.roomId} key={room.roomId}>
+											bookingDays.map((day, dayIndex) => (
+												<div className={"col-xs" + (dayIndex + 1 == moment(this.props.selectedDate, 'YYYY/M/D').isoWeekday() ? " selected-date" : "")} key={dayIndex}>
 													{
 														// If displaying the first row of the table, simply display it as a header
-														// Else, check if any bookings exist for the time slot and display it
-														index == 0 ? (
-															<strong>{room.roomName}</strong>
-														) : (
-															bookingsByDate[selectedDate].items.filter((booking) => booking.roomId == room.roomId && booking.timeSlot == index).map((booking) => (
-																<Booking booking={booking} key={booking.bookingId} />
-															))
+														index == 0 && (
+															<strong>{day}</strong>
 														)
 													}
 												</div>
@@ -89,49 +159,11 @@ const BookingTableComponent = ({selectedDate, bookingsByDate, rooms}) => (
 							}
 						</Paper>
 					</section>
-				) : (
-					<section>
-						<Paper className="booking-table paper text-center">
-							<h1>No rooms available!</h1>
-							<p>If you're seeing this message, please contact the system administrator.</p>
-						</Paper>
-					</section>
-				)
-			}
-		</Tab>
-
-		<Tab label="Weekly View">
-			<section>
-				<BookingDatePicker />
-
-				<Paper className="booking-table paper text-center">
-					{
-						timeSlots.map((time, index) => (
-							<div className="row" key={time}>
-								<div className="col-xs">
-									<strong>{time}</strong>
-								</div>
-
-								{
-									bookingDays.map((day, dayIndex) => (
-										<div className={"col-xs" + (dayIndex + 1 == moment(selectedDate, 'YYYY/M/D').isoWeekday() ? " selected-date" : "")} key={dayIndex}>
-											{
-												// If displaying the first row of the table, simply display it as a header
-												index == 0 && (
-													<strong>{day}</strong>
-												)
-											}
-										</div>
-									))
-								}
-							</div>
-						))
-					}
-				</Paper>
-			</section>
-		</Tab>
-	</Tabs>
-)
+				</Tab>
+			</Tabs>
+		)
+	}
+}
 
 // Define the property types that the component expects to receive
 BookingTableComponent.propTypes = {
