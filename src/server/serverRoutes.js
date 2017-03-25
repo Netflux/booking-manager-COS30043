@@ -61,16 +61,6 @@ const serverRoutes = app => {
 		res.sendStatus(403)
 	})
 
-	/*app.get('/static/bundle.js', (req, res, next) => {
-		// If in production, serve gzipped version of the bundle
-		if (process.env.NODE_ENV === 'production') {
-			req.url = req.url + '.gz'
-			res.set('Content-Encoding', 'gzip')
-		}
-
-		next()
-	})*/
-
 	app.get('/static/*', (req, res) => {
 		// If in production, serve optimized version of the static content
 		if (process.env.NODE_ENV === 'production') {
