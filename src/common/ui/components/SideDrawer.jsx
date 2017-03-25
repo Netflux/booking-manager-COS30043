@@ -76,6 +76,7 @@ class SideDrawerComponent extends Component {
 
 				<Link to="/" onTouchTap={() => this.props.onToggleMenu(!this.props.isDocked)}><MenuItem leftIcon={<FontIcon className="material-icons">home</FontIcon>}>Home</MenuItem></Link>
 				<Link to="/about" onTouchTap={() => this.props.onToggleMenu(!this.props.isDocked)}><MenuItem leftIcon={<FontIcon className="material-icons">info</FontIcon>}>About</MenuItem></Link>
+				<Link to="/rooms" onTouchTap={() => this.props.onToggleMenu(!this.props.isDocked)}><MenuItem leftIcon={<FontIcon className="material-icons">room</FontIcon>}>Rooms</MenuItem></Link>
 				<Link to="/login" onTouchTap={() => this.props.onToggleMenu(!this.props.isDocked)}><MenuItem leftIcon={<FontIcon className="material-icons">account_circle</FontIcon>}>Login</MenuItem></Link>
 				<Link to="/logout" onTouchTap={() => this.props.onToggleMenu(!this.props.isDocked)}><MenuItem leftIcon={<FontIcon className="material-icons">power_settings_new</FontIcon>}>Logout</MenuItem></Link>
 

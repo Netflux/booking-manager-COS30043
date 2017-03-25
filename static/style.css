@@ -1,5 +1,5 @@
 /* ===== General CSS Start ===== */
-* {
+body {
 	font-family: Roboto, sans-serif;
 }
 main {
@@ -35,12 +35,15 @@ section {
 	margin-top: 16px;
 	padding: 16px;
 }
+.paper:not(.paper-room):last-of-type {
+	margin-bottom: 16px;
+}
 /* ===== General CSS End ===== */
 
 
 /* ===== Utility CSS Start ===== */
 .text-center {
-	text-align: center;
+	text-align: center !important;
 }
 .vertical-center, .booking > .paper {
 	display: flex;
@@ -54,9 +57,6 @@ section {
 
 
 /* ===== Home Page CSS Start ===== */
-.booking-table {
-	margin-bottom: 16px;
-}
 .booking-table > .row {
 	margin: 0;
 }
@@ -105,6 +105,7 @@ section {
 .booking-date-picker > h1, .booking-date-picker > p {
 	height: 56px;
 	margin: 0;
+	border-radius: 2px;
 	transition: background-color 0.2s;
 }
 .booking-date-picker > h1 {
@@ -124,6 +125,13 @@ section {
 	background-color: #FFF3E0;
 }
 /* ===== Home Page CSS End ===== */
+
+
+/* ===== Rooms Page CSS Start ===== */
+.paper-room > h1 {
+	margin: 0.33em 0;
+}
+/* ===== Rooms Page CSS End ===== */
 
 
 /* ===== Login Page CSS Start ===== */

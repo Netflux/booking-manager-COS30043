@@ -24,6 +24,7 @@ const bookingSchema = new Schema({
 const roomSchema = new Schema({
 	roomId: String,
 	roomName: String,
+	roomDesc: String,
 	isAvailable: Boolean
 })
 
