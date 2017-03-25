@@ -61,8 +61,32 @@ const serverRoutes = app => {
 		res.sendStatus(403)
 	})
 
+	/*app.get('/static/bundle.js', (req, res, next) => {
+		// If in production, serve gzipped version of the bundle
+		if (process.env.NODE_ENV === 'production') {
+			req.url = req.url + '.gz'
+			res.set('Content-Encoding', 'gzip')
+		}
+
+		next()
+	})*/
+
 	app.get('/static/*', (req, res) => {
-		res.sendFile(req.originalUrl, { root: path.join(__dirname, '../../') })
+		// If in production, serve optimized version of the static content
+		if (process.env.NODE_ENV === 'production') {
+			switch (req.url) {
+				case '/static/bundle.js':
+					req.url = req.url + '.gz'
+					res.set('Content-Encoding', 'gzip')
+					break;
+
+				case '/static/style.css':
+					req.url = '/static/style.min.css'
+					break;
+			}
+		}
+
+		res.sendFile(req.url, { root: path.join(__dirname, '../../') })
 	})
 
 	// For any route besides the API, serve the web application

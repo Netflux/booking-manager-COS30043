@@ -1,6 +1,8 @@
 # Compiled code and Static bundle
 dist
 static/bundle.js
+static/*.gz
+static/*.min.css
 
 # Logs
 logs

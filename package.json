@@ -5,10 +5,11 @@
   "main": "dist/server/server.js",
   "scripts": {
     "test": "nodemon src/server/server.js --exec babel-node",
-    "clean": "rm -rf ./dist ./static/bundle.js",
-    "build-dev": "babel src -d dist; webpack",
-    "build": "babel src -d dist; webpack -p",
-    "start": "node dist/server/server.js"
+    "clean": "rm -rf ./dist ./static/bundle.js ./static/*.gz ./static/*.min.css",
+    "build-dev": "babel src -d dist; webpack --config webpack.config.js",
+    "build": "babel src -d dist; cleancss -02 -o ./static/style.min.css ./static/style.css; webpack -p --config webpack.config.prod.js",
+    "start-dev": "node dist/server/server.js",
+    "start": "NODE_ENV='production' node dist/server/server.js"
   },
   "author": "Netflux",
   "repository": {
@@ -40,6 +41,8 @@
     "babel-plugin-transform-object-rest-spread": "^6.23.0",
     "babel-preset-es2015": "^6.22.0",
     "babel-preset-react": "^6.23.0",
+    "clean-css-cli": "^4.0.10",
+    "compression-webpack-plugin": "^0.3.2",
     "nodemon": "^1.11.0",
     "webpack": "^2.2.1"
   }
