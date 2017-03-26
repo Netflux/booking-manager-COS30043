@@ -11,8 +11,6 @@ const mapStateToProps = state => {
 	}
 }
 
-const mapDispatchToProps = dispatch => ({})
-
 // Define the Base Page component
 const BasePageComponent = ({children, isOpen, isDocked}) => (
 	<div id="content" className={isOpen && isDocked ? "content-offset" : null}>
@@ -41,7 +39,7 @@ BasePageComponent.propTypes = {
 	isDocked: PropTypes.bool.isRequired
 }
 
-// Define the container for the Base Page component (maps state and dispatchers)
-const BasePage = connect(mapStateToProps, mapDispatchToProps)(BasePageComponent)
+// Define the container for the Base Page component (maps state)
+const BasePage = connect(mapStateToProps)(BasePageComponent)
 
 export default BasePage

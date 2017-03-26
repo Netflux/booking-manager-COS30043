@@ -35,7 +35,7 @@ section {
 	margin-top: 16px;
 	padding: 16px;
 }
-.paper:not(.paper-room):last-of-type {
+.paper:not(.paper-solo):last-of-type {
 	margin-bottom: 16px;
 }
 .clickable, .selectable {
@@ -58,6 +58,9 @@ section {
 }
 .text-color-dark, main {
 	color: #424242;
+}
+.margin-none {
+	margin: 0 !important;
 }
 /* ===== Utility CSS End ===== */
 

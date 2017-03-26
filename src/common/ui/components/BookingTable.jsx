@@ -96,12 +96,12 @@ class BookingTableComponent extends Component {
 
 		return (
 			<div>
-				<Tabs className="tabbar">
-					<Tab label="Room View">
-						{
-							// If at least 1 room is available, display the booking table
-							// Else, display a message indicating that no rooms are available
-							this.props.rooms.items.length > 0 ? (
+				{
+					// If at least 1 room is available, display the booking table
+					// Else, display a message indicating that no rooms are available
+					this.props.rooms.items.length > 0 ? (
+						<Tabs className="tabbar">
+							<Tab label="Room View">
 								<section>
 									<BookingDatePicker />
 
@@ -114,43 +114,53 @@ class BookingTableComponent extends Component {
 													</div>
 
 													{
-														this.props.rooms.items.filter((room) => room.isAvailable).map((room) => (
-															<div className={"col-xs" + (index != 0 && this.props.bookingsByDate[this.props.selectedDate] && this.props.bookingsByDate[this.props.selectedDate].items.filter((booking) => booking.roomId == room.roomId && booking.timeSlot == index).length == 0 ? " selectable" : "")}  onTouchTap={() => bookingDialog.getWrappedInstance().show({room: room.roomId, time: index})} key={room.roomId}>
-																{
-																	// If displaying the first row of the table, simply display it as a header
-																	// Else, check if any bookings exist for the time slot and display it
-																	index == 0 ? (
-																		<strong>{room.roomName}</strong>
-																	) : (
-																		this.props.bookingsByDate[this.props.selectedDate] && this.props.bookingsByDate[this.props.selectedDate].items.filter((booking) => booking.roomId == room.roomId && booking.timeSlot == index).map((booking) => (
-																			<Booking booking={booking} key={booking.bookingId} />
-																		))
-																	)
-																}
-															</div>
-														))
+														this.props.rooms.items.filter((room) => room.isAvailable).map((room) => {
+															let bookingsByTimeSlot = []
+															let timeSlotAvailable = true
+
+															if (this.props.bookingsByDate[this.props.selectedDate]) {
+																// Filter for any bookings that are available on the current time slot
+																bookingsByTimeSlot = this.props.bookingsByDate[this.props.selectedDate].items.filter((booking) => booking.roomId == room.roomId && booking.timeSlot == index)
+
+																// Check whether any bookings overlap with the current time slot
+																timeSlotAvailable = !(
+																	this.props.bookingsByDate[this.props.selectedDate].items.filter((booking) => booking.roomId == room.roomId).some((booking) => {
+																		for (let i = 0; i < booking.duration; ++i) {
+																			if (booking.timeSlot + i == index) {
+																				return true
+																			}
+																		}
+
+																		return false
+																	})
+																)
+															}
+
+															return (
+																<div className={"col-xs" + (index != 0 && timeSlotAvailable ? " selectable" : "")} onTouchTap={() => index != 0 && timeSlotAvailable ? bookingDialog.getWrappedInstance().show({roomId: room.roomId, timeSlot: index}) : null} key={room.roomId}>
+																	{
+																		// If displaying the first row of the table, simply display it as a header
+																		// Else, display any bookings that exist for the time slot
+																		index == 0 ? (
+																			<strong>{room.roomName}</strong>
+																		) : (
+																			bookingsByTimeSlot.map((booking) => (
+																				<Booking booking={booking} onTouchTap={() => bookingDialog.getWrappedInstance().show({dialogTitle: "Edit Booking", editing: true, ...booking})} key={booking.bookingId} />
+																			))
+																		)
+																	}
+																</div>
+															)
+														})
 													}
 												</div>
 											))
 										}
 									</Paper>
 								</section>
-							) : (
-								<section>
-									<Paper className="booking-table paper text-center">
-										<h1>No rooms available!</h1>
-										<p>If you're seeing this message, please contact the system administrator.</p>
-									</Paper>
-								</section>
-							)
-						}
-					</Tab>
+							</Tab>
 
-					<Tab label="Weekly View">
-						{
-							// If at least 1 room is available, display the booking table
-							// Else, display a message indicating that no rooms are available
-							this.props.rooms.items.length > 0 ? (
+							<Tab label="Weekly View">
 								<section>
 									<BookingDatePicker />
 
@@ -171,7 +181,7 @@ class BookingTableComponent extends Component {
 																	<strong>{day}</strong>
 																</div>
 															) : (
-																<div className={"col-xs selectable" + (dayIndex + 1 == moment(this.props.selectedDate, 'YYYY/M/D').isoWeekday() ? " selected-date" : "")} onTouchTap={() => bookingDialog.getWrappedInstance().show({date: getSelectedDate(dayIndex), time: index})} key={dayIndex}></div>
+																<div className={"col-xs selectable" + (dayIndex + 1 == moment(this.props.selectedDate, 'YYYY/M/D').isoWeekday() ? " selected-date" : "")} onTouchTap={() => bookingDialog.getWrappedInstance().show({date: getSelectedDate(dayIndex), timeSlot: index})} key={dayIndex}></div>
 															)
 														))
 													}
@@ -180,17 +190,17 @@ class BookingTableComponent extends Component {
 										}
 									</Paper>
 								</section>
-							) : (
-								<section>
-									<Paper className="booking-table paper text-center">
-										<h1>No rooms available!</h1>
-										<p>If you're seeing this message, please contact the system administrator.</p>
-									</Paper>
-								</section>
-							)
-						}
-					</Tab>
-				</Tabs>
+							</Tab>
+						</Tabs>
+					) : (
+						<section>
+							<Paper className="booking-table paper text-center">
+								<h1>No rooms available!</h1>
+								<p>If you're seeing this message, please contact the system administrator.</p>
+							</Paper>
+						</section>
+					)
+				}
 
 				<BookingDialog ref={(dialog) => bookingDialog = dialog} />
 			</div>

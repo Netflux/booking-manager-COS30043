@@ -31,7 +31,7 @@ const RoomsListComponent = ({rooms, fetchRooms}) => {
 						{
 							rooms.items.map((room) => (
 								<div className="col-sm-6" key={room.roomId}>
-									<Paper className="paper paper-room">
+									<Paper className="paper paper-solo">
 										<h1>{room.roomName}</h1>
 										<p>{room.roomDesc}</p>
 										<p>Booking Allowed: {room.isAvailable ? "Yes" : "No"}</p>

@@ -1,9 +1,10 @@
 import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
 import moment from 'moment'
-import { DatePicker, Dialog, FlatButton, MenuItem, SelectField, TextField } from 'material-ui'
+import shortid from 'shortid'
+import { DatePicker, Dialog, FlatButton, MenuItem, SelectField, Snackbar, TextField } from 'material-ui'
 
-import { addBooking, fetchRoomsIfNeeded } from '../../actions'
+import { addBooking, deleteBooking, fetchRoomsIfNeeded } from '../../actions'
 
 const mapStateToProps = state => {
 	return {
@@ -16,6 +17,9 @@ const mapDispatchToProps = dispatch => {
 	return {
 		addNewBooking: (booking) => {
 			dispatch(addBooking(booking.date, booking))
+		},
+		deleteCurrentBooking: (date, bookingId) => {
+			dispatch(deleteBooking(date, bookingId))
 		},
 		fetchRooms: () => {
 			dispatch(fetchRoomsIfNeeded())
@@ -31,21 +35,33 @@ class BookingDialogComponent extends Component {
 		// Initialize the default state
 		this.state = this.defaultState = {
 			open: false,
-			room: "",
-			roomErrorText: "",
-			title: "",
-			titleErrorText: "",
-			desc: "",
-			descErrorText: "",
+			editing: false,
+			dialogTitle: "New Booking",
+			roomId: "",
+			roomIdErrorText: "",
+			bookingId: "",
+			bookingTitle: "",
+			bookingTitleErrorText: "",
+			bookingDesc: "",
+			bookingDescErrorText: "",
 			date: this.props.selectedDate,
-			time: 1,
-			duration: 1,
+			timeSlot: 1,
+			duration: 1
 		}
 	}
 
 	componentDidMount() {
 		// Fetch the rooms
 		this.props.fetchRooms()
+	}
+
+	componentWillReceiveProps(nextProps) {
+		if (nextProps.selectedDate !== this.state.date) {
+			this.setState({
+				date: nextProps.selectedDate
+			})
+			this.defaultState.date = nextProps.selectedDate
+		}
 	}
 
 	handleChange(value, stateName) {
@@ -57,8 +73,8 @@ class BookingDialogComponent extends Component {
 
 	show(props) {
 		this.setState({
-			open: true,
-			...props
+			...props,
+			open: true
 		})
 	}
 
@@ -66,31 +82,38 @@ class BookingDialogComponent extends Component {
 		this.setState(this.defaultState)
 	}
 
-	onAccept() {
+	delete() {
+		this.props.deleteCurrentBooking(this.state.date, this.state.bookingId)
+
+		this.dismiss()
+	}
+
+	accept() {
 		let hasError = false
 
-		if (this.state.room == "") {
-			this.setState({roomErrorText: "This field is required"})
+		if (this.state.roomId == "") {
+			this.setState({roomIdErrorText: "This field is required"})
 			hasError = true
 		}
 
-		if (this.state.title == "") {
-			this.setState({titleErrorText: "This field is required"})
+		if (this.state.bookingTitle == "") {
+			this.setState({bookingTitleErrorText: "This field is required"})
 			hasError = true
 		}
 
-		if (this.state.desc == "") {
-			this.setState({descErrorText: "This field is required"})
+		if (this.state.bookingDesc == "") {
+			this.setState({bookingDescErrorText: "This field is required"})
 			hasError = true
 		}
 
 		if (!hasError) {
 			const newBooking = {
-				bookingTitle: this.state.title,
-				bookingDesc: this.state.desc,
-				roomId: this.state.room,
+				bookingId: this.state.bookingId || shortid.generate() + moment().format('ss'),
+				bookingTitle: this.state.bookingTitle,
+				bookingDesc: this.state.bookingDesc,
+				roomId: this.state.roomId,
 				date: this.state.date,
-				timeSlot: this.state.time,
+				timeSlot: this.state.timeSlot,
 				duration: this.state.duration
 			}
 
@@ -103,8 +126,9 @@ class BookingDialogComponent extends Component {
 	render() {
 		// Define the action buttons to display in the dialog
 		const actions = [
+			<FlatButton label="Delete" secondary={true} disabled={!this.state.editing} onTouchTap={() => this.delete()} />,
 			<FlatButton label="Cancel" secondary={true} onTouchTap={() => this.dismiss()} />,
-			<FlatButton label="Ok" secondary={true} onTouchTap={() => this.onAccept()} />
+			<FlatButton label="Ok" secondary={true} onTouchTap={() => this.accept()} />
 		]
 
 		// Define the time slots available for booking
@@ -132,18 +156,18 @@ class BookingDialogComponent extends Component {
 		]
 
 		return (
-			<Dialog title="New Booking" autoScrollBodyContent={true} actions={actions} open={this.state.open} onRequestClose={() => this.dismiss()}>
-				<SelectField id="room" className="form-input" floatingLabelText="Room" floatingLabelFixed={true} errorText={this.state.roomErrorText} onChange={(event, key, payload) => this.handleChange(payload, "room")} value={this.state.room}>
+			<Dialog title={this.state.dialogTitle} autoScrollBodyContent={true} actions={actions} open={this.state.open} onRequestClose={() => this.dismiss()}>
+				<SelectField id="room" className="form-input" floatingLabelText="Room" floatingLabelFixed={true} errorText={this.state.roomIdErrorText} onChange={(event, key, payload) => this.handleChange(payload, "roomId")} value={this.state.roomId}>
 					{
 						this.props.rooms.items.filter((room) => room.isAvailable).map((room, index) => (
 							<MenuItem primaryText={room.roomName} value={room.roomId} key={index}/>
 						))
 					}
 				</SelectField><br />
-				<TextField id="title" className="form-input" floatingLabelText="Title" floatingLabelFixed={true} errorText={this.state.titleErrorText} onChange={(event) => this.handleChange(event.target.value, "title")} value={this.state.title} /><br />
-				<TextField id="description" className="form-input" floatingLabelText="Description" floatingLabelFixed={true} errorText={this.state.descErrorText} onChange={(event) => this.handleChange(event.target.value, "desc")} value={this.state.desc} /><br />
+				<TextField id="title" className="form-input" floatingLabelText="Title" floatingLabelFixed={true} errorText={this.state.bookingTitleErrorText} onChange={(event) => this.handleChange(event.target.value, "bookingTitle")} value={this.state.bookingTitle} /><br />
+				<TextField id="description" className="form-input" floatingLabelText="Description" floatingLabelFixed={true} errorText={this.state.bookingDescErrorText} onChange={(event) => this.handleChange(event.target.value, "bookingDesc")} value={this.state.bookingDesc} /><br />
 				<DatePicker id="date" floatingLabelText="Date" floatingLabelFixed={true} formatDate={(date) => moment(date).format('D/M/YYYY')} onChange={(event, date) => this.handleChange(moment(date).format('YYYY/M/D'), "date")} value={moment(this.state.date, 'YYYY/M/D').toDate()} />
-				<SelectField id="time" className="form-input" floatingLabelText="Time" floatingLabelFixed={true} onChange={(event, key, payload) => this.handleChange(payload, "time")} value={this.state.time}>
+				<SelectField id="time" className="form-input" floatingLabelText="Time" floatingLabelFixed={true} onChange={(event, key, payload) => this.handleChange(payload, "timeSlot")} value={this.state.timeSlot}>
 					{
 						timeSlots.map((time, index) => (
 							<MenuItem primaryText={time} value={index + 1} key={index}/>
@@ -167,6 +191,7 @@ BookingDialogComponent.propTypes = {
 	selectedDate: PropTypes.string.isRequired,
 	rooms: PropTypes.object.isRequired,
 	addNewBooking: PropTypes.func.isRequired,
+	deleteCurrentBooking: PropTypes.func.isRequired,
 	fetchRooms: PropTypes.func.isRequired
 }
 

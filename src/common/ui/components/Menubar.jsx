@@ -6,12 +6,6 @@ import theme from '../theme'
 
 import { toggleDrawerOpen } from '../../actions'
 
-const mapStateToProps = state => {
-	return {
-
-	}
-}
-
 const mapDispatchToProps = dispatch => {
 	return {
 		onToggleMenu: () => {
@@ -36,7 +30,7 @@ MenubarComponent.propTypes = {
 	onToggleMenu: PropTypes.func.isRequired
 }
 
-// Define the container for the Menubar component (maps state and dispatchers)
-const Menubar = connect(mapStateToProps, mapDispatchToProps)(MenubarComponent)
+// Define the container for the Menubar component (maps dispatchers)
+const Menubar = connect(null, mapDispatchToProps)(MenubarComponent)
 
 export default Menubar

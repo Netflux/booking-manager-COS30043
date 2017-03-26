@@ -1,6 +1,7 @@
 import React from 'react'
 import { Paper, TextField, RaisedButton } from 'material-ui'
 
+// Define the Login Form component
 const LoginForm = () => (
 	<Paper className="paper">
 		<form action="/api/login" method="post">
