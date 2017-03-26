@@ -4,9 +4,10 @@ import moment from 'moment'
 import { Paper, Tabs, Tab } from 'material-ui'
 
 import BookingDatePicker from './BookingDatePicker'
+import BookingDialog from './BookingDialog'
 import Booking from './Booking'
 
-import { fetchBookingsIfNeeded, fetchRoomsIfNeeded } from '../../actions'
+import { selectDate, fetchBookingsIfNeeded, fetchRoomsIfNeeded } from '../../actions'
 
 const mapStateToProps = state => {
 	return {
@@ -31,6 +32,9 @@ const mapDispatchToProps = dispatch => {
 		},
 		fetchRooms: () => {
 			dispatch(fetchRoomsIfNeeded())
+		},
+		onSelectDate: (date) => {
+			dispatch(selectDate(date))
 		}
 	}
 }
@@ -79,88 +83,117 @@ class BookingTableComponent extends Component {
 	}
 
 	render() {
+		const getSelectedDate = dayIndex => {
+			// Get the date offset and use it to generate the selected date
+			const dateOffset = (dayIndex + 1) - moment(this.props.selectedDate, 'YYYY/M/D').isoWeekday()
+
+			return moment(this.props.selectedDate, 'YYYY/M/D').add(dateOffset, 'days').format('YYYY/M/D')
+		}
+
+		// Store a reference to the Booking Dialog component
+		// Used to show the dialog when the user clicks on a time slot
+		let bookingDialog
+
 		return (
-			<Tabs className="tabbar">
-				<Tab label="Room View">
-					{
-						// If at least 1 room is available, display the booking table
-						// Else, display a message indicating that no rooms are available
-						this.props.rooms.items.length > 0 ? (
-							<section>
-								<BookingDatePicker />
+			<div>
+				<Tabs className="tabbar">
+					<Tab label="Room View">
+						{
+							// If at least 1 room is available, display the booking table
+							// Else, display a message indicating that no rooms are available
+							this.props.rooms.items.length > 0 ? (
+								<section>
+									<BookingDatePicker />
 
-								<Paper className="booking-table paper text-center">
-									{
-										timeSlots.map((time, index) => (
-											<div className="row" key={time}>
-												<div className="col-xs">
-													<strong>{time}</strong>
-												</div>
-
-												{
-													this.props.rooms.items.filter((room) => room.isAvailable).map((room) => (
-														<div className={"col-xs" + (index != 0 && this.props.bookingsByDate[this.props.selectedDate] && this.props.bookingsByDate[this.props.selectedDate].items.filter((booking) => booking.roomId == room.roomId && booking.timeSlot == index).length == 0 ? " selectable" : "")} data-row={index} data-roomId={room.roomId} key={room.roomId}>
-															{
-																// If displaying the first row of the table, simply display it as a header
-																// Else, check if any bookings exist for the time slot and display it
-																index == 0 ? (
-																	<strong>{room.roomName}</strong>
-																) : (
-																	this.props.bookingsByDate[this.props.selectedDate] && this.props.bookingsByDate[this.props.selectedDate].items.filter((booking) => booking.roomId == room.roomId && booking.timeSlot == index).map((booking) => (
-																		<Booking booking={booking} key={booking.bookingId} />
-																	))
-																)
-															}
-														</div>
-													))
-												}
-											</div>
-										))
-									}
-								</Paper>
-							</section>
-						) : (
-							<section>
-								<Paper className="booking-table paper text-center">
-									<h1>No rooms available!</h1>
-									<p>If you're seeing this message, please contact the system administrator.</p>
-								</Paper>
-							</section>
-						)
-					}
-				</Tab>
-
-				<Tab label="Weekly View">
-					<section>
-						<BookingDatePicker />
-
-						<Paper className="booking-table paper text-center">
-							{
-								timeSlots.map((time, index) => (
-									<div className="row" key={time}>
-										<div className="col-xs">
-											<strong>{time}</strong>
-										</div>
-
+									<Paper className="booking-table paper text-center">
 										{
-											bookingDays.map((day, dayIndex) => (
-												<div className={"col-xs" + (dayIndex + 1 == moment(this.props.selectedDate, 'YYYY/M/D').isoWeekday() ? " selected-date" : "")} key={dayIndex}>
+											timeSlots.map((time, index) => (
+												<div className="row" key={time}>
+													<div className="col-xs">
+														<strong>{time}</strong>
+													</div>
+
 													{
-														// If displaying the first row of the table, simply display it as a header
-														index == 0 && (
-															<strong>{day}</strong>
-														)
+														this.props.rooms.items.filter((room) => room.isAvailable).map((room) => (
+															<div className={"col-xs" + (index != 0 && this.props.bookingsByDate[this.props.selectedDate] && this.props.bookingsByDate[this.props.selectedDate].items.filter((booking) => booking.roomId == room.roomId && booking.timeSlot == index).length == 0 ? " selectable" : "")}  onTouchTap={() => bookingDialog.getWrappedInstance().show({room: room.roomId, time: index})} key={room.roomId}>
+																{
+																	// If displaying the first row of the table, simply display it as a header
+																	// Else, check if any bookings exist for the time slot and display it
+																	index == 0 ? (
+																		<strong>{room.roomName}</strong>
+																	) : (
+																		this.props.bookingsByDate[this.props.selectedDate] && this.props.bookingsByDate[this.props.selectedDate].items.filter((booking) => booking.roomId == room.roomId && booking.timeSlot == index).map((booking) => (
+																			<Booking booking={booking} key={booking.bookingId} />
+																		))
+																	)
+																}
+															</div>
+														))
 													}
 												</div>
 											))
 										}
-									</div>
-								))
-							}
-						</Paper>
-					</section>
-				</Tab>
-			</Tabs>
+									</Paper>
+								</section>
+							) : (
+								<section>
+									<Paper className="booking-table paper text-center">
+										<h1>No rooms available!</h1>
+										<p>If you're seeing this message, please contact the system administrator.</p>
+									</Paper>
+								</section>
+							)
+						}
+					</Tab>
+
+					<Tab label="Weekly View">
+						{
+							// If at least 1 room is available, display the booking table
+							// Else, display a message indicating that no rooms are available
+							this.props.rooms.items.length > 0 ? (
+								<section>
+									<BookingDatePicker />
+
+									<Paper className="booking-table paper text-center">
+										{
+											timeSlots.map((time, index) => (
+												<div className="row" key={time}>
+													<div className="col-xs">
+														<strong>{time}</strong>
+													</div>
+
+													{
+														bookingDays.map((day, dayIndex) => (
+															// If displaying the first row of the table, simply display it as a header
+															// Else, check if any bookings exist for the time slot and display it
+															index == 0 ? (
+																<div className={"col-xs clickable" + (dayIndex + 1 == moment(this.props.selectedDate, 'YYYY/M/D').isoWeekday() ? " selected-date" : "")} onTouchTap={() => this.props.onSelectDate(getSelectedDate(dayIndex))} key={dayIndex}>
+																	<strong>{day}</strong>
+																</div>
+															) : (
+																<div className={"col-xs selectable" + (dayIndex + 1 == moment(this.props.selectedDate, 'YYYY/M/D').isoWeekday() ? " selected-date" : "")} onTouchTap={() => bookingDialog.getWrappedInstance().show({date: getSelectedDate(dayIndex), time: index})} key={dayIndex}></div>
+															)
+														))
+													}
+												</div>
+											))
+										}
+									</Paper>
+								</section>
+							) : (
+								<section>
+									<Paper className="booking-table paper text-center">
+										<h1>No rooms available!</h1>
+										<p>If you're seeing this message, please contact the system administrator.</p>
+									</Paper>
+								</section>
+							)
+						}
+					</Tab>
+				</Tabs>
+
+				<BookingDialog ref={(dialog) => bookingDialog = dialog} />
+			</div>
 		)
 	}
 }
@@ -169,7 +202,10 @@ class BookingTableComponent extends Component {
 BookingTableComponent.propTypes = {
 	selectedDate: PropTypes.string.isRequired,
 	bookingsByDate: PropTypes.object.isRequired,
-	rooms: PropTypes.object.isRequired
+	rooms: PropTypes.object.isRequired,
+	fetchBookings: PropTypes.func.isRequired,
+	fetchRooms: PropTypes.func.isRequired,
+	onSelectDate: PropTypes.func.isRequired
 }
 
 // Define the container for the Booking Table component (maps state and dispatchers)

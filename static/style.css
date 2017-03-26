@@ -38,6 +38,12 @@ section {
 .paper:not(.paper-room):last-of-type {
 	margin-bottom: 16px;
 }
+.clickable, .selectable {
+	cursor: pointer;
+}
+.selectable:hover {
+	background-color: rgba(66, 66, 66, 0.1);
+}
 /* ===== General CSS End ===== */
 
 
@@ -99,9 +105,6 @@ section {
 .booking-date-picker {
 	margin-top: 16px;
 }
-.booking-date-picker > h1, .booking-date-picker > p, .selectable {
-	cursor: pointer;
-}
 .booking-date-picker > h1, .booking-date-picker > p {
 	height: 56px;
 	margin: 0;
@@ -117,9 +120,6 @@ section {
 .col-xs {
 	padding: 0;
 	transition: background-color 0.2s;
-}
-.selectable:hover {
-	background-color: rgba(66, 66, 66, 0.1);
 }
 .selected-date {
 	background-color: #FFF3E0;
