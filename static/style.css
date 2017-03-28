@@ -142,9 +142,9 @@ section {
 }
 .fab {
 	position: fixed;
-	top: calc(100% - 10vw);
-	left: 90%;
-	transform: translate(-90%, -90%);
+	top: calc(100% - 5vw);
+	left: 95%;
+	transform: translate(-95%, -95%);
 }
 /* ===== Rooms Page CSS End ===== */
 
@@ -160,11 +160,6 @@ section {
 @media (max-width: 1366px) {
 	section {
 		padding: 0 5%;
-	}
-	.fab {
-		top: calc(100% - 5vw);;
-		left: 95%;
-		transform: translate(-95%, -95%);
 	}
 }
 
