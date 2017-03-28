@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react'
 import { Link } from 'react-router'
 import { connect } from 'react-redux'
 import moment from 'moment'
-import { Paper, RaisedButton, Tabs, Tab } from 'material-ui'
+import { FloatingActionButton, FontIcon, Paper, RaisedButton, Tabs, Tab } from 'material-ui'
 
 import BookingDatePicker from './BookingDatePicker'
 import BookingDialog from './BookingDialog'
@@ -208,6 +208,9 @@ class BookingTableComponent extends Component {
 					)
 				}
 
+				<FloatingActionButton className="fab" secondary={true} onTouchTap={() => this.props.rooms.items.filter((room) => room.isAvailable).length > 0 ? bookingDialog.getWrappedInstance().show() : roomDialog.getWrappedInstance().show()}>
+					<FontIcon className="material-icons">add</FontIcon>
+				</FloatingActionButton>
 				<BookingDialog ref={(dialog) => bookingDialog = dialog} />
 				<RoomDialog ref={(dialog) => roomDialog = dialog} />
 			</div>

@@ -33,7 +33,7 @@ const RoomsListComponent = ({rooms, fetchRooms, deleteCurrentRoom}) => {
 	let roomDialog
 
 	return (
-		<section>
+		<section className="room-table">
 			{
 				rooms.items.length > 0 ? (
 					<div className="row center-xs start-sm">
