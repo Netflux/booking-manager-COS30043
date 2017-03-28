@@ -142,7 +142,7 @@ section {
 }
 .fab {
 	position: fixed;
-	top: 90%;
+	top: calc(100% - 10vw);
 	left: 90%;
 	transform: translate(-90%, -90%);
 }
@@ -162,7 +162,7 @@ section {
 		padding: 0 5%;
 	}
 	.fab {
-		top: 95%;
+		top: calc(100% - 5vw);;
 		left: 95%;
 		transform: translate(-95%, -95%);
 	}
