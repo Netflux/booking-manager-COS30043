@@ -107,17 +107,21 @@ class BookingDialogComponent extends Component {
 		}
 
 		if (!hasError) {
-			const newBooking = {
-				bookingId: this.state.bookingId || shortid.generate() + moment().format('ss'),
-				bookingTitle: this.state.bookingTitle,
-				bookingDesc: this.state.bookingDesc,
-				roomId: this.state.roomId,
-				date: this.state.date,
-				timeSlot: this.state.timeSlot,
-				duration: this.state.duration
-			}
+			if (!this.state.editing) {
+				const newBooking = {
+					bookingId: shortid.generate() + moment().format('ss'),
+					bookingTitle: this.state.bookingTitle,
+					bookingDesc: this.state.bookingDesc,
+					roomId: this.state.roomId,
+					date: this.state.date,
+					timeSlot: this.state.timeSlot,
+					duration: this.state.duration
+				}
 
-			this.props.addNewBooking(newBooking)
+				this.props.addNewBooking(newBooking)
+			} else {
+
+			}
 
 			this.dismiss()
 		}
@@ -156,7 +160,7 @@ class BookingDialogComponent extends Component {
 		]
 
 		return (
-			<Dialog title={this.state.dialogTitle} autoScrollBodyContent={true} actions={actions} open={this.state.open} onRequestClose={() => this.dismiss()}>
+			<Dialog contentClassName="dialog" title={this.state.dialogTitle} autoScrollBodyContent={true} actions={actions} open={this.state.open} onRequestClose={() => this.dismiss()}>
 				<SelectField id="room" className="form-input" floatingLabelText="Room" floatingLabelFixed={true} errorText={this.state.roomIdErrorText} onChange={(event, key, payload) => this.handleChange(payload, "roomId")} value={this.state.roomId}>
 					{
 						this.props.rooms.items.filter((room) => room.isAvailable).map((room, index) => (

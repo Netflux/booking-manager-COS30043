@@ -1,11 +1,13 @@
 import React, { Component, PropTypes } from 'react'
+import { Link } from 'react-router'
 import { connect } from 'react-redux'
 import moment from 'moment'
-import { Paper, Tabs, Tab } from 'material-ui'
+import { Paper, RaisedButton, Tabs, Tab } from 'material-ui'
 
 import BookingDatePicker from './BookingDatePicker'
 import BookingDialog from './BookingDialog'
 import Booking from './Booking'
+import RoomDialog from './RoomDialog'
 
 import { selectDate, fetchBookingsIfNeeded, fetchRoomsIfNeeded } from '../../actions'
 
@@ -94,12 +96,16 @@ class BookingTableComponent extends Component {
 		// Used to show the dialog when the user clicks on a time slot
 		let bookingDialog
 
+		// Store a reference to the Room Dialog component
+		// Used to show the dialog when the user clicks on a room
+		let roomDialog
+
 		return (
 			<div>
 				{
 					// If at least 1 room is available, display the booking table
 					// Else, display a message indicating that no rooms are available
-					this.props.rooms.items.length > 0 ? (
+					this.props.rooms.items.filter((room) => room.isAvailable).length > 0 ? (
 						<Tabs className="tabbar">
 							<Tab label="Room View">
 								<section>
@@ -194,15 +200,16 @@ class BookingTableComponent extends Component {
 						</Tabs>
 					) : (
 						<section>
-							<Paper className="booking-table paper text-center">
+							<Paper className="paper text-center">
 								<h1>No rooms available!</h1>
-								<p>If you're seeing this message, please contact the system administrator.</p>
+								<RaisedButton label="Add New Room" secondary={true} onTouchTap={() => roomDialog.getWrappedInstance().show()} />
 							</Paper>
 						</section>
 					)
 				}
 
 				<BookingDialog ref={(dialog) => bookingDialog = dialog} />
+				<RoomDialog ref={(dialog) => roomDialog = dialog} />
 			</div>
 		)
 	}
