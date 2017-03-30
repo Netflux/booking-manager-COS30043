@@ -1,9 +1,10 @@
 import React, { Component, PropTypes } from 'react'
+import { browserHistory } from 'react-router'
 import { connect } from 'react-redux'
 import { CircularProgress, FontIcon, Paper, RaisedButton, TextField } from 'material-ui'
 import { red500 } from 'material-ui/styles/colors'
 
-import { requestLogin } from '../../actions'
+import { requestLogin, clearLoginError } from '../../actions'
 
 const mapStateToProps = state => {
 	return {
@@ -31,9 +32,23 @@ class LoginFormComponent extends Component {
 			username: "",
 			usernameErrorText: "",
 			password: "",
-			passwordErrorText: "",
-			displayLoginError: false
+			passwordErrorText: ""
 		}
+
+		this.handleIsLoggedIn = (isLoggedIn) => {
+			// If already logged in, navigate to the homepage
+			if (isLoggedIn) {
+				browserHistory.push('/')
+			}
+		}
+	}
+
+	componentDidMount() {
+		this.handleIsLoggedIn(this.props.isLoggedIn)
+	}
+
+	componentWillReceiveProps(nextProps) {
+		this.handleIsLoggedIn(nextProps.isLoggedIn)
 	}
 
 	handleChange(value, stateName) {
@@ -62,9 +77,6 @@ class LoginFormComponent extends Component {
 
 			if (!hasError) {
 				this.props.handleLogin(this.state.username, this.state.password)
-				this.setState({
-					displayLoginError: true
-				})
 			}
 		}
 	}
@@ -77,7 +89,7 @@ class LoginFormComponent extends Component {
 						<form action="/login" method="post" onSubmit={(event) => this.onLogin(event)}>
 							{
 								// If there is a login error, display it
-								this.state.displayLoginError && this.props.loginError && (
+								this.props.loginError && (
 									<div className="login-error">
 										<FontIcon className="material-icons" color={red500}>error</FontIcon>
 										<p>{this.props.loginError}</p>
@@ -109,7 +121,8 @@ class LoginFormComponent extends Component {
 LoginFormComponent.propTypes = {
 	isLoggingIn: PropTypes.bool.isRequired,
 	isLoggedIn: PropTypes.bool.isRequired,
-	loginError: PropTypes.string.isRequired
+	loginError: PropTypes.string.isRequired,
+	handleLogin: PropTypes.func.isRequired
 }
 
 // Define the container for the Login Form component (maps state and dispatchers)

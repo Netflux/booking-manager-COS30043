@@ -5,7 +5,6 @@ import Passport from 'passport'
 import LocalStrategy from 'passport-local'
 import Validator from 'validator'
 import Bcrypt from 'bcrypt'
-import Crypto from 'crypto'
 
 import { UserModel } from './database/models'
 
@@ -28,7 +27,7 @@ const serverAuth = app => {
 		})
 	})
 
-	// Set up the LocalStrategy for logging in through the login form
+	// Set up the LocalStrategy for login authentication
 	Passport.use(new LocalStrategy((username, password, done) => {
 		const usernameEscaped = Validator.escape(username)
 		const passwordEscaped = Validator.escape(password)

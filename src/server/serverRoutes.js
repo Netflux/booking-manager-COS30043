@@ -47,36 +47,53 @@ const serverRoutes = app => {
 
 	app.post('/api/login', (req, res) => {
 		Passport.authenticate('local', (err, user, info) => {
-			if (err) { return res.json({ success: false, error: err }) }
-			if (!user) { return res.json({ success: false, error: 'Invalid username or password' }) }
+			if (err) {
+				console.log(err)
+				return res.json({ success: false, error: 'An error occured when logging in' })
+			}
+			if (!user) { return res.json({ success: false, error: info.message }) }
 
-			req.logIn(user, err => {
-				if (err) { return res.json({ success: false, error: err }) }
+			req.login(user, err => {
+				if (err) {
+					console.log(err)
+					return res.json({ success: false, error: 'An error occured when logging in' })
+				}
 				return res.json({ success: true, error: '' })
 			})
 		})(req, res)
 	})
 
-	// Fallback login route for non-JS users
+	app.get('/api/logout', (req, res) => {
+		req.logout();
+		res.json({ success: true })
+	})
+
+	// Fallback login/logout routes for non-JS users
 	app.post('/login', (req, res) => {
 		Passport.authenticate('local', (err, user, info) => {
 			if (err) {
-				req.session.loginError = err
+				console.log(err)
+				req.session.loginError = 'An error occured when logging in'
 				return res.redirect('/login')
 			}
 			if (!user) {
-				req.session.loginError = 'Invalid username or password'
+				req.session.loginError = info.message
 				return res.redirect('/login')
 			}
 
-			req.logIn(user, err => {
+			req.login(user, err => {
 				if (err) {
-					req.session.loginError = err
+					console.log(err)
+					req.session.loginError = 'An error occured when logging in'
 					return res.redirect('/login')
 				}
 				return res.redirect('/')
 			})
 		})(req, res)
+	})
+	app.get('/logout', (req, res) => {
+		req.logout();
+		res.redirect('/');
 	})
 
 	app.get('/api/bookings/:year/:month/:day', (req, res) => {

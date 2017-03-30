@@ -64,7 +64,6 @@ export const fetchBookings = date => {
 			})
 			.then(json => dispatch(receiveBookings(date, json)))
 			.catch(error => {
-				console.log(error)
 				dispatch(receiveBookingsError())
 			})
 	}
@@ -159,7 +158,7 @@ export const fetchRooms = () => {
 		dispatch(requestRooms())
 
 		// Fetch the room entries and dispatch a receive rooms action
-		return fetch('/api/rooms/')
+		return fetch('/api/rooms')
 			.then(response => {
 				if (response.ok) {
 					return response.json()
@@ -168,7 +167,6 @@ export const fetchRooms = () => {
 			})
 			.then(json => dispatch(receiveRooms(json)))
 			.catch(error => {
-				console.log(error)
 				dispatch(receiveRoomsError())
 			})
 	}
@@ -251,6 +249,14 @@ export const completeLoginError = () => {
 	}
 }
 
+// Action when the login error is no longer required
+export const CLEAR_LOGIN_ERROR = 'CLEAR_LOGIN_ERROR'
+export const clearLoginError = () => {
+	return {
+		type: CLEAR_LOGIN_ERROR
+	}
+}
+
 // Action when the user logs in
 export const requestLogin = (username, password) => {
 	return dispatch => {
@@ -258,7 +264,7 @@ export const requestLogin = (username, password) => {
 		dispatch(beginLogin())
 
 		// Send the username and password to the server for authentication
-		fetch('/api/login', {
+		return fetch('/api/login', {
 			headers: {
 				'Accept': 'application/json',
 				'Content-Type': 'application/json'
@@ -274,8 +280,36 @@ export const requestLogin = (username, password) => {
 		})
 		.then(json => dispatch(completeLogin(json)))
 		.catch(error => {
-			console.log(error)
 			dispatch(completeLoginError())
 		})
+	}
+}
+
+export const COMPLETE_LOGOUT = 'COMPLETE_LOGOUT'
+export const completeLogout = () => {
+	return {
+		type: COMPLETE_LOGOUT
+	}
+}
+
+// Action when the user logs out
+export const requestLogout = () => {
+	return dispatch => {
+		// Send the username and password to the server for authentication
+		return fetch('/api/logout')
+			.then(response => {
+				if (response.ok) {
+					return response.json()
+				}
+				throw new Error(`HTTP Error ${response.status}: Failed to logout`)
+			})
+			.then(json => {
+				if (json.success) {
+					dispatch(completeLogout())
+				}
+			})
+			.catch(error => {
+				// Logout failed, no action required
+			})
 	}
 }

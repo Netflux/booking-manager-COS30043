@@ -3,7 +3,7 @@ import moment from 'moment'
 import { TOGGLE_DRAWER_OPEN, TOGGLE_DRAWER_DOCKED, SELECT_DATE,
 	REQUEST_BOOKINGS, RECEIVE_BOOKINGS, RECEIVE_BOOKINGS_ERROR, INVALIDATE_BOOKINGS, ADD_BOOKING, DELETE_BOOKING,
 	REQUEST_ROOMS, RECEIVE_ROOMS, RECEIVE_ROOMS_ERROR, INVALIDATE_ROOMS, ADD_ROOM, DELETE_ROOM,
-	BEGIN_LOGIN, COMPLETE_LOGIN, COMPLETE_LOGIN_ERROR } from '../actions'
+	BEGIN_LOGIN, COMPLETE_LOGIN, COMPLETE_LOGIN_ERROR, CLEAR_LOGIN_ERROR, COMPLETE_LOGOUT } from '../actions'
 
 // Reducer for side drawer-related actions
 const sideDrawerState = (state = {
@@ -178,6 +178,16 @@ const user = (state = {
 				...state,
 				isLoggingIn: false,
 				loginError: 'An error occured when logging in'
+			}
+		case CLEAR_LOGIN_ERROR:
+			return {
+				...state,
+				loginError: ''
+			}
+		case COMPLETE_LOGOUT:
+			return {
+				...state,
+				isLoggedIn: false
 			}
 		default:
 			return state

@@ -6,25 +6,31 @@ import { Divider, Drawer, FontIcon, MenuItem, Subheader, Toolbar, ToolbarTitle }
 
 import theme from '../theme'
 
-import { toggleDrawerOpen, toggleDrawerDocked, selectDate } from '../../actions'
+import { toggleDrawerOpen, toggleDrawerDocked, selectDate, clearLoginError, requestLogout } from '../../actions'
 
 const mapStateToProps = state => {
 	return {
 		isOpen: state.sideDrawerState.isOpen,
 		isDocked: state.sideDrawerState.isDocked,
-		selectedDateHistory: state.selectedDateHistory
+		selectedDateHistory: state.selectedDateHistory,
+		isLoggedIn: state.user.isLoggedIn
 	}
 }
 
 const mapDispatchToProps = dispatch => {
 	return {
+		onNavigate: (shouldToggle) => {
+			dispatch(clearLoginError())
+			if (shouldToggle) dispatch(toggleDrawerOpen())
+		},
 		onToggleMenu: (shouldToggle) => {
-			if (shouldToggle) {
-				dispatch(toggleDrawerOpen())
-			}
+			if (shouldToggle) dispatch(toggleDrawerOpen())
 		},
 		onSelectDate: (date) => {
 			dispatch(selectDate(date))
+		},
+		onLogout: () => {
+			dispatch(requestLogout())
 		},
 		onWindowResize: (isOpen, isDocked) => {
 			if (window.innerWidth >= 1024) {
@@ -74,11 +80,22 @@ class SideDrawerComponent extends Component {
 					<ToolbarTitle text="Navigation" style={{color: theme.palette.alternateTextColor}} />
 				</Toolbar>
 
-				<Link to="/" onTouchTap={() => this.props.onToggleMenu(!this.props.isDocked)}><MenuItem leftIcon={<FontIcon className="material-icons">home</FontIcon>}>Home</MenuItem></Link>
-				<Link to="/about" onTouchTap={() => this.props.onToggleMenu(!this.props.isDocked)}><MenuItem leftIcon={<FontIcon className="material-icons">info</FontIcon>}>About</MenuItem></Link>
-				<Link to="/rooms" onTouchTap={() => this.props.onToggleMenu(!this.props.isDocked)}><MenuItem leftIcon={<FontIcon className="material-icons">room</FontIcon>}>Rooms</MenuItem></Link>
-				<Link to="/login" onTouchTap={() => this.props.onToggleMenu(!this.props.isDocked)}><MenuItem leftIcon={<FontIcon className="material-icons">account_circle</FontIcon>}>Login</MenuItem></Link>
-				<Link to="/logout" onTouchTap={() => this.props.onToggleMenu(!this.props.isDocked)}><MenuItem leftIcon={<FontIcon className="material-icons">power_settings_new</FontIcon>}>Logout</MenuItem></Link>
+				<Link to="/" onTouchTap={() => this.props.onNavigate(!this.props.isDocked)}><MenuItem leftIcon={<FontIcon className="material-icons">home</FontIcon>}>Home</MenuItem></Link>
+				<Link to="/about" onTouchTap={() => this.props.onNavigate(!this.props.isDocked)}><MenuItem leftIcon={<FontIcon className="material-icons">info</FontIcon>}>About</MenuItem></Link>
+				<Link to="/rooms" onTouchTap={() => this.props.onNavigate(!this.props.isDocked)}><MenuItem leftIcon={<FontIcon className="material-icons">room</FontIcon>}>Rooms</MenuItem></Link>
+
+				{
+					// Render either the login/logout button depending on the user login status
+					this.props.isLoggedIn ? (
+						<Link to="/logout" onTouchTap={(event) => {
+								event.preventDefault()
+								this.props.onNavigate(!this.props.isDocked)
+								this.props.onLogout()
+							}} onClick={(event) => event.preventDefault()}><MenuItem leftIcon={<FontIcon className="material-icons">power_settings_new</FontIcon>}>Logout</MenuItem></Link>
+					) : (
+						<Link to="/login" onTouchTap={() => this.props.onNavigate(!this.props.isDocked)}><MenuItem leftIcon={<FontIcon className="material-icons">account_circle</FontIcon>}>Login</MenuItem></Link>
+					)
+				}
 
 				{
 					// Only render history list if there are entries to display
@@ -90,7 +107,7 @@ class SideDrawerComponent extends Component {
 							{
 								this.props.selectedDateHistory.map((date) => (
 									<Link to="/" onTouchTap={() => {
-											this.props.onToggleMenu(!this.props.isDocked)
+											this.props.onNavigate(!this.props.isDocked)
 											this.props.onSelectDate(date)
 										}} key={date}><MenuItem>{moment(date, 'YYYY/M/D').format('D/M/YYYY')}</MenuItem></Link>
 								))
@@ -108,8 +125,11 @@ SideDrawerComponent.propTypes = {
 	isOpen: PropTypes.bool.isRequired,
 	isDocked: PropTypes.bool.isRequired,
 	selectedDateHistory: PropTypes.array.isRequired,
+	isLoggedIn: PropTypes.bool.isRequired,
+	onNavigate: PropTypes.func.isRequired,
 	onToggleMenu: PropTypes.func.isRequired,
 	onSelectDate: PropTypes.func.isRequired,
+	onLogout: PropTypes.func.isRequired,
 	onWindowResize: PropTypes.func.isRequired
 }
 

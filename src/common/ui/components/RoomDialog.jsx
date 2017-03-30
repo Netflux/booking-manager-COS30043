@@ -6,12 +6,6 @@ import { Dialog, FlatButton, MenuItem, SelectField, Snackbar, TextField, Toggle 
 
 import { addRoom, deleteRoom } from '../../actions'
 
-const mapStateToProps = state => {
-	return {
-
-	}
-}
-
 const mapDispatchToProps = dispatch => {
 	return {
 		addNewRoom: (room) => {
@@ -121,7 +115,7 @@ RoomDialogComponent.propTypes = {
 	deleteCurrentRoom: PropTypes.func.isRequired
 }
 
-// Define the container for the Room Dialog component (maps state and dispatchers)
-const RoomDialog = connect(mapStateToProps, mapDispatchToProps, null, {withRef: true})(RoomDialogComponent)
+// Define the container for the Room Dialog component (maps dispatchers)
+const RoomDialog = connect(null, mapDispatchToProps, null, {withRef: true})(RoomDialogComponent)
 
 export default RoomDialog
