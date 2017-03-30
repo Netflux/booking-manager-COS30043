@@ -97,8 +97,8 @@ class LoginFormComponent extends Component {
 								)
 							}
 
-							<TextField id="username" className="form-input" floatingLabelText="Username" floatingLabelFixed={true} errorText={this.state.usernameErrorText} onChange={(event) => this.handleChange(event.target.value, "username")} value={this.state.username} /><br />
-							<TextField id="password" className="form-input" floatingLabelText="Password" floatingLabelFixed={true} errorText={this.state.passwordErrorText} onChange={(event) => this.handleChange(event.target.value, "password")} value={this.state.password} type="password" /><br />
+							<TextField id="username" className="form-input" name="username" floatingLabelText="Username" floatingLabelFixed={true} errorText={this.state.usernameErrorText} onChange={(event) => this.handleChange(event.target.value, "username")} value={this.state.username} /><br />
+							<TextField id="password" className="form-input" name="password" floatingLabelText="Password" floatingLabelFixed={true} errorText={this.state.passwordErrorText} onChange={(event) => this.handleChange(event.target.value, "password")} value={this.state.password} type="password" /><br />
 
 							{
 								// If logging in, display the circular progress bar
