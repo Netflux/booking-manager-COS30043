@@ -27,10 +27,14 @@ const renderPage = (html, defaultState) => {
 				${head.meta.toString()}
 				${head.link.toString()}
 				${head.script.toString()}
+				<noscript><link rel="stylesheet" href="/static/style-nojs.css" /></noscript>
 			</head>
 
 			<body>
-				<div id="app">${html}</div>
+				<div id="app">
+					<input id="menu" type="checkbox" hidden />
+					${html}
+				</div>
 
 				<script>window.__DEFAULT_STATE__ = ${JSON.stringify(defaultState).replace(/</g, '\\x3c')}</script>
 				<script src="/static/bundle.js"></script>

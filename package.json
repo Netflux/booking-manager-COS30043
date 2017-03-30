@@ -7,7 +7,7 @@
     "test": "nodemon src/server/server.js --exec babel-node",
     "clean": "rm -rf ./dist ./static/bundle.js ./static/*.gz ./static/*.min.css",
     "build-dev": "babel src -d dist; webpack --config webpack.config.js",
-    "build": "babel src -d dist; cleancss -02 -o ./static/style.min.css ./static/style.css; webpack -p --config webpack.config.prod.js",
+    "build": "babel src -d dist; cleancss -02 -o ./static/style.min.css ./static/style.css; cleancss -02 -o ./static/style-nojs.min.css ./static/style-nojs.css; webpack -p --config webpack.config.prod.js",
     "start-dev": "node dist/server/server.js",
     "start": "NODE_ENV='production' node dist/server/server.js"
   },

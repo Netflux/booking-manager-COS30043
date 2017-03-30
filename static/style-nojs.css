@@ -1,0 +1,26 @@
+/* ===== General CSS Start ===== */
+#content {
+	overflow: hidden;
+}
+main {
+	min-width: 360px;
+}
+/* ===== General CSS End ===== */
+
+/* ===== Side Drawer CSS Start ===== */
+#menu {
+	display: none;
+}
+#menu + #content .side-drawer > div {
+	transition: transform 450ms cubic-bezier(0.23, 1, 0.32, 1) 25ms !important;
+	transform: translate(-256px, 0px) !important;
+}
+#menu:checked + #content .side-drawer > div {
+	transition: transform 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms !important;
+	transform: translate(0px, 0px) !important;
+}
+#menu:checked + #content > main {
+	transition: margin-left 450ms cubic-bezier(0.23, 1, 0.32, 1) 5ms;
+	margin-left: 256px;
+}
+/* ===== Side Drawer CSS End ===== */
