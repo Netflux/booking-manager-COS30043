@@ -56,8 +56,17 @@ export const fetchBookings = date => {
 
 		// Fetch the booking entries and dispatch a receive bookings action
 		return fetch(`/api/bookings/${date}`)
-			.then(response => response.json())
+			.then(response => {
+				if (response.ok) {
+					return response.json()
+				}
+				throw new Error(`HTTP Error ${response.status}: Failed to fetch bookings (${date})`)
+			})
 			.then(json => dispatch(receiveBookings(date, json)))
+			.catch(error => {
+				console.log(error)
+				dispatch(receiveBookingsError())
+			})
 	}
 }
 
@@ -78,6 +87,14 @@ export const receiveBookings = (date, json) => {
 		date,
 		bookings: json,
 		receivedAt: Date.now()
+	}
+}
+
+// Action when the bookings request action encounters an error
+export const RECEIVE_BOOKINGS_ERROR = 'RECEIVE_BOOKINGS_ERROR'
+export const receiveBookingsError = () => {
+	return {
+		type: RECEIVE_BOOKINGS_ERROR
 	}
 }
 
@@ -142,9 +159,18 @@ export const fetchRooms = () => {
 		dispatch(requestRooms())
 
 		// Fetch the room entries and dispatch a receive rooms action
-		return fetch(`/api/rooms/`)
-			.then(response => response.json())
+		return fetch('/api/rooms/')
+			.then(response => {
+				if (response.ok) {
+					return response.json()
+				}
+				throw new Error(`HTTP Error ${response.status}: Failed to fetch rooms`)
+			})
 			.then(json => dispatch(receiveRooms(json)))
+			.catch(error => {
+				console.log(error)
+				dispatch(receiveRoomsError())
+			})
 	}
 }
 
@@ -163,6 +189,14 @@ export const receiveRooms = (json) => {
 		type: RECEIVE_ROOMS,
 		rooms: json,
 		receivedAt: Date.now()
+	}
+}
+
+// Action when the room request action encounters an error
+export const RECEIVE_ROOMS_ERROR = 'RECEIVE_ROOMS_ERROR'
+export const receiveRoomsError = () => {
+	return {
+		type: RECEIVE_ROOMS_ERROR
 	}
 }
 
@@ -189,5 +223,59 @@ export const deleteRoom = (roomId) => {
 	return {
 		type: DELETE_ROOM,
 		roomId
+	}
+}
+
+// Action when the login process has begun
+export const BEGIN_LOGIN = 'BEGIN_LOGIN'
+export const beginLogin = () => {
+	return {
+		type: BEGIN_LOGIN
+	}
+}
+
+// Action when the login process has been completed
+export const COMPLETE_LOGIN = 'COMPLETE_LOGIN'
+export const completeLogin = (json) => {
+	return {
+		type: COMPLETE_LOGIN,
+		response: json
+	}
+}
+
+// Action when the login process encounters an error
+export const COMPLETE_LOGIN_ERROR = 'COMPLETE_LOGIN_ERROR'
+export const completeLoginError = () => {
+	return {
+		type: COMPLETE_LOGIN_ERROR
+	}
+}
+
+// Action when the user logs in
+export const requestLogin = (username, password) => {
+	return dispatch => {
+		// Dispatch a begin login action
+		dispatch(beginLogin())
+
+		// Send the username and password to the server for authentication
+		fetch('/api/login', {
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json'
+			},
+			method: 'POST',
+			body: JSON.stringify({username: username, password: password})
+		})
+		.then(response => {
+			if (response.ok) {
+				return response.json()
+			}
+			throw new Error(`HTTP Error ${response.status}: Failed to login`)
+		})
+		.then(json => dispatch(completeLogin(json)))
+		.catch(error => {
+			console.log(error)
+			dispatch(completeLoginError())
+		})
 	}
 }

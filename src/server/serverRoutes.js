@@ -45,11 +45,41 @@ const serverRoutes = app => {
 	// More information: http://stackoverflow.com/a/34015469/988941
 	injectTapEventPlugin()
 
-	app.post('/api/login', Passport.authenticate('local', { failureRedirect: '/login' }), (req, res) => {
-		res.redirect('/')
+	app.post('/api/login', (req, res) => {
+		Passport.authenticate('local', (err, user, info) => {
+			if (err) { return res.json({ success: false, error: err }) }
+			if (!user) { return res.json({ success: false, error: 'Invalid username or password' }) }
+
+			req.logIn(user, err => {
+				if (err) { return res.json({ success: false, error: err }) }
+				return res.json({ success: true, error: '' })
+			})
+		})(req, res)
 	})
 
-	app.get('/api/bookings/:date', (req, res) => {
+	// Fallback login route for non-JS users
+	app.post('/login', (req, res) => {
+		Passport.authenticate('local', (err, user, info) => {
+			if (err) {
+				req.session.loginError = err
+				return res.redirect('/login')
+			}
+			if (!user) {
+				req.session.loginError = 'Invalid username or password'
+				return res.redirect('/login')
+			}
+
+			req.logIn(user, err => {
+				if (err) {
+					req.session.loginError = err
+					return res.redirect('/login')
+				}
+				return res.redirect('/')
+			})
+		})(req, res)
+	})
+
+	app.get('/api/bookings/:year/:month/:day', (req, res) => {
 		res.sendStatus(403)
 	})
 
@@ -88,7 +118,13 @@ const serverRoutes = app => {
 				res.redirect(302, redirectLocation.pathname + redirectLocation.search)
 			} else if (renderProps) {
 				// Generate the default state
-				const defaultState = {}
+				const defaultState = req.session.loginError ? {
+					user: {
+						isLoggingIn: false,
+						isLoggedIn: false,
+						loginError: req.session.loginError
+					}
+				} : {}
 
 				// Create a new Redux store instance
 				const store = configureStore(defaultState)

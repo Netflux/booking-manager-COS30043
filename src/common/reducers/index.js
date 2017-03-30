@@ -1,8 +1,9 @@
 import { combineReducers } from 'redux'
 import moment from 'moment'
 import { TOGGLE_DRAWER_OPEN, TOGGLE_DRAWER_DOCKED, SELECT_DATE,
-	REQUEST_BOOKINGS, RECEIVE_BOOKINGS, INVALIDATE_BOOKINGS, ADD_BOOKING, DELETE_BOOKING,
-	REQUEST_ROOMS, RECEIVE_ROOMS, INVALIDATE_ROOMS, ADD_ROOM, DELETE_ROOM } from '../actions'
+	REQUEST_BOOKINGS, RECEIVE_BOOKINGS, RECEIVE_BOOKINGS_ERROR, INVALIDATE_BOOKINGS, ADD_BOOKING, DELETE_BOOKING,
+	REQUEST_ROOMS, RECEIVE_ROOMS, RECEIVE_ROOMS_ERROR, INVALIDATE_ROOMS, ADD_ROOM, DELETE_ROOM,
+	BEGIN_LOGIN, COMPLETE_LOGIN, COMPLETE_LOGIN_ERROR } from '../actions'
 
 // Reducer for side drawer-related actions
 const sideDrawerState = (state = {
@@ -66,6 +67,11 @@ const handleBookings = (state = {
 				items: action.bookings,
 				lastUpdated: action.receivedAt
 			}
+		case RECEIVE_BOOKINGS_ERROR:
+			return {
+				...state,
+				isFetching: false
+			}
 		case INVALIDATE_BOOKINGS:
 			return {
 				...state,
@@ -122,6 +128,11 @@ const rooms = (state = {
 				items: action.rooms,
 				lastUpdated: action.receivedAt
 			}
+		case RECEIVE_ROOMS_ERROR:
+			return {
+				...state,
+				isFetching: false
+			}
 		case INVALIDATE_ROOMS:
 			return {
 				...state,
@@ -142,13 +153,45 @@ const rooms = (state = {
 	}
 }
 
+// Reducer for user-related actions
+const user = (state = {
+	isLoggingIn: false,
+	isLoggedIn: false,
+	loginError: ''
+}, action) => {
+	switch (action.type) {
+		case BEGIN_LOGIN:
+			return {
+				...state,
+				isLoggingIn: true,
+				loginError: ''
+			}
+		case COMPLETE_LOGIN:
+			return {
+				...state,
+				isLoggingIn: false,
+				isLoggedIn: action.response.success,
+				loginError: action.response.error
+			}
+		case COMPLETE_LOGIN_ERROR:
+			return {
+				...state,
+				isLoggingIn: false,
+				loginError: 'An error occured when logging in'
+			}
+		default:
+			return state
+	}
+}
+
 // Combine all reducers into a singular root reducer
 const rootReducer = combineReducers({
 	sideDrawerState,
 	selectedDate,
 	selectedDateHistory,
 	bookingsByDate,
-	rooms
+	rooms,
+	user
 })
 
 export default rootReducer

@@ -137,7 +137,7 @@ section {
 .room-table {
 	margin-bottom: 16px;
 }
-.paper-room > h1 {
+.room-table h1 {
 	margin: 0.33em 0;
 }
 .fab {
@@ -152,6 +152,20 @@ section {
 /* ===== Login Page CSS Start ===== */
 .form-input {
 	margin-bottom: 8px;
+	text-align: left;
+}
+.login-error {
+	height: 24px;
+	color: #F44336;
+	font-size: 14px;
+}
+.login-error > p {
+	display: inline-block;
+	position: relative;
+	top: -7px;
+	height: 24px;
+	line-height: 24px;
+	margin: 0 0 0 8px;
 }
 /* ===== Login Page CSS End ===== */
 
