@@ -5,6 +5,7 @@ import { renderToString } from 'react-dom/server'
 import { match, RouterContext } from 'react-router'
 import { Provider } from 'react-redux'
 import injectTapEventPlugin from 'react-tap-event-plugin'
+import Mongoose from 'mongoose'
 import Passport from 'passport'
 
 import theme from '../common/ui/theme'
@@ -49,7 +50,14 @@ const serverRoutes = app => {
 	// More information: http://stackoverflow.com/a/34015469/988941
 	injectTapEventPlugin()
 
+	// Helper function to check whether Mongoose has an open connection
+	const hasDBConnection = () => (Mongoose.connection.readyState == 1)
+
 	app.post('/api/login', (req, res) => {
+		if (!hasDBConnection()) {
+			return res.json({ success: false, error: 'An error occured when logging in' })
+		}
+
 		Passport.authenticate('local', (err, user, info) => {
 			if (err) {
 				console.error(err)
@@ -74,6 +82,11 @@ const serverRoutes = app => {
 
 	// Fallback login/logout routes for non-JS users
 	app.post('/login', (req, res) => {
+		if (!hasDBConnection()) {
+			req.session.loginError = 'An error occured when logging in'
+			return res.redirect('/login')
+		}
+
 		Passport.authenticate('local', (err, user, info) => {
 			if (err) {
 				console.error(err)
@@ -101,14 +114,26 @@ const serverRoutes = app => {
 	})
 
 	app.get('/api/bookings/:year/:month/:day', (req, res) => {
+		if (!hasDBConnection()) {
+			return res.sendStatus(500)
+		}
+
 		res.sendStatus(403)
 	})
 
 	app.get('/api/bookings', (req, res) => {
+		if (!hasDBConnection()) {
+			return res.sendStatus(500)
+		}
+
 		res.sendStatus(403)
 	})
 
 	app.get('/api/rooms', (req, res) => {
+		if (!hasDBConnection()) {
+			return res.sendStatus(500)
+		}
+
 		res.sendStatus(403)
 	})
 

@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react'
 import { browserHistory } from 'react-router'
 import { connect } from 'react-redux'
-import { CircularProgress, FontIcon, Paper, RaisedButton, TextField } from 'material-ui'
+import { CircularProgress, Divider, FontIcon, Paper, RaisedButton, TextField } from 'material-ui'
 import { red500 } from 'material-ui/styles/colors'
 
 import { requestLogin, clearLoginError } from '../../actions'
@@ -86,6 +86,7 @@ class LoginFormComponent extends Component {
 			<section>
 				<div className="row center-xs">
 					<Paper className="paper">
+						<h1 className="login-header text-center">Login</h1>
 						<form action="/login" method="post" onSubmit={(event) => this.onLogin(event)}>
 							{
 								// If there is a login error, display it
