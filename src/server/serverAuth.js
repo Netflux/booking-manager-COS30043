@@ -17,8 +17,7 @@ const store = new MongoDBStore({
 	collection: 'sessions'
 })
 store.on('error', (error) => {
-	assert.ifError(error);
-	assert.ok(false);
+	console.error(`MongoDB Session connection error: ${error}`)
 });
 
 // Helper functions for finding users based on ID or username

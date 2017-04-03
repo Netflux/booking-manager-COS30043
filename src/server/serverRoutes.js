@@ -52,14 +52,14 @@ const serverRoutes = app => {
 	app.post('/api/login', (req, res) => {
 		Passport.authenticate('local', (err, user, info) => {
 			if (err) {
-				console.log(err)
+				console.error(err)
 				return res.json({ success: false, error: 'An error occured when logging in' })
 			}
 			if (!user) { return res.json({ success: false, error: info.message }) }
 
 			req.login(user, err => {
 				if (err) {
-					console.log(err)
+					console.error(err)
 					return res.json({ success: false, error: 'An error occured when logging in' })
 				}
 				return res.json({ success: true, error: '' })
@@ -76,7 +76,7 @@ const serverRoutes = app => {
 	app.post('/login', (req, res) => {
 		Passport.authenticate('local', (err, user, info) => {
 			if (err) {
-				console.log(err)
+				console.error(err)
 				req.session.loginError = 'An error occured when logging in'
 				return res.redirect('/login')
 			}
@@ -87,7 +87,7 @@ const serverRoutes = app => {
 
 			req.login(user, err => {
 				if (err) {
-					console.log(err)
+					console.error(err)
 					req.session.loginError = 'An error occured when logging in'
 					return res.redirect('/login')
 				}

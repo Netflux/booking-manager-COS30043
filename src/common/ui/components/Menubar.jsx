@@ -18,7 +18,7 @@ const mapDispatchToProps = dispatch => {
 const MenubarComponent = ({title, onToggleMenu}) => (
 	<Toolbar className="toolbar">
 		<ToolbarGroup>
-			<label className="clickable" htmlFor="menu"><FontIcon className="material-icons menu-icon" onTouchTap={() => onToggleMenu()} color={theme.palette.alternateTextColor} hoverColor={theme.palette.alternateTextColor}>menu</FontIcon></label>
+			<label className="clickable" htmlFor="menu"><FontIcon className="material-icons menu-icon" onTouchTap={() => onToggleMenu()} style={{color: theme.palette.alternateTextColor}}>menu</FontIcon></label>
 			<ToolbarTitle text={title} style={{color: theme.palette.alternateTextColor}} />
 		</ToolbarGroup>
 	</Toolbar>

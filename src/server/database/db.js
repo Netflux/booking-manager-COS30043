@@ -24,7 +24,7 @@ Mongoose.connection.on('connected', () => {
 	// Hash the password of the default user
 	Bcrypt.hash(user.password, 12, (err, hash) => {
 		if (err) {
-			console.log(err)
+			console.error(err)
 		}
 
 		// Insert the default user if it does not exist
@@ -33,16 +33,16 @@ Mongoose.connection.on('connected', () => {
 			{ $setOnInsert: { ...user, password: hash } },
 			{ upsert: true },
 			(err, raw) => {
-				if (err) console.log(err)
+				if (err) console.error(err)
 			}
 		)
 	})
 })
 Mongoose.connection.on('disconnected', () => {
-	console.log(`Mongoose connection closed`)
+	console.log('Mongoose connection closed')
 })
 Mongoose.connection.on('error', err => {
-	console.log(`Mongoose connection error: ${err}`)
+	console.error(`Mongoose connection error: ${err}`)
 })
 
 // Close the connection when the application terminates
