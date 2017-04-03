@@ -55,7 +55,7 @@ export const fetchBookings = date => {
 		dispatch(requestBookings(date))
 
 		// Fetch the booking entries and dispatch a receive bookings action
-		return fetch(`/api/bookings/${date}`)
+		return fetch(`/api/bookings/${date}`, { credentials: 'include' })
 			.then(response => {
 				if (response.ok) {
 					return response.json()
@@ -158,7 +158,7 @@ export const fetchRooms = () => {
 		dispatch(requestRooms())
 
 		// Fetch the room entries and dispatch a receive rooms action
-		return fetch('/api/rooms')
+		return fetch('/api/rooms', { credentials: 'include' })
 			.then(response => {
 				if (response.ok) {
 					return response.json()
@@ -270,6 +270,7 @@ export const requestLogin = (username, password) => {
 				'Content-Type': 'application/json'
 			},
 			method: 'POST',
+			credentials: 'include',
 			body: JSON.stringify({username: username, password: password})
 		})
 		.then(response => {
@@ -296,7 +297,7 @@ export const completeLogout = () => {
 export const requestLogout = () => {
 	return dispatch => {
 		// Send the username and password to the server for authentication
-		return fetch('/api/logout')
+		return fetch('/api/logout', { credentials: 'include' })
 			.then(response => {
 				if (response.ok) {
 					return response.json()

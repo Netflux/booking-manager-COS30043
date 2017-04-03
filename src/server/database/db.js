@@ -55,3 +55,5 @@ process.on('SIGINT', () => {
 
 // Start the connection to the database
 Mongoose.connect(dbURI)
+
+export default dbURI

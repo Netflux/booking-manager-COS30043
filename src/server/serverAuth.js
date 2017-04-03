@@ -1,12 +1,25 @@
 import Express from 'express'
 import Session from 'express-session'
+import ConnectMDB from 'connect-mongodb-session'
 import Mongoose from 'mongoose'
 import Passport from 'passport'
 import LocalStrategy from 'passport-local'
 import Validator from 'validator'
 import Bcrypt from 'bcrypt'
 
+import dbURI from './database/db'
 import { UserModel } from './database/models'
+
+// Setup the MongoDB store for sessions
+const MongoDBStore = ConnectMDB(Session)
+const store = new MongoDBStore({
+	uri: dbURI,
+	collection: 'sessions'
+})
+store.on('error', (error) => {
+	assert.ifError(error);
+	assert.ok(false);
+});
 
 // Helper functions for finding users based on ID or username
 const findUserById = (id, callback) => {
@@ -49,7 +62,8 @@ const serverAuth = app => {
 		},
 		resave: false,
 		saveUninitialized: false,
-		secret: 'booking-manager'
+		secret: 'booking-manager',
+		store: store
 	}))
 	app.use(Passport.initialize())
 	app.use(Passport.session())

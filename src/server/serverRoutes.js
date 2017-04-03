@@ -139,13 +139,13 @@ const serverRoutes = app => {
 				res.redirect(302, redirectLocation.pathname + redirectLocation.search)
 			} else if (renderProps) {
 				// Generate the default state
-				const defaultState = req.session.loginError ? {
+				const defaultState = {
 					user: {
 						isLoggingIn: false,
-						isLoggedIn: false,
+						isLoggedIn: req.user ? true : false,
 						loginError: req.session.loginError
 					}
-				} : {}
+				}
 
 				// Create a new Redux store instance
 				const store = configureStore(defaultState)
