@@ -15,7 +15,8 @@ const mapStateToProps = state => {
 	return {
 		selectedDate: state.selectedDate,
 		bookingsByDate: state.bookingsByDate,
-		rooms: state.rooms
+		rooms: state.rooms,
+		isLoggedIn: state.user.isLoggedIn
 	}
 }
 
@@ -202,15 +203,30 @@ class BookingTableComponent extends Component {
 						<section>
 							<Paper className="paper text-center">
 								<h1>No rooms available!</h1>
-								<RaisedButton label="Add New Room" secondary={true} onTouchTap={() => roomDialog.getWrappedInstance().show()} />
+
+								{
+									// If logged in, display the 'Add New Room' button
+									// Else, display a message to the user
+									this.props.isLoggedIn ? (
+										<RaisedButton label="Add New Room" secondary={true} onTouchTap={() => roomDialog.getWrappedInstance().show()} />
+									) : (
+										<p>If you're seeing this message, please contact the system administrator.</p>
+									)
+								}
 							</Paper>
 						</section>
 					)
 				}
 
-				<FloatingActionButton className="fab" secondary={true} onTouchTap={() => this.props.rooms.items.filter((room) => room.isAvailable).length > 0 ? bookingDialog.getWrappedInstance().show() : roomDialog.getWrappedInstance().show()}>
-					<FontIcon className="material-icons">add</FontIcon>
-				</FloatingActionButton>
+				{
+					// If logged in, display the FAB for adding new rooms/bookings
+					this.props.isLoggedIn && (
+						<FloatingActionButton className="fab" secondary={true} onTouchTap={() => this.props.rooms.items.filter((room) => room.isAvailable).length > 0 ? bookingDialog.getWrappedInstance().show() : roomDialog.getWrappedInstance().show()}>
+							<FontIcon className="material-icons">add</FontIcon>
+						</FloatingActionButton>
+					)
+				}
+
 				<BookingDialog ref={(dialog) => bookingDialog = dialog} />
 				<RoomDialog ref={(dialog) => roomDialog = dialog} />
 			</div>
@@ -223,6 +239,7 @@ BookingTableComponent.propTypes = {
 	selectedDate: PropTypes.string.isRequired,
 	bookingsByDate: PropTypes.object.isRequired,
 	rooms: PropTypes.object.isRequired,
+	isLoggedIn: PropTypes.bool.isRequired,
 	fetchBookings: PropTypes.func.isRequired,
 	fetchRooms: PropTypes.func.isRequired,
 	onSelectDate: PropTypes.func.isRequired

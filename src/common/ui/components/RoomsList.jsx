@@ -8,7 +8,8 @@ import { fetchRoomsIfNeeded, deleteRoom } from '../../actions'
 
 const mapStateToProps = state => {
 	return {
-		rooms: state.rooms
+		rooms: state.rooms,
+		isLoggedIn: state.user.isLoggedIn
 	}
 }
 
@@ -24,7 +25,7 @@ const mapDispatchToProps = dispatch => {
 }
 
 // Define the Rooms List component
-const RoomsListComponent = ({rooms, fetchRooms, deleteCurrentRoom}) => {
+const RoomsListComponent = ({rooms, isLoggedIn, fetchRooms, deleteCurrentRoom}) => {
 	// Fetch the rooms
 	fetchRooms()
 
@@ -55,14 +56,29 @@ const RoomsListComponent = ({rooms, fetchRooms, deleteCurrentRoom}) => {
 				) : (
 					<Paper className="paper text-center">
 						<h1>No rooms available!</h1>
-						<RaisedButton label="Add New Room" secondary={true} onTouchTap={() => roomDialog.getWrappedInstance().show()} />
+
+						{
+							// If logged in, display the 'Add New Room' button
+							// Else, display a message to the user
+							isLoggedIn ? (
+								<RaisedButton label="Add New Room" secondary={true} onTouchTap={() => roomDialog.getWrappedInstance().show()} />
+							) : (
+								<p>If you're seeing this message, please contact the system administrator.</p>
+							)
+						}
 					</Paper>
 				)
 			}
 
-			<FloatingActionButton className="fab" secondary={true} onTouchTap={() => roomDialog.getWrappedInstance().show()}>
-				<FontIcon className="material-icons">add</FontIcon>
-			</FloatingActionButton>
+			{
+				// If logged in, display the FAB for adding new rooms
+				isLoggedIn && (
+					<FloatingActionButton className="fab" secondary={true} onTouchTap={() => roomDialog.getWrappedInstance().show()}>
+						<FontIcon className="material-icons">add</FontIcon>
+					</FloatingActionButton>
+				)
+			}
+
 			<RoomDialog ref={(dialog) => roomDialog = dialog} />
 		</section>
 	)
@@ -71,6 +87,7 @@ const RoomsListComponent = ({rooms, fetchRooms, deleteCurrentRoom}) => {
 // Define the property types that the component expects to receive
 RoomsListComponent.propTypes = {
 	rooms: PropTypes.object.isRequired,
+	isLoggedIn: PropTypes.bool.isRequired,
 	fetchRooms: PropTypes.func.isRequired,
 	deleteCurrentRoom: PropTypes.func.isRequired
 }
