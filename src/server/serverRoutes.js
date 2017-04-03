@@ -143,7 +143,7 @@ const serverRoutes = app => {
 					user: {
 						isLoggingIn: false,
 						isLoggedIn: req.user ? true : false,
-						loginError: req.session.loginError
+						loginError: req.session.loginError ? req.session.loginError : ''
 					}
 				}
 
