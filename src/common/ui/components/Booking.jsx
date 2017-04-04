@@ -12,7 +12,7 @@ const Booking = ({booking, onTouchTap}) => (
 			) : (
 				<Paper className="paper paper-solo">
 					<p><strong>{booking.bookingTitle}</strong></p>
-					<p>{booking.bookingDesc}</p>
+					<p>{booking.bookingDesc || "No description provided"}</p>
 				</Paper>
 			)
 		}

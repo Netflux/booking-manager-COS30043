@@ -72,7 +72,7 @@ class RoomDialogComponent extends Component {
 				const newRoom = {
 					roomId: shortid.generate() + moment().format('ss'),
 					roomName: this.state.roomName,
-					roomDesc: this.state.roomDesc || "No description provided",
+					roomDesc: this.state.roomDesc,
 					isAvailable: this.state.isAvailable
 				}
 

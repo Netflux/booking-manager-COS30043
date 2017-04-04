@@ -105,7 +105,7 @@ class BookingDialogComponent extends Component {
 				const newBooking = {
 					bookingId: shortid.generate() + moment().format('ss'),
 					bookingTitle: this.state.bookingTitle,
-					bookingDesc: this.state.bookingDesc || "No description provided",
+					bookingDesc: this.state.bookingDesc,
 					roomId: this.state.roomId,
 					date: this.state.date,
 					timeSlot: this.state.timeSlot,

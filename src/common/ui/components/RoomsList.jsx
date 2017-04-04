@@ -43,7 +43,7 @@ const RoomsListComponent = ({rooms, isLoggedIn, fetchRooms, deleteCurrentRoom}) 
 								<div className="col-sm-6 col-xs-12" key={room.roomId}>
 									<Paper className="paper paper-solo">
 										<h1 className="room-header">{room.roomName}</h1>
-										<p>{room.roomDesc}</p>
+										<p>{room.roomDesc || "No description provided"}</p>
 										<p>Booking Allowed: {room.isAvailable ? "Yes" : "No"}</p>
 
 										<FlatButton label="Edit" secondary={true} onTouchTap={() => roomDialog.getWrappedInstance().show({dialogTitle: "Edit Room", editing: true, ...room})} />
