@@ -138,60 +138,36 @@ const serverRoutes = app => {
 			return res.sendStatus(500)
 		}
 		if (!req.user) {
-			return res.sendStatus(401)
+			return res.sendStatus(403)
 		}
 
 		const bookingId = Validator.escape(req.params.bookingId)
 
 		switch (req.method) {
-			case 'POST':
-				if (req.body) {
-					let bodySanitized = {
-						bookingId: bookingId,
-						bookingTitle: Validator.escape(req.body.bookingTitle),
-						bookingDesc: Validator.escape(req.body.bookingDesc),
-						roomId: Validator.escape(req.body.roomId),
-						date: Validator.escape(req.body.date),
-						timeSlot: parseInt(Validator.escape(req.body.timeSlot), 10),
-						duration: parseInt(Validator.escape(req.body.duration), 10),
-						createdBy: req.user.userId,
-						createdDate: moment().format('YYYY/M/D'),
-						updatedBy: req.user.userId,
-						updatedDate: moment().format('YYYY/M/D')
-					}
-
-					BookingModel.create(bodySanitized, (err, booking) => {
-						if (err) {
-							console.error(err)
-							return res.sendStatus(500)
-						}
-
-						return res.sendStatus(201)
-					})
-				}
-				break;
 			case 'PUT':
-				if (req.body) {
-					let bodySanitized = {
-						bookingTitle: Validator.escape(req.body.bookingTitle),
-						bookingDesc: Validator.escape(req.body.bookingDesc),
-						roomId: Validator.escape(req.body.roomId),
-						date: Validator.escape(req.body.date),
-						timeSlot: parseInt(Validator.escape(req.body.timeSlot), 10),
-						duration: parseInt(Validator.escape(req.body.duration), 10),
-						updatedBy: req.user.userId,
-						updatedDate: moment().format('YYYY/M/D')
+				if (!req.body) {
+					return res.sendStatus(400)
+				}
+
+				let bodySanitized = {
+					bookingTitle: Validator.escape(req.body.bookingTitle),
+					bookingDesc: Validator.escape(req.body.bookingDesc),
+					roomId: Validator.escape(req.body.roomId),
+					date: Validator.escape(req.body.date),
+					timeSlot: parseInt(Validator.escape(req.body.timeSlot), 10),
+					duration: parseInt(Validator.escape(req.body.duration), 10),
+					updatedBy: req.user.userId,
+					updatedDate: moment().format('YYYY/M/D')
+				}
+
+				BookingModel.findOneAndUpdate({ bookingId }, bodySanitized, (err, booking) => {
+					if (err) {
+						console.error(err)
+						return res.sendStatus(500)
 					}
 
-					BookingModel.findOneAndUpdate({ bookingId }, bodySanitized, (err, booking) => {
-						if (err) {
-							console.error(err)
-							return res.sendStatus(500)
-						}
-
-						return res.sendStatus(200)
-					})
-				}
+					return res.sendStatus(200)
+				})
 				break;
 			case 'DELETE':
 				BookingModel.remove({ bookingId }, (err) => {
@@ -207,6 +183,41 @@ const serverRoutes = app => {
 				// Route does not handle other request types
 				break;
 		}
+	})
+
+	app.post('/api/bookings', (req, res) => {
+		if (!hasDBConnection()) {
+			return res.sendStatus(500)
+		}
+		if (!req.user) {
+			return res.sendStatus(403)
+		}
+		if (!req.body) {
+			return res.sendStatus(400)
+		}
+
+		let bodySanitized = {
+			bookingId: Validator.escape(req.body.bookingId),
+			bookingTitle: Validator.escape(req.body.bookingTitle),
+			bookingDesc: Validator.escape(req.body.bookingDesc),
+			roomId: Validator.escape(req.body.roomId),
+			date: Validator.escape(req.body.date),
+			timeSlot: parseInt(Validator.escape(req.body.timeSlot), 10),
+			duration: parseInt(Validator.escape(req.body.duration), 10),
+			createdBy: req.user.userId,
+			createdDate: moment().format('YYYY/M/D'),
+			updatedBy: req.user.userId,
+			updatedDate: moment().format('YYYY/M/D')
+		}
+
+		BookingModel.create(bodySanitized, (err, booking) => {
+			if (err) {
+				console.error(err)
+				return res.sendStatus(500)
+			}
+
+			return res.sendStatus(201)
+		})
 	})
 
 	app.get('/api/bookings', (req, res) => {
@@ -231,54 +242,33 @@ const serverRoutes = app => {
 			return res.sendStatus(500)
 		}
 		if (!req.user) {
-			return res.sendStatus(401)
+			return res.sendStatus(403)
 		}
 
 		const roomId = Validator.escape(req.params.roomId)
 
 		switch (req.method) {
-			case 'POST':
-				if (req.body) {
-					let bodySanitized = {
-						roomId: roomId,
-						roomName: Validator.escape(req.body.roomName),
-						roomDesc: Validator.escape(req.body.roomDesc),
-						isAvailable: req.body.isAvailable,
-						createdBy: req.user.userId,
-						createdDate: moment().format('YYYY/M/D'),
-						updatedBy: req.user.userId,
-						updatedDate: moment().format('YYYY/M/D')
-					}
-
-					RoomModel.create(bodySanitized, (err, room) => {
-						if (err) {
-							console.error(err)
-							return res.sendStatus(500)
-						}
-
-						return res.sendStatus(201)
-					})
-				}
-				break;
 			case 'PUT':
-				if (req.body) {
-					let bodySanitized = {
-						roomName: Validator.escape(req.body.roomName),
-						roomDesc: Validator.escape(req.body.roomDesc),
-						isAvailable: req.body.isAvailable,
-						updatedBy: req.user.userId,
-						updatedDate: moment().format('YYYY/M/D')
+				if (!req.body) {
+					return res.sendStatus(400)
+				}
+
+				let bodySanitized = {
+					roomName: Validator.escape(req.body.roomName),
+					roomDesc: Validator.escape(req.body.roomDesc),
+					isAvailable: req.body.isAvailable,
+					updatedBy: req.user.userId,
+					updatedDate: moment().format('YYYY/M/D')
+				}
+
+				RoomModel.findOneAndUpdate({ roomId }, bodySanitized, (err, room) => {
+					if (err) {
+						console.error(err)
+						return res.sendStatus(500)
 					}
 
-					RoomModel.findOneAndUpdate({ roomId }, bodySanitized, (err, room) => {
-						if (err) {
-							console.error(err)
-							return res.sendStatus(500)
-						}
-
-						return res.sendStatus(200)
-					})
-				}
+					return res.sendStatus(200)
+				})
 				break;
 			case 'DELETE':
 				RoomModel.remove({ roomId }, (err) => {
@@ -294,6 +284,40 @@ const serverRoutes = app => {
 				// Route does not handle other request types
 				break;
 		}
+
+		return res.sendStatus(400)
+	})
+
+	app.post('/api/rooms', (req, res) => {
+		if (!hasDBConnection()) {
+			return res.sendStatus(500)
+		}
+		if (!req.user) {
+			return res.sendStatus(403)
+		}
+		if (!req.body) {
+			return res.sendStatus(400)
+		}
+
+		let bodySanitized = {
+			roomId: Validator.escape(req.body.roomId),
+			roomName: Validator.escape(req.body.roomName),
+			roomDesc: Validator.escape(req.body.roomDesc),
+			isAvailable: req.body.isAvailable,
+			createdBy: req.user.userId,
+			createdDate: moment().format('YYYY/M/D'),
+			updatedBy: req.user.userId,
+			updatedDate: moment().format('YYYY/M/D')
+		}
+
+		RoomModel.create(bodySanitized, (err, room) => {
+			if (err) {
+				console.error(err)
+				return res.sendStatus(500)
+			}
+
+			return res.sendStatus(201)
+		})
 	})
 
 	app.get('/api/rooms', (req, res) => {
