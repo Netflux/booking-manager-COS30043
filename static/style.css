@@ -115,7 +115,7 @@ section {
 	text-overflow: ellipsis;
 }
 .booking-date-picker {
-	margin-top: 16px;
+	margin: 16px 0 0 0;
 }
 .booking-date-picker > h1, .booking-date-picker > p {
 	height: 56px;

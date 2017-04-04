@@ -43,7 +43,6 @@ class BookingDialogComponent extends Component {
 			bookingTitle: "",
 			bookingTitleErrorText: "",
 			bookingDesc: "",
-			bookingDescErrorText: "",
 			date: this.props.selectedDate,
 			timeSlot: 1,
 			duration: 1
@@ -101,17 +100,12 @@ class BookingDialogComponent extends Component {
 			hasError = true
 		}
 
-		if (this.state.bookingDesc == "") {
-			this.setState({bookingDescErrorText: "This field is required"})
-			hasError = true
-		}
-
 		if (!hasError) {
 			if (!this.state.editing) {
 				const newBooking = {
 					bookingId: shortid.generate() + moment().format('ss'),
 					bookingTitle: this.state.bookingTitle,
-					bookingDesc: this.state.bookingDesc,
+					bookingDesc: this.state.bookingDesc || "No description provided",
 					roomId: this.state.roomId,
 					date: this.state.date,
 					timeSlot: this.state.timeSlot,
@@ -169,7 +163,7 @@ class BookingDialogComponent extends Component {
 					}
 				</SelectField><br />
 				<TextField id="title" className="form-input" floatingLabelText="Title" floatingLabelFixed={true} errorText={this.state.bookingTitleErrorText} onChange={(event) => this.handleChange(event.target.value, "bookingTitle")} value={this.state.bookingTitle} /><br />
-				<TextField id="description" className="form-input" floatingLabelText="Description" floatingLabelFixed={true} errorText={this.state.bookingDescErrorText} onChange={(event) => this.handleChange(event.target.value, "bookingDesc")} value={this.state.bookingDesc} /><br />
+				<TextField id="description" className="form-input" floatingLabelText="Description" floatingLabelFixed={true} onChange={(event) => this.handleChange(event.target.value, "bookingDesc")} value={this.state.bookingDesc} /><br />
 				<DatePicker id="date" floatingLabelText="Date" floatingLabelFixed={true} formatDate={(date) => moment(date).format('D/M/YYYY')} onChange={(event, date) => this.handleChange(moment(date).format('YYYY/M/D'), "date")} value={moment(this.state.date, 'YYYY/M/D').toDate()} />
 				<SelectField id="time" className="form-input" floatingLabelText="Time" floatingLabelFixed={true} onChange={(event, key, payload) => this.handleChange(payload, "timeSlot")} value={this.state.timeSlot}>
 					{
