@@ -5,8 +5,10 @@ import { renderToString } from 'react-dom/server'
 import { match, RouterContext } from 'react-router'
 import { Provider } from 'react-redux'
 import injectTapEventPlugin from 'react-tap-event-plugin'
+import moment from 'moment'
 import Mongoose from 'mongoose'
 import Passport from 'passport'
+import Validator from 'validator'
 
 import theme from '../common/ui/theme'
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
@@ -14,6 +16,7 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 
 import configureStore from '../common/store/configureStore'
 import routes from '../common/routes'
+import { BookingModel, RoomModel } from './database/models'
 
 // Helper function to generate the base HTML including the React application
 const renderPage = (html, defaultState) => {
@@ -118,7 +121,92 @@ const serverRoutes = app => {
 			return res.sendStatus(500)
 		}
 
-		res.sendStatus(403)
+		BookingModel.find({ date: `${req.params.year}/${req.params.month}/${req.params.day}` })
+			.select('bookingId bookingTitle bookingDesc roomId date timeSlot duration')
+			.exec((err, bookings) => {
+				if (err) {
+					console.error(err)
+					return res.sendStatus(500)
+				}
+
+				return res.json(bookings)
+			})
+	})
+
+	app.all('/api/bookings/:bookingId', (req, res) => {
+		if (!hasDBConnection()) {
+			return res.sendStatus(500)
+		}
+		if (!req.user) {
+			return res.sendStatus(401)
+		}
+
+		const bookingId = Validator.escape(req.params.bookingId)
+
+		switch (req.method) {
+			case 'POST':
+				if (req.body) {
+					let bodySanitized = {
+						bookingId: bookingId,
+						bookingTitle: Validator.escape(req.body.bookingTitle),
+						bookingDesc: Validator.escape(req.body.bookingDesc),
+						roomId: Validator.escape(req.body.roomId),
+						date: Validator.escape(req.body.date),
+						timeSlot: parseInt(Validator.escape(req.body.timeSlot), 10),
+						duration: parseInt(Validator.escape(req.body.duration), 10),
+						createdBy: req.user.userId,
+						createdDate: moment().format('YYYY/M/D'),
+						updatedBy: req.user.userId,
+						updatedDate: moment().format('YYYY/M/D')
+					}
+
+					BookingModel.create(bodySanitized, (err, booking) => {
+						if (err) {
+							console.error(err)
+							return res.sendStatus(500)
+						}
+
+						return res.sendStatus(201)
+					})
+				}
+				break;
+			case 'PUT':
+				if (req.body) {
+					let bodySanitized = {
+						bookingTitle: Validator.escape(req.body.bookingTitle),
+						bookingDesc: Validator.escape(req.body.bookingDesc),
+						roomId: Validator.escape(req.body.roomId),
+						date: Validator.escape(req.body.date),
+						timeSlot: parseInt(Validator.escape(req.body.timeSlot), 10),
+						duration: parseInt(Validator.escape(req.body.duration), 10),
+						updatedBy: req.user.userId,
+						updatedDate: moment().format('YYYY/M/D')
+					}
+
+					BookingModel.findOneAndUpdate({ bookingId }, bodySanitized, (err, booking) => {
+						if (err) {
+							console.error(err)
+							return res.sendStatus(500)
+						}
+
+						return res.sendStatus(200)
+					})
+				}
+				break;
+			case 'DELETE':
+				BookingModel.remove({ bookingId }, (err) => {
+					if (err) {
+						console.error(err)
+						return res.sendStatus(500)
+					}
+
+					return res.sendStatus(200)
+				})
+				break;
+			default:
+				// Route does not handle other request types
+				break;
+		}
 	})
 
 	app.get('/api/bookings', (req, res) => {
@@ -126,7 +214,86 @@ const serverRoutes = app => {
 			return res.sendStatus(500)
 		}
 
-		res.sendStatus(403)
+		BookingModel.find()
+			.select('bookingId bookingTitle bookingDesc roomId date timeSlot duration')
+			.exec((err, bookings) => {
+				if (err) {
+					console.error(err)
+					return res.sendStatus(500)
+				}
+
+				return res.json(bookings)
+			})
+	})
+
+	app.all('/api/rooms/:roomId', (req, res) => {
+		if (!hasDBConnection()) {
+			return res.sendStatus(500)
+		}
+		if (!req.user) {
+			return res.sendStatus(401)
+		}
+
+		const roomId = Validator.escape(req.params.roomId)
+
+		switch (req.method) {
+			case 'POST':
+				if (req.body) {
+					let bodySanitized = {
+						roomId: roomId,
+						roomName: Validator.escape(req.body.roomName),
+						roomDesc: Validator.escape(req.body.roomDesc),
+						isAvailable: req.body.isAvailable,
+						createdBy: req.user.userId,
+						createdDate: moment().format('YYYY/M/D'),
+						updatedBy: req.user.userId,
+						updatedDate: moment().format('YYYY/M/D')
+					}
+
+					RoomModel.create(bodySanitized, (err, room) => {
+						if (err) {
+							console.error(err)
+							return res.sendStatus(500)
+						}
+
+						return res.sendStatus(201)
+					})
+				}
+				break;
+			case 'PUT':
+				if (req.body) {
+					let bodySanitized = {
+						roomName: Validator.escape(req.body.roomName),
+						roomDesc: Validator.escape(req.body.roomDesc),
+						isAvailable: req.body.isAvailable,
+						updatedBy: req.user.userId,
+						updatedDate: moment().format('YYYY/M/D')
+					}
+
+					RoomModel.findOneAndUpdate({ roomId }, bodySanitized, (err, room) => {
+						if (err) {
+							console.error(err)
+							return res.sendStatus(500)
+						}
+
+						return res.sendStatus(200)
+					})
+				}
+				break;
+			case 'DELETE':
+				RoomModel.remove({ roomId }, (err) => {
+					if (err) {
+						console.error(err)
+						return res.sendStatus(500)
+					}
+
+					return res.sendStatus(200)
+				})
+				break;
+			default:
+				// Route does not handle other request types
+				break;
+		}
 	})
 
 	app.get('/api/rooms', (req, res) => {
@@ -134,7 +301,16 @@ const serverRoutes = app => {
 			return res.sendStatus(500)
 		}
 
-		res.sendStatus(403)
+		RoomModel.find()
+			.select('roomId roomName roomDesc isAvailable')
+			.exec((err, rooms) => {
+				if (err) {
+					console.error(err)
+					return res.sendStatus(500)
+				}
+
+				return res.json(rooms)
+			})
 	})
 
 	app.get('/static/*', (req, res) => {
