@@ -33,7 +33,7 @@ const bookingSchema = new Schema({
 		required: [true, 'Room ID is required']
 	},
 	date: {
-		type: Date,
+		type: String,
 		required: [true, 'Date is required']
 	},
 	timeSlot: {

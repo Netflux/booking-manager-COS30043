@@ -4,15 +4,18 @@ import moment from 'moment'
 import shortid from 'shortid'
 import { Dialog, FlatButton, MenuItem, SelectField, Snackbar, TextField, Toggle } from 'material-ui'
 
-import { addRoom, deleteRoom } from '../../actions'
+import { handleAddRoom, handleUpdateRoom, handleDeleteRoom } from '../../actions'
 
 const mapDispatchToProps = dispatch => {
 	return {
-		addNewRoom: (room) => {
-			dispatch(addRoom(room))
+		addRoom: (room) => {
+			dispatch(handleAddRoom(room))
 		},
-		deleteCurrentRoom: (roomId) => {
-			dispatch(deleteRoom(roomId))
+		updateRoom: (room) => {
+			dispatch(handleUpdateRoom(room))
+		},
+		deleteRoom: (roomId) => {
+			dispatch(handleDeleteRoom(roomId))
 		}
 	}
 }
@@ -54,8 +57,7 @@ class RoomDialogComponent extends Component {
 	}
 
 	delete() {
-		this.props.deleteCurrentRoom(this.state.roomId)
-
+		this.props.deleteRoom(this.state.roomId)
 		this.dismiss()
 	}
 
@@ -68,17 +70,18 @@ class RoomDialogComponent extends Component {
 		}
 
 		if (!hasError) {
-			if (!this.state.editing) {
-				const newRoom = {
-					roomId: shortid.generate() + moment().format('ss'),
-					roomName: this.state.roomName,
-					roomDesc: this.state.roomDesc,
-					isAvailable: this.state.isAvailable
-				}
+			let room = {
+				roomId: this.state.roomId,
+				roomName: this.state.roomName,
+				roomDesc: this.state.roomDesc,
+				isAvailable: this.state.isAvailable
+			}
 
-				this.props.addNewRoom(newRoom)
+			if (this.state.editing) {
+				this.props.updateRoom(room)
 			} else {
-
+				room.roomId = shortid.generate() + moment().format('ss')
+				this.props.addRoom(room)
 			}
 
 			this.dismiss()
@@ -105,8 +108,9 @@ class RoomDialogComponent extends Component {
 
 // Define the property types that the component expects to receive
 RoomDialogComponent.propTypes = {
-	addNewRoom: PropTypes.func.isRequired,
-	deleteCurrentRoom: PropTypes.func.isRequired
+	addRoom: PropTypes.func.isRequired,
+	updateRoom: PropTypes.func.isRequired,
+	deleteRoom: PropTypes.func.isRequired
 }
 
 // Define the container for the Room Dialog component (maps dispatchers)

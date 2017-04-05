@@ -4,7 +4,6 @@ import ConnectMDB from 'connect-mongodb-session'
 import Mongoose from 'mongoose'
 import Passport from 'passport'
 import LocalStrategy from 'passport-local'
-import Validator from 'validator'
 import Bcrypt from 'bcrypt'
 
 import dbURI from './database/db'
@@ -41,13 +40,10 @@ const serverAuth = app => {
 
 	// Set up the LocalStrategy for login authentication
 	Passport.use(new LocalStrategy((username, password, done) => {
-		const usernameEscaped = Validator.escape(username)
-		const passwordEscaped = Validator.escape(password)
-
-		findUserByUsername(usernameEscaped, (err, user) => {
+		findUserByUsername(username, (err, user) => {
 			if (err) { return done(err) }
 			if (!user) { return done(null, false, { message: 'Invalid username or password' }) }
-			Bcrypt.compare(passwordEscaped, user.password, (err, res) => {
+			Bcrypt.compare(password, user.password, (err, res) => {
 				if (err) { return done(err) }
 				if (!res) { return done(null, false, { message: 'Invalid username or password' }) }
 				return done(null, user)

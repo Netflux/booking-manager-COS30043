@@ -1,8 +1,8 @@
 import { combineReducers } from 'redux'
 import moment from 'moment'
 import { TOGGLE_DRAWER_OPEN, TOGGLE_DRAWER_DOCKED, SELECT_DATE,
-	REQUEST_BOOKINGS, RECEIVE_BOOKINGS, RECEIVE_BOOKINGS_ERROR, INVALIDATE_BOOKINGS, ADD_BOOKING, DELETE_BOOKING,
-	REQUEST_ROOMS, RECEIVE_ROOMS, RECEIVE_ROOMS_ERROR, INVALIDATE_ROOMS, ADD_ROOM, DELETE_ROOM,
+	REQUEST_BOOKINGS, RECEIVE_BOOKINGS, RECEIVE_BOOKINGS_ERROR, INVALIDATE_BOOKINGS, ADD_BOOKING, UPDATE_BOOKING, DELETE_BOOKING,
+	REQUEST_ROOMS, RECEIVE_ROOMS, RECEIVE_ROOMS_ERROR, INVALIDATE_ROOMS, ADD_ROOM, UPDATE_ROOM, DELETE_ROOM,
 	BEGIN_LOGIN, COMPLETE_LOGIN, COMPLETE_LOGIN_ERROR, CLEAR_LOGIN_ERROR, COMPLETE_LOGOUT } from '../actions'
 
 // Reducer for side drawer-related actions
@@ -78,6 +78,7 @@ const handleBookings = (state = {
 				didInvalidate: true
 			}
 		case ADD_BOOKING:
+		case UPDATE_BOOKING:
 			return {
 				...state,
 				items: [...state.items, action.booking]
@@ -103,6 +104,21 @@ const bookingsByDate = (state = {}, action) => {
 			return {
 				...state,
 				[action.date]: handleBookings(state[action.date], action)
+			}
+		case UPDATE_BOOKING:
+			let newState = {}
+
+			for (let date in state) {
+				newState[date] = {
+					isFetching: state[date].isFetching,
+					didInvalidate: state[date].didInvalidate,
+					items: state[date].items.filter((booking) => booking.bookingId != action.booking.bookingId)
+				}
+			}
+
+			return {
+				...newState,
+				[action.date]: handleBookings(newState[action.date], action)
 			}
 		default:
 			return state
@@ -142,6 +158,11 @@ const rooms = (state = {
 			return {
 				...state,
 				items: [...state.items, action.room]
+			}
+		case UPDATE_ROOM:
+			return {
+				...state,
+				items: [...state.items.filter((room) => room.roomId != action.room.roomId), action.room]
 			}
 		case DELETE_ROOM:
 			return {

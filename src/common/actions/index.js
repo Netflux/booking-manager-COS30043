@@ -49,12 +49,12 @@ export const fetchBookingsIfNeeded = date => {
 }
 
 // Action when the user is fetching booking entries
-export const fetchBookings = date => {
+const fetchBookings = date => {
 	return dispatch => {
-		// Dispatch a request bookings action
+		// Dispatch a 'Request Bookings' action
 		dispatch(requestBookings(date))
 
-		// Fetch the booking entries and dispatch a receive bookings action
+		// Fetch the booking entries and dispatch a 'Receive Bookings' action
 		return fetch(`/api/bookings/${date}`, { credentials: 'include' })
 			.then(response => {
 				if (response.ok) {
@@ -71,7 +71,7 @@ export const fetchBookings = date => {
 
 // Action when the user requests booking entries
 export const REQUEST_BOOKINGS = 'REQUEST_BOOKINGS'
-export const requestBookings = date => {
+const requestBookings = date => {
 	return {
 		type: REQUEST_BOOKINGS,
 		date
@@ -80,7 +80,7 @@ export const requestBookings = date => {
 
 // Action when the user receives booking entries
 export const RECEIVE_BOOKINGS = 'RECEIVE_BOOKINGS'
-export const receiveBookings = (date, json) => {
+const receiveBookings = (date, json) => {
 	return {
 		type: RECEIVE_BOOKINGS,
 		date,
@@ -91,7 +91,7 @@ export const receiveBookings = (date, json) => {
 
 // Action when the bookings request action encounters an error
 export const RECEIVE_BOOKINGS_ERROR = 'RECEIVE_BOOKINGS_ERROR'
-export const receiveBookingsError = () => {
+const receiveBookingsError = () => {
 	return {
 		type: RECEIVE_BOOKINGS_ERROR
 	}
@@ -106,9 +106,37 @@ export const invalidateBookings = date => {
 	}
 }
 
+// Action when the user adds a booking entry (server-side)
+export const handleAddBooking = (booking) => {
+	return dispatch => {
+		// Dispatch a 'Add Booking' action
+		dispatch(addBooking(booking.date, booking))
+
+		// Send the booking entry to the server for storage
+		return fetch('/api/bookings', {
+				headers: {
+					'Accept': 'application/json',
+					'Content-Type': 'application/json'
+				},
+				method: 'POST',
+				credentials: 'include',
+				body: JSON.stringify(booking)
+			})
+			.then(response => {
+				if (response.ok) {
+					return // Add booking succeeded
+				}
+				throw new Error(`HTTP Error ${response.status}: Failed to add booking`)
+			})
+			.catch(error => {
+				// Add booking failed, no action required
+			})
+	}
+}
+
 // Action when the user adds a booking entry
 export const ADD_BOOKING = 'ADD_BOOKING'
-export const addBooking = (date, booking) => {
+const addBooking = (date, booking) => {
 	return {
 		type: ADD_BOOKING,
 		date,
@@ -116,9 +144,70 @@ export const addBooking = (date, booking) => {
 	}
 }
 
+// Action when the user updates a booking entry (server-side)
+export const handleUpdateBooking = (booking) => {
+	return dispatch => {
+		// Dispatch a 'Update Booking' action
+		dispatch(updateBooking(booking.date, booking))
+
+		// Send the updated booking entry to the server for storage
+		return fetch(`/api/bookings/${booking.bookingId}`, {
+				headers: {
+					'Accept': 'application/json',
+					'Content-Type': 'application/json'
+				},
+				method: 'PUT',
+				credentials: 'include',
+				body: JSON.stringify(booking)
+			})
+			.then(response => {
+				if (response.ok) {
+					return // Update booking succeeded
+				}
+				throw new Error(`HTTP Error ${response.status}: Failed to update booking`)
+			})
+			.catch(error => {
+				// Update booking failed, no action required
+			})
+	}
+}
+
+// Action when the user updates a booking entry
+export const UPDATE_BOOKING = 'UPDATE_BOOKING'
+const updateBooking = (date, booking) => {
+	return {
+		type: UPDATE_BOOKING,
+		date,
+		booking
+	}
+}
+
+// Action when the user deletes a booking entry (server-side)
+export const handleDeleteBooking = (date, bookingId) => {
+	return dispatch => {
+		// Dispatch a 'Delete Booking' action
+		dispatch(deleteBooking(date, bookingId))
+
+		// Delete the booking entry on the server
+		return fetch(`/api/bookings/${bookingId}`, {
+				method: 'DELETE',
+				credentials: 'include'
+			})
+			.then(response => {
+				if (response.ok) {
+					return // Delete booking succeeded
+				}
+				throw new Error(`HTTP Error ${response.status}: Failed to delete booking`)
+			})
+			.catch(error => {
+				// Delete booking failed, no action required
+			})
+	}
+}
+
 // Action when the user deletes a booking entry
 export const DELETE_BOOKING = 'DELETE_BOOKING'
-export const deleteBooking = (date, bookingId) => {
+const deleteBooking = (date, bookingId) => {
 	return {
 		type: DELETE_BOOKING,
 		date,
@@ -130,7 +219,7 @@ export const deleteBooking = (date, bookingId) => {
 const shouldFetchRooms = (state) => {
 	const rooms = state.rooms
 
-	if (!rooms) {
+	if (rooms.items.length == 0) {
 		return true;
 	} else if (rooms.isFetching) {
 		return false
@@ -152,12 +241,12 @@ export const fetchRoomsIfNeeded = () => {
 }
 
 // Action when the user is fetching room entries
-export const fetchRooms = () => {
+const fetchRooms = () => {
 	return dispatch => {
-		// Dispatch a request rooms action
+		// Dispatch a 'Request Rooms' action
 		dispatch(requestRooms())
 
-		// Fetch the room entries and dispatch a receive rooms action
+		// Fetch the room entries and dispatch a 'Receive Rooms' action
 		return fetch('/api/rooms', { credentials: 'include' })
 			.then(response => {
 				if (response.ok) {
@@ -174,7 +263,7 @@ export const fetchRooms = () => {
 
 // Action when the user requests room entries
 export const REQUEST_ROOMS = 'REQUEST_ROOMS'
-export const requestRooms = () => {
+const requestRooms = () => {
 	return {
 		type: REQUEST_ROOMS
 	}
@@ -182,7 +271,7 @@ export const requestRooms = () => {
 
 // Action when the user receives room entries
 export const RECEIVE_ROOMS = 'RECEIVE_ROOMS'
-export const receiveRooms = (json) => {
+const receiveRooms = (json) => {
 	return {
 		type: RECEIVE_ROOMS,
 		rooms: json,
@@ -192,7 +281,7 @@ export const receiveRooms = (json) => {
 
 // Action when the room request action encounters an error
 export const RECEIVE_ROOMS_ERROR = 'RECEIVE_ROOMS_ERROR'
-export const receiveRoomsError = () => {
+const receiveRoomsError = () => {
 	return {
 		type: RECEIVE_ROOMS_ERROR
 	}
@@ -206,18 +295,106 @@ export const invalidateRooms = () => {
 	}
 }
 
-// Action when the user adds a room entry
+// Action when the user adds a room entry (server-side)
+export const handleAddRoom = (room) => {
+	return dispatch => {
+		// Dispatch a 'Add Room' action
+		dispatch(addRoom(room))
+
+		// Send the room entry to the server for storage
+		return fetch('/api/rooms', {
+				headers: {
+					'Accept': 'application/json',
+					'Content-Type': 'application/json'
+				},
+				method: 'POST',
+				credentials: 'include',
+				body: JSON.stringify(room)
+			})
+			.then(response => {
+				if (response.ok) {
+					return // Add room succeeded
+				}
+				throw new Error(`HTTP Error ${response.status}: Failed to add room`)
+			})
+			.catch(error => {
+				// Add room failed, no action required
+			})
+	}
+}
+
+// Action when the user adds a room entry (client-side)
 export const ADD_ROOM = 'ADD_ROOM'
-export const addRoom = (room) => {
+const addRoom = (room) => {
 	return {
 		type: ADD_ROOM,
 		room
 	}
 }
 
-// Action when the user deletes a room entry
+// Action when the user updates a room entry (server-side)
+export const handleUpdateRoom = (room) => {
+	return dispatch => {
+		// Dispatch a 'Update Room' action
+		dispatch(updateRoom(room))
+
+		// Send the updated room entry to the server for storage
+		return fetch(`/api/rooms/${room.roomId}`, {
+				headers: {
+					'Accept': 'application/json',
+					'Content-Type': 'application/json'
+				},
+				method: 'PUT',
+				credentials: 'include',
+				body: JSON.stringify(room)
+			})
+			.then(response => {
+				if (response.ok) {
+					return // Update room succeeded
+				}
+				throw new Error(`HTTP Error ${response.status}: Failed to update room`)
+			})
+			.catch(error => {
+				// Update room failed, no action required
+			})
+	}
+}
+
+// Action when the user updates a room entry (client-side)
+export const UPDATE_ROOM = 'UPDATE_ROOM'
+const updateRoom = (room) => {
+	return {
+		type: UPDATE_ROOM,
+		room
+	}
+}
+
+// Action when the user deletes a room entry (server-side)
+export const handleDeleteRoom = (roomId) => {
+	return dispatch => {
+		// Dispatch a 'Delete Room' action
+		dispatch(deleteRoom(roomId))
+
+		// Delete the room entry on the server
+		return fetch(`/api/rooms/${roomId}`, {
+				method: 'DELETE',
+				credentials: 'include'
+			})
+			.then(response => {
+				if (response.ok) {
+					return // Delete room succeeded
+				}
+				throw new Error(`HTTP Error ${response.status}: Failed to delete room`)
+			})
+			.catch(error => {
+				// Delete room failed, no action required
+			})
+	}
+}
+
+// Action when the user deletes a room entry (client-side)
 export const DELETE_ROOM = 'DELETE_ROOM'
-export const deleteRoom = (roomId) => {
+const deleteRoom = (roomId) => {
 	return {
 		type: DELETE_ROOM,
 		roomId
@@ -226,7 +403,7 @@ export const deleteRoom = (roomId) => {
 
 // Action when the login process has begun
 export const BEGIN_LOGIN = 'BEGIN_LOGIN'
-export const beginLogin = () => {
+const beginLogin = () => {
 	return {
 		type: BEGIN_LOGIN
 	}
@@ -234,7 +411,7 @@ export const beginLogin = () => {
 
 // Action when the login process has been completed
 export const COMPLETE_LOGIN = 'COMPLETE_LOGIN'
-export const completeLogin = (json) => {
+const completeLogin = (json) => {
 	return {
 		type: COMPLETE_LOGIN,
 		response: json
@@ -243,7 +420,7 @@ export const completeLogin = (json) => {
 
 // Action when the login process encounters an error
 export const COMPLETE_LOGIN_ERROR = 'COMPLETE_LOGIN_ERROR'
-export const completeLoginError = () => {
+const completeLoginError = () => {
 	return {
 		type: COMPLETE_LOGIN_ERROR
 	}
@@ -260,7 +437,7 @@ export const clearLoginError = () => {
 // Action when the user logs in
 export const requestLogin = (username, password) => {
 	return dispatch => {
-		// Dispatch a begin login action
+		// Dispatch a 'Begin Login' action
 		dispatch(beginLogin())
 
 		// Send the username and password to the server for authentication
@@ -287,7 +464,7 @@ export const requestLogin = (username, password) => {
 }
 
 export const COMPLETE_LOGOUT = 'COMPLETE_LOGOUT'
-export const completeLogout = () => {
+const completeLogout = () => {
 	return {
 		type: COMPLETE_LOGOUT
 	}
@@ -300,14 +477,9 @@ export const requestLogout = () => {
 		return fetch('/api/logout', { credentials: 'include' })
 			.then(response => {
 				if (response.ok) {
-					return response.json()
+					return dispatch(completeLogout())
 				}
 				throw new Error(`HTTP Error ${response.status}: Failed to logout`)
-			})
-			.then(json => {
-				if (json.success) {
-					dispatch(completeLogout())
-				}
 			})
 			.catch(error => {
 				// Logout failed, no action required

@@ -4,7 +4,7 @@ import moment from 'moment'
 import shortid from 'shortid'
 import { DatePicker, Dialog, FlatButton, MenuItem, SelectField, Snackbar, TextField } from 'material-ui'
 
-import { addBooking, deleteBooking, fetchRoomsIfNeeded } from '../../actions'
+import { handleAddBooking, handleUpdateBooking, handleDeleteBooking, fetchRoomsIfNeeded } from '../../actions'
 
 const mapStateToProps = state => {
 	return {
@@ -15,14 +15,14 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
 	return {
-		addNewBooking: (booking) => {
-			dispatch(addBooking(booking.date, booking))
+		addBooking: (booking) => {
+			dispatch(handleAddBooking(booking))
 		},
-		deleteCurrentBooking: (date, bookingId) => {
-			dispatch(deleteBooking(date, bookingId))
+		updateBooking: (booking) => {
+			dispatch(handleUpdateBooking(booking))
 		},
-		fetchRooms: () => {
-			dispatch(fetchRoomsIfNeeded())
+		deleteBooking: (date, bookingId) => {
+			dispatch(handleDeleteBooking(date, bookingId))
 		}
 	}
 }
@@ -47,11 +47,6 @@ class BookingDialogComponent extends Component {
 			timeSlot: 1,
 			duration: 1
 		}
-	}
-
-	componentDidMount() {
-		// Fetch the rooms
-		this.props.fetchRooms()
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -82,8 +77,7 @@ class BookingDialogComponent extends Component {
 	}
 
 	delete() {
-		this.props.deleteCurrentBooking(this.state.date, this.state.bookingId)
-
+		this.props.deleteBooking(this.state.date, this.state.bookingId)
 		this.dismiss()
 	}
 
@@ -101,20 +95,21 @@ class BookingDialogComponent extends Component {
 		}
 
 		if (!hasError) {
-			if (!this.state.editing) {
-				const newBooking = {
-					bookingId: shortid.generate() + moment().format('ss'),
-					bookingTitle: this.state.bookingTitle,
-					bookingDesc: this.state.bookingDesc,
-					roomId: this.state.roomId,
-					date: this.state.date,
-					timeSlot: this.state.timeSlot,
-					duration: this.state.duration
-				}
+			let booking = {
+				bookingId: this.state.bookingId,
+				bookingTitle: this.state.bookingTitle,
+				bookingDesc: this.state.bookingDesc,
+				roomId: this.state.roomId,
+				date: this.state.date,
+				timeSlot: this.state.timeSlot,
+				duration: this.state.duration
+			}
 
-				this.props.addNewBooking(newBooking)
+			if (this.state.editing) {
+				this.props.updateBooking(booking)
 			} else {
-
+				booking.bookingId = shortid.generate() + moment().format('ss')
+				this.props.addBooking(booking)
 			}
 
 			this.dismiss()
@@ -188,9 +183,9 @@ class BookingDialogComponent extends Component {
 BookingDialogComponent.propTypes = {
 	selectedDate: PropTypes.string.isRequired,
 	rooms: PropTypes.object.isRequired,
-	addNewBooking: PropTypes.func.isRequired,
-	deleteCurrentBooking: PropTypes.func.isRequired,
-	fetchRooms: PropTypes.func.isRequired
+	addBooking: PropTypes.func.isRequired,
+	updateBooking: PropTypes.func.isRequired,
+	deleteBooking: PropTypes.func.isRequired
 }
 
 // Define the container for the Booking Dialog component (maps state and dispatchers)

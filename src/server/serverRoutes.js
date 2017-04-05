@@ -8,7 +8,6 @@ import injectTapEventPlugin from 'react-tap-event-plugin'
 import moment from 'moment'
 import Mongoose from 'mongoose'
 import Passport from 'passport'
-import Validator from 'validator'
 
 import theme from '../common/ui/theme'
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
@@ -35,10 +34,8 @@ const renderPage = (html, defaultState) => {
 			</head>
 
 			<body>
-				<div id="app">
-					<input id="menu" type="checkbox" hidden />
-					${html}
-				</div>
+				<input id="menu" type="checkbox" hidden />
+				<div id="app">${html}</div>
 
 				<script>window.__DEFAULT_STATE__ = ${JSON.stringify(defaultState).replace(/</g, '\\x3c')}</script>
 				<script src="/static/bundle.js"></script>
@@ -79,8 +76,8 @@ const serverRoutes = app => {
 	})
 
 	app.get('/api/logout', (req, res) => {
-		req.logout();
-		res.json({ success: true })
+		req.logout()
+		res.sendStatus(200)
 	})
 
 	// Fallback login/logout routes for non-JS users
@@ -112,8 +109,8 @@ const serverRoutes = app => {
 		})(req, res)
 	})
 	app.get('/logout', (req, res) => {
-		req.logout();
-		res.redirect('/');
+		req.logout()
+		res.redirect('/')
 	})
 
 	app.get('/api/bookings/:year/:month/:day', (req, res) => {
@@ -133,7 +130,7 @@ const serverRoutes = app => {
 			})
 	})
 
-	app.all('/api/bookings/:bookingId', (req, res) => {
+	app.all('/api/bookings/:bookingId', (req, res, next) => {
 		if (!hasDBConnection()) {
 			return res.sendStatus(500)
 		}
@@ -141,7 +138,7 @@ const serverRoutes = app => {
 			return res.sendStatus(403)
 		}
 
-		const bookingId = Validator.escape(req.params.bookingId)
+		const bookingId = req.params.bookingId
 
 		switch (req.method) {
 			case 'PUT':
@@ -149,18 +146,13 @@ const serverRoutes = app => {
 					return res.sendStatus(400)
 				}
 
-				let bodySanitized = {
-					bookingTitle: Validator.escape(req.body.bookingTitle),
-					bookingDesc: Validator.escape(req.body.bookingDesc),
-					roomId: Validator.escape(req.body.roomId),
-					date: Validator.escape(req.body.date),
-					timeSlot: parseInt(Validator.escape(req.body.timeSlot), 10),
-					duration: parseInt(Validator.escape(req.body.duration), 10),
+				let body = {
+					...req.body,
 					updatedBy: req.user.userId,
 					updatedDate: moment().format('YYYY/M/D')
 				}
 
-				BookingModel.findOneAndUpdate({ bookingId }, bodySanitized, (err, booking) => {
+				BookingModel.findOneAndUpdate({ bookingId }, body, (err, booking) => {
 					if (err) {
 						console.error(err)
 						return res.sendStatus(500)
@@ -168,7 +160,7 @@ const serverRoutes = app => {
 
 					return res.sendStatus(200)
 				})
-				break;
+				break
 			case 'DELETE':
 				BookingModel.remove({ bookingId }, (err) => {
 					if (err) {
@@ -178,10 +170,10 @@ const serverRoutes = app => {
 
 					return res.sendStatus(200)
 				})
-				break;
+				break
 			default:
-				// Route does not handle other request types
-				break;
+				next() // Route does not handle other request types
+				break
 		}
 	})
 
@@ -196,21 +188,15 @@ const serverRoutes = app => {
 			return res.sendStatus(400)
 		}
 
-		let bodySanitized = {
-			bookingId: Validator.escape(req.body.bookingId),
-			bookingTitle: Validator.escape(req.body.bookingTitle),
-			bookingDesc: Validator.escape(req.body.bookingDesc),
-			roomId: Validator.escape(req.body.roomId),
-			date: Validator.escape(req.body.date),
-			timeSlot: parseInt(Validator.escape(req.body.timeSlot), 10),
-			duration: parseInt(Validator.escape(req.body.duration), 10),
+		let body = {
+			...req.body,
 			createdBy: req.user.userId,
 			createdDate: moment().format('YYYY/M/D'),
 			updatedBy: req.user.userId,
 			updatedDate: moment().format('YYYY/M/D')
 		}
 
-		BookingModel.create(bodySanitized, (err, booking) => {
+		BookingModel.create(body, (err, booking) => {
 			if (err) {
 				console.error(err)
 				return res.sendStatus(500)
@@ -237,7 +223,7 @@ const serverRoutes = app => {
 			})
 	})
 
-	app.all('/api/rooms/:roomId', (req, res) => {
+	app.all('/api/rooms/:roomId', (req, res, next) => {
 		if (!hasDBConnection()) {
 			return res.sendStatus(500)
 		}
@@ -245,7 +231,7 @@ const serverRoutes = app => {
 			return res.sendStatus(403)
 		}
 
-		const roomId = Validator.escape(req.params.roomId)
+		const roomId = req.params.roomId
 
 		switch (req.method) {
 			case 'PUT':
@@ -253,15 +239,13 @@ const serverRoutes = app => {
 					return res.sendStatus(400)
 				}
 
-				let bodySanitized = {
-					roomName: Validator.escape(req.body.roomName),
-					roomDesc: Validator.escape(req.body.roomDesc),
-					isAvailable: req.body.isAvailable,
+				let body = {
+					...req.body,
 					updatedBy: req.user.userId,
 					updatedDate: moment().format('YYYY/M/D')
 				}
 
-				RoomModel.findOneAndUpdate({ roomId }, bodySanitized, (err, room) => {
+				RoomModel.findOneAndUpdate({ roomId }, body, (err, room) => {
 					if (err) {
 						console.error(err)
 						return res.sendStatus(500)
@@ -269,7 +253,7 @@ const serverRoutes = app => {
 
 					return res.sendStatus(200)
 				})
-				break;
+				break
 			case 'DELETE':
 				RoomModel.remove({ roomId }, (err) => {
 					if (err) {
@@ -279,13 +263,11 @@ const serverRoutes = app => {
 
 					return res.sendStatus(200)
 				})
-				break;
+				break
 			default:
-				// Route does not handle other request types
-				break;
+				next() // Route does not handle other request types
+				break
 		}
-
-		return res.sendStatus(400)
 	})
 
 	app.post('/api/rooms', (req, res) => {
@@ -299,18 +281,15 @@ const serverRoutes = app => {
 			return res.sendStatus(400)
 		}
 
-		let bodySanitized = {
-			roomId: Validator.escape(req.body.roomId),
-			roomName: Validator.escape(req.body.roomName),
-			roomDesc: Validator.escape(req.body.roomDesc),
-			isAvailable: req.body.isAvailable,
+		let body = {
+			...req.body,
 			createdBy: req.user.userId,
 			createdDate: moment().format('YYYY/M/D'),
 			updatedBy: req.user.userId,
 			updatedDate: moment().format('YYYY/M/D')
 		}
 
-		RoomModel.create(bodySanitized, (err, room) => {
+		RoomModel.create(body, (err, room) => {
 			if (err) {
 				console.error(err)
 				return res.sendStatus(500)
@@ -344,11 +323,11 @@ const serverRoutes = app => {
 				case '/static/bundle.js':
 					req.url = req.url + '.gz'
 					res.set('Content-Encoding', 'gzip')
-					break;
+					break
 
 				case '/static/style.css':
 					req.url = '/static/style.min.css'
-					break;
+					break
 			}
 		}
 
