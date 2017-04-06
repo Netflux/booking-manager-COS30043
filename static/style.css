@@ -74,15 +74,24 @@ section {
 /* ===== Home Page CSS Start ===== */
 .booking-table {
 	margin-bottom: 72px;
+	overflow-x: scroll;
 }
 .booking-table > .row {
 	margin: 0;
+	flex-wrap: nowrap;
 }
 .booking-table > .row > div {
 	height: 56px;
 	line-height: 56px;
 	border-right: 1px solid #E0E0E0;
 	border-bottom: 1px solid #E0E0E0;
+}
+.booking-table > .row > div:first-of-type {
+	position: sticky;
+	left: 0;
+	min-width: 84px;
+	background-color: #FFFFFF;
+	z-index: 6;
 }
 .booking-table > .row > div:last-of-type {
 	border-right: none;
@@ -130,6 +139,7 @@ section {
 	width: 56px;
 }
 .col-xs {
+	min-width: 56px;
 	padding: 0;
 	transition: background-color 0.2s;
 }
@@ -151,6 +161,7 @@ section {
 	top: calc(100% - 5vw);
 	left: 95%;
 	transform: translate(-95%, -95%);
+	z-index: 10;
 }
 /* ===== Rooms Page CSS End ===== */
 
@@ -195,9 +206,6 @@ section {
 @media (max-width: 640px) {
 	.booking-table.paper {
 		padding: 0;
-	}
-	.booking-table > .row > div:first-of-type {
-		display: none;
 	}
 }
 /* ===== Media Query CSS End ===== */
