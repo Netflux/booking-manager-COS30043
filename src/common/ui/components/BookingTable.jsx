@@ -101,12 +101,15 @@ class BookingTableComponent extends Component {
 		// Used to show the dialog when the user clicks on a room
 		let roomDialog
 
+		// Store a list of all available rooms
+		const availableRooms = this.props.rooms.items.filter((room) => room.isAvailable)
+
 		return (
 			<div>
 				{
 					// If at least 1 room is available, display the booking table
 					// Else, display a message indicating that no rooms are available
-					this.props.rooms.items.filter((room) => room.isAvailable).length > 0 ? (
+					availableRooms.length > 0 ? (
 						<Tabs className="tabbar">
 							<Tab label="Room View">
 								<section>
@@ -121,7 +124,7 @@ class BookingTableComponent extends Component {
 													</div>
 
 													{
-														this.props.rooms.items.filter((room) => room.isAvailable).map((room) => {
+														availableRooms.map((room) => {
 															let bookingsByTimeSlot = []
 															let timeSlotAvailable = true
 
@@ -130,21 +133,19 @@ class BookingTableComponent extends Component {
 																bookingsByTimeSlot = this.props.bookingsByDate[this.props.selectedDate].items.filter((booking) => booking.roomId == room.roomId && booking.timeSlot == index)
 
 																// Check whether any bookings overlap with the current time slot
-																timeSlotAvailable = !(
-																	this.props.bookingsByDate[this.props.selectedDate].items.filter((booking) => booking.roomId == room.roomId).some((booking) => {
-																		for (let i = 0; i < booking.duration; ++i) {
-																			if (booking.timeSlot + i == index) {
-																				return true
-																			}
+																timeSlotAvailable = !(this.props.bookingsByDate[this.props.selectedDate].items.filter((booking) => booking.roomId == room.roomId).some((booking) => {
+																	for (let i = 0; i < booking.duration; ++i) {
+																		if (booking.timeSlot + i == index) {
+																			return true
 																		}
+																	}
 
-																		return false
-																	})
-																)
+																	return false
+																}))
 															}
 
 															return (
-																<div className={"col-xs" + (index != 0 && timeSlotAvailable ? " selectable" : "")} onTouchTap={() => index != 0 && timeSlotAvailable ? bookingDialog.getWrappedInstance().show({roomId: room.roomId, timeSlot: index}) : null} key={room.roomId}>
+																<div className={"col-xs" + (this.props.isLoggedIn && index != 0 && timeSlotAvailable ? " selectable" : "")} onTouchTap={() => this.props.isLoggedIn && index != 0 && timeSlotAvailable && bookingDialog.getWrappedInstance().show({roomId: room.roomId, timeSlot: index})} key={room.roomId}>
 																	{
 																		// If displaying the first row of the table, simply display it as a header
 																		// Else, display any bookings that exist for the time slot
@@ -152,7 +153,7 @@ class BookingTableComponent extends Component {
 																			<strong>{room.roomName}</strong>
 																		) : (
 																			bookingsByTimeSlot.map((booking) => (
-																				<Booking booking={booking} onTouchTap={() => bookingDialog.getWrappedInstance().show({dialogTitle: "Edit Booking", editing: true, ...booking})} key={booking.bookingId} />
+																				<Booking className={this.props.isLoggedIn ? "clickable" : ""} booking={booking} onTouchTap={() => this.props.isLoggedIn && bookingDialog.getWrappedInstance().show({dialogTitle: "Edit Booking", editing: true, ...booking})} key={booking.bookingId} />
 																			))
 																		)
 																	}
@@ -188,7 +189,7 @@ class BookingTableComponent extends Component {
 																	<strong>{day}</strong>
 																</div>
 															) : (
-																<div className={"col-xs selectable" + (dayIndex + 1 == moment(this.props.selectedDate, 'YYYY/M/D').isoWeekday() ? " selected-date" : "")} onTouchTap={() => bookingDialog.getWrappedInstance().show({date: getSelectedDate(dayIndex), timeSlot: index})} key={dayIndex}></div>
+																<div className={"col-xs" + (this.props.isLoggedIn ? " selectable" : "") + (dayIndex + 1 == moment(this.props.selectedDate, 'YYYY/M/D').isoWeekday() ? " selected-date" : "")} onTouchTap={() => this.props.isLoggedIn && bookingDialog.getWrappedInstance().show({date: getSelectedDate(dayIndex), timeSlot: index})} key={dayIndex}></div>
 															)
 														))
 													}
@@ -221,7 +222,7 @@ class BookingTableComponent extends Component {
 				{
 					// If logged in, display the FAB for adding new rooms/bookings
 					this.props.isLoggedIn && (
-						<FloatingActionButton className="fab" secondary={true} onTouchTap={() => this.props.rooms.items.filter((room) => room.isAvailable).length > 0 ? bookingDialog.getWrappedInstance().show() : roomDialog.getWrappedInstance().show()}>
+						<FloatingActionButton className="fab" secondary={true} onTouchTap={() => availableRooms.length > 0 ? bookingDialog.getWrappedInstance().show() : roomDialog.getWrappedInstance().show()}>
 							<FontIcon className="material-icons">add</FontIcon>
 						</FloatingActionButton>
 					)

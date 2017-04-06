@@ -104,7 +104,6 @@ section {
 	box-sizing: border-box;
 	width: 100%;
 	padding: 8px;
-	cursor: pointer;
 	line-height: normal;
 	z-index: 5;
 }

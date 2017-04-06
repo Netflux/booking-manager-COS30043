@@ -49,8 +49,15 @@ class RoomsListComponent extends Component {
 											<p>{room.roomDesc || "No description provided"}</p>
 											<p>Booking Allowed: {room.isAvailable ? "Yes" : "No"}</p>
 
-											<FlatButton label="Edit" secondary={true} onTouchTap={() => this.props.roomDialog.getWrappedInstance().show({dialogTitle: "Edit Room", editing: true, ...room})} />
-											<FlatButton label="Delete" secondary={true} onTouchTap={() => this.props.deleteRoom(room.roomId)} />
+											{
+												// Only display the Edit/Delete buttons if the user is logged in
+												this.props.isLoggedIn && (
+													<div>
+														<FlatButton label="Edit" secondary={true} onTouchTap={() => this.props.roomDialog.getWrappedInstance().show({dialogTitle: "Edit Room", editing: true, ...room})} />
+														<FlatButton label="Delete" secondary={true} onTouchTap={() => this.props.deleteRoom(room.roomId)} />
+													</div>
+												)
+											}
 										</Paper>
 									</div>
 								))
