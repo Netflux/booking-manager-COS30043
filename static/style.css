@@ -74,7 +74,7 @@ section {
 /* ===== Home Page CSS Start ===== */
 .booking-table {
 	margin-bottom: 72px;
-	overflow-x: scroll;
+	overflow-x: auto;
 }
 .booking-table > .row {
 	margin: 0;
