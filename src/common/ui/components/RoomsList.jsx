@@ -53,7 +53,7 @@ class RoomsListComponent extends Component {
 												// Only display the Edit/Delete buttons if the user is logged in
 												this.props.isLoggedIn && (
 													<div>
-														<FlatButton label="Edit" secondary={true} onTouchTap={() => this.props.roomDialog.getWrappedInstance().show({dialogTitle: "Edit Room", editing: true, ...room})} />
+														<FlatButton label="Edit" secondary={true} onTouchTap={() => roomDialog.getWrappedInstance().show({dialogTitle: "Edit Room", editing: true, ...room})} />
 														<FlatButton label="Delete" secondary={true} onTouchTap={() => this.props.deleteRoom(room.roomId)} />
 													</div>
 												)
@@ -71,7 +71,7 @@ class RoomsListComponent extends Component {
 								// If logged in, display the 'Add New Room' button
 								// Else, display a message to the user
 								this.props.isLoggedIn ? (
-									<RaisedButton label="Add New Room" secondary={true} onTouchTap={() => this.props.roomDialog.getWrappedInstance().show()} />
+									<RaisedButton label="Add New Room" secondary={true} onTouchTap={() => roomDialog.getWrappedInstance().show()} />
 								) : (
 									<p>If you're seeing this message, please contact the system administrator.</p>
 								)
@@ -83,7 +83,7 @@ class RoomsListComponent extends Component {
 				{
 					// If logged in, display the FAB for adding new rooms
 					this.props.isLoggedIn && (
-						<FloatingActionButton className="fab" secondary={true} onTouchTap={() => this.props.roomDialog.getWrappedInstance().show()}>
+						<FloatingActionButton className="fab" secondary={true} onTouchTap={() => roomDialog.getWrappedInstance().show()}>
 							<FontIcon className="material-icons">add</FontIcon>
 						</FloatingActionButton>
 					)
