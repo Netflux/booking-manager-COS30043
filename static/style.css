@@ -44,12 +44,6 @@ section {
 .selectable:hover {
 	background-color: rgba(66, 66, 66, 0.1);
 }
-.dialog {
-	transform: translate(0px, 0px) !important;
-}
-.dialog > div > div:first-of-type {
-	max-height: calc(100vh - 218px) !important;
-}
 /* ===== General CSS End ===== */
 
 
@@ -145,6 +139,9 @@ section {
 .selected-date {
 	background-color: #FFF3E0;
 }
+#room > div > div, #title, #description, #date, #time > div > div, #duration > div > div {
+	color: #424242 !important;
+}
 /* ===== Home Page CSS End ===== */
 
 
@@ -205,6 +202,12 @@ section {
 @media (max-width: 640px) {
 	.booking-table.paper {
 		padding: 0;
+	}
+	.dialog {
+		transform: translate(0px, 0px) !important;
+	}
+	.dialog > div > div:first-of-type {
+		max-height: calc(100vh - 218px) !important;
 	}
 }
 /* ===== Media Query CSS End ===== */

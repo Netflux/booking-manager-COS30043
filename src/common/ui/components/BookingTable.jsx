@@ -153,7 +153,7 @@ class BookingTableComponent extends Component {
 																			<strong>{room.roomName}</strong>
 																		) : (
 																			bookingsByTimeSlot.map((booking) => (
-																				<Booking className={this.props.isLoggedIn ? "clickable" : ""} booking={booking} onTouchTap={() => this.props.isLoggedIn && bookingDialog.getWrappedInstance().show({dialogTitle: "Edit Booking", editing: true, ...booking})} key={booking.bookingId} />
+																				<Booking booking={booking} onTouchTap={() => bookingDialog.getWrappedInstance().show({mode: 1, ...booking})} key={booking.bookingId} />
 																			))
 																		)
 																	}

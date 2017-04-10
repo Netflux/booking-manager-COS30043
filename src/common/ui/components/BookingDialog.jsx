@@ -9,7 +9,8 @@ import { handleAddBooking, handleUpdateBooking, handleDeleteBooking, fetchRoomsI
 const mapStateToProps = state => {
 	return {
 		selectedDate: state.selectedDate,
-		rooms: state.rooms
+		rooms: state.rooms,
+		isLoggedIn: state.user.isLoggedIn
 	}
 }
 
@@ -27,6 +28,10 @@ const mapDispatchToProps = dispatch => {
 	}
 }
 
+const MODE_ADD = 0
+const MODE_VIEW = 1
+const MODE_EDIT = 2
+
 // Define the Booking Dialog component
 class BookingDialogComponent extends Component {
 	constructor(props) {
@@ -35,7 +40,7 @@ class BookingDialogComponent extends Component {
 		// Initialize the default state
 		this.state = this.defaultState = {
 			open: false,
-			editing: false,
+			mode: MODE_ADD,
 			dialogTitle: "New Booking",
 			roomId: "",
 			roomIdErrorText: "",
@@ -70,6 +75,25 @@ class BookingDialogComponent extends Component {
 			...props,
 			open: true
 		})
+
+		switch (props.mode) {
+			case MODE_VIEW:
+				this.setState({
+					dialogTitle: "View Booking"
+				})
+				break
+			case MODE_EDIT:
+				this.setState({
+					dialogTitle: "Edit Booking"
+				})
+				break
+			case MODE_ADD:
+			default:
+				this.setState({
+					dialogTitle: this.defaultState.dialogTitle
+				})
+				break
+		}
 	}
 
 	dismiss() {
@@ -79,6 +103,24 @@ class BookingDialogComponent extends Component {
 	delete() {
 		this.props.deleteBooking(this.state.date, this.state.bookingId)
 		this.dismiss()
+	}
+
+	edit() {
+		this.setState({
+			dialogTitle: "Edit Booking",
+			mode: MODE_EDIT
+		})
+	}
+
+	cancel() {
+		if (this.state.mode === MODE_EDIT) {
+			this.setState({
+				dialogTitle: "View Booking",
+				mode: MODE_VIEW
+			})
+		} else {
+			this.dismiss()
+		}
 	}
 
 	accept() {
@@ -105,9 +147,9 @@ class BookingDialogComponent extends Component {
 				duration: this.state.duration
 			}
 
-			if (this.state.editing) {
+			if (this.state.mode === MODE_EDIT) {
 				this.props.updateBooking(booking)
-			} else {
+			} else if (this.state.mode === MODE_ADD) {
 				booking.bookingId = shortid.generate() + moment().format('ss')
 				this.props.addBooking(booking)
 			}
@@ -119,10 +161,17 @@ class BookingDialogComponent extends Component {
 	render() {
 		// Define the action buttons to display in the dialog
 		const actions = [
-			<FlatButton label="Delete" secondary={true} disabled={!this.state.editing} onTouchTap={() => this.delete()} />,
-			<FlatButton label="Cancel" secondary={true} onTouchTap={() => this.dismiss()} />,
+			<FlatButton label="Cancel" secondary={true} onTouchTap={() => this.cancel()} />,
 			<FlatButton label="Ok" secondary={true} onTouchTap={() => this.accept()} />
 		]
+
+		if (this.props.isLoggedIn) {
+			if (this.state.mode === MODE_VIEW) {
+				actions.unshift(<FlatButton label="Edit" secondary={true} onTouchTap={() => this.edit()} />)
+			} else if (this.state.mode === MODE_EDIT) {
+				actions.unshift(<FlatButton label="Delete" secondary={true} onTouchTap={() => this.delete()} />)
+			}
+		}
 
 		// Define the time slots available for booking
 		const timeSlots = [
@@ -150,24 +199,24 @@ class BookingDialogComponent extends Component {
 
 		return (
 			<Dialog contentClassName="dialog" title={this.state.dialogTitle} autoScrollBodyContent={true} actions={actions} open={this.state.open} onRequestClose={() => this.dismiss()}>
-				<SelectField id="room" className="form-input" floatingLabelText="Room" floatingLabelFixed={true} errorText={this.state.roomIdErrorText} onChange={(event, key, payload) => this.handleChange(payload, "roomId")} value={this.state.roomId}>
+				<SelectField id="room" className="form-input" floatingLabelText="Room" floatingLabelFixed={true} errorText={this.state.roomIdErrorText} disabled={this.state.mode === MODE_VIEW} onChange={(event, key, payload) => this.handleChange(payload, "roomId")} value={this.state.roomId}>
 					{
 						this.props.rooms.items.filter((room) => room.isAvailable).map((room, index) => (
 							<MenuItem primaryText={room.roomName} value={room.roomId} key={index}/>
 						))
 					}
 				</SelectField><br />
-				<TextField id="title" className="form-input" floatingLabelText="Title" floatingLabelFixed={true} errorText={this.state.bookingTitleErrorText} onChange={(event) => this.handleChange(event.target.value, "bookingTitle")} value={this.state.bookingTitle} /><br />
-				<TextField id="description" className="form-input" floatingLabelText="Description" floatingLabelFixed={true} onChange={(event) => this.handleChange(event.target.value, "bookingDesc")} value={this.state.bookingDesc} /><br />
-				<DatePicker id="date" floatingLabelText="Date" floatingLabelFixed={true} formatDate={(date) => moment(date).format('D/M/YYYY')} onChange={(event, date) => this.handleChange(moment(date).format('YYYY/M/D'), "date")} value={moment(this.state.date, 'YYYY/M/D').toDate()} />
-				<SelectField id="time" className="form-input" floatingLabelText="Time" floatingLabelFixed={true} onChange={(event, key, payload) => this.handleChange(payload, "timeSlot")} value={this.state.timeSlot}>
+				<TextField id="title" className="form-input" floatingLabelText="Title" floatingLabelFixed={true} errorText={this.state.bookingTitleErrorText} disabled={this.state.mode === MODE_VIEW} onChange={(event) => this.handleChange(event.target.value, "bookingTitle")} value={this.state.bookingTitle} /><br />
+				<TextField id="description" className="form-input" floatingLabelText="Description" floatingLabelFixed={true} disabled={this.state.mode === MODE_VIEW} onChange={(event) => this.handleChange(event.target.value, "bookingDesc")} value={this.state.bookingDesc} /><br />
+				<DatePicker id="date" floatingLabelText="Date" floatingLabelFixed={true} formatDate={(date) => moment(date).format('D/M/YYYY')} disabled={this.state.mode === MODE_VIEW} onChange={(event, date) => this.handleChange(moment(date).format('YYYY/M/D'), "date")} value={moment(this.state.date, 'YYYY/M/D').toDate()} />
+				<SelectField id="time" className="form-input" floatingLabelText="Time" floatingLabelFixed={true} disabled={this.state.mode === MODE_VIEW} onChange={(event, key, payload) => this.handleChange(payload, "timeSlot")} value={this.state.timeSlot}>
 					{
 						timeSlots.map((time, index) => (
 							<MenuItem primaryText={time} value={index + 1} key={index}/>
 						))
 					}
 				</SelectField><br />
-				<SelectField id="duration" className="form-input" floatingLabelText="Duration" floatingLabelFixed={true} onChange={(event, key, payload) => this.handleChange(payload, "duration")} value={this.state.duration}>
+				<SelectField id="duration" className="form-input" floatingLabelText="Duration" floatingLabelFixed={true} disabled={this.state.mode === MODE_VIEW} onChange={(event, key, payload) => this.handleChange(payload, "duration")} value={this.state.duration}>
 					{
 						durations.map((duration, index) => (
 							<MenuItem primaryText={duration} value={index + 1} key={index}/>
@@ -183,6 +232,7 @@ class BookingDialogComponent extends Component {
 BookingDialogComponent.propTypes = {
 	selectedDate: PropTypes.string.isRequired,
 	rooms: PropTypes.object.isRequired,
+	isLoggedIn: PropTypes.bool.isRequired,
 	addBooking: PropTypes.func.isRequired,
 	updateBooking: PropTypes.func.isRequired,
 	deleteBooking: PropTypes.func.isRequired
