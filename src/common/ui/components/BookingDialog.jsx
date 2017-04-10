@@ -9,6 +9,7 @@ import { handleAddBooking, handleUpdateBooking, handleDeleteBooking, fetchRoomsI
 const mapStateToProps = state => {
 	return {
 		selectedDate: state.selectedDate,
+		bookingsByDate: state.bookingsByDate,
 		rooms: state.rooms,
 		isLoggedIn: state.user.isLoggedIn
 	}
@@ -48,6 +49,8 @@ class BookingDialogComponent extends Component {
 			bookingTitle: "",
 			bookingTitleErrorText: "",
 			bookingDesc: "",
+			timeSlotErrorText: "",
+			durationErrorText: "",
 			date: this.props.selectedDate,
 			timeSlot: 1,
 			duration: 1
@@ -106,6 +109,7 @@ class BookingDialogComponent extends Component {
 	}
 
 	edit() {
+		this.oldState = this.state
 		this.setState({
 			dialogTitle: "Edit Booking",
 			mode: MODE_EDIT
@@ -114,28 +118,52 @@ class BookingDialogComponent extends Component {
 
 	cancel() {
 		if (this.state.mode === MODE_EDIT) {
-			this.setState({
-				dialogTitle: "View Booking",
-				mode: MODE_VIEW
-			})
+			this.setState(this.oldState)
 		} else {
 			this.dismiss()
 		}
 	}
 
 	accept() {
+		// Reset all error text
+		this.setState({
+			roomIdErrorText: "",
+			bookingTitleErrorText: "",
+			timeSlotErrorText: "",
+			durationErrorText: ""
+		})
+
 		let hasError = false
 
+		// Check whether there are any input errors
 		if (this.state.roomId == "") {
 			this.setState({roomIdErrorText: "This field is required"})
 			hasError = true
 		}
-
 		if (this.state.bookingTitle == "") {
 			this.setState({bookingTitleErrorText: "This field is required"})
 			hasError = true
 		}
+		if (this.props.bookingsByDate[this.state.date]) {
+			// Check whether any bookings overlap with the current time slot
+			this.props.bookingsByDate[this.state.date].items.filter((booking) => booking.roomId === this.state.roomId && booking.bookingId !== this.state.bookingId).some((booking) => {
+				if (booking.timeSlot <= this.state.timeSlot + (this.state.duration - 1) && this.state.timeSlot <= booking.timeSlot + (booking.duration - 1)) {
+					if (booking.timeSlot === this.state.timeSlot) {
+						this.setState({timeSlotErrorText: "Overlaps with other booking"})
+					} else {
+						this.setState({durationErrorText: "Overlaps with other booking"})
+					}
 
+					hasError = true
+
+					return true
+				}
+
+				return false
+			})
+		}
+
+		// If there are no input errors, add/update the booking
 		if (!hasError) {
 			let booking = {
 				bookingId: this.state.bookingId,
@@ -209,14 +237,14 @@ class BookingDialogComponent extends Component {
 				<TextField id="title" className="form-input" floatingLabelText="Title" floatingLabelFixed={true} errorText={this.state.bookingTitleErrorText} disabled={this.state.mode === MODE_VIEW} onChange={(event) => this.handleChange(event.target.value, "bookingTitle")} value={this.state.bookingTitle} /><br />
 				<TextField id="description" className="form-input" floatingLabelText="Description" floatingLabelFixed={true} disabled={this.state.mode === MODE_VIEW} onChange={(event) => this.handleChange(event.target.value, "bookingDesc")} value={this.state.bookingDesc} /><br />
 				<DatePicker id="date" floatingLabelText="Date" floatingLabelFixed={true} formatDate={(date) => moment(date).format('D/M/YYYY')} disabled={this.state.mode === MODE_VIEW} onChange={(event, date) => this.handleChange(moment(date).format('YYYY/M/D'), "date")} value={moment(this.state.date, 'YYYY/M/D').toDate()} />
-				<SelectField id="time" className="form-input" floatingLabelText="Time" floatingLabelFixed={true} disabled={this.state.mode === MODE_VIEW} onChange={(event, key, payload) => this.handleChange(payload, "timeSlot")} value={this.state.timeSlot}>
+				<SelectField id="time" className="form-input" floatingLabelText="Time" floatingLabelFixed={true} errorText={this.state.timeSlotErrorText} disabled={this.state.mode === MODE_VIEW} onChange={(event, key, payload) => this.handleChange(payload, "timeSlot")} value={this.state.timeSlot}>
 					{
 						timeSlots.map((time, index) => (
 							<MenuItem primaryText={time} value={index + 1} key={index}/>
 						))
 					}
 				</SelectField><br />
-				<SelectField id="duration" className="form-input" floatingLabelText="Duration" floatingLabelFixed={true} disabled={this.state.mode === MODE_VIEW} onChange={(event, key, payload) => this.handleChange(payload, "duration")} value={this.state.duration}>
+			<SelectField id="duration" className="form-input" floatingLabelText="Duration" floatingLabelFixed={true} errorText={this.state.durationErrorText} disabled={this.state.mode === MODE_VIEW} onChange={(event, key, payload) => this.handleChange(payload, "duration")} value={this.state.duration}>
 					{
 						durations.map((duration, index) => (
 							<MenuItem primaryText={duration} value={index + 1} key={index}/>

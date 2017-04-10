@@ -188,21 +188,38 @@ const serverRoutes = app => {
 			return res.sendStatus(400)
 		}
 
-		let body = {
-			...req.body,
-			createdBy: req.user.userId,
-			createdDate: moment().format('YYYY/M/D'),
-			updatedBy: req.user.userId,
-			updatedDate: moment().format('YYYY/M/D')
-		}
-
-		BookingModel.create(body, (err, booking) => {
+		// Retrieve stored bookings for the specified date and check for any overlaps with the new booking entry
+		BookingModel.find({ date: req.body.date }, (err, bookings) => {
 			if (err) {
 				console.error(err)
 				return res.sendStatus(500)
 			}
 
-			return res.sendStatus(201)
+			// Check whether any bookings overlap with the new booking entry
+			let hasOverlap = bookings.filter((booking) => booking.roomId === req.body.roomId).some((booking) => {
+				return booking.timeSlot <= req.body.timeSlot + (req.body.duration - 1) && req.body.timeSlot <= booking.timeSlot + (booking.duration - 1)
+			})
+
+			if (hasOverlap) {
+				return res.sendStatus(400)
+			}
+
+			let body = {
+				...req.body,
+				createdBy: req.user.userId,
+				createdDate: moment().format('YYYY/M/D'),
+				updatedBy: req.user.userId,
+				updatedDate: moment().format('YYYY/M/D')
+			}
+
+			BookingModel.create(body, (err, booking) => {
+				if (err) {
+					console.error(err)
+					return res.sendStatus(500)
+				}
+
+				return res.sendStatus(201)
+			})
 		})
 	})
 

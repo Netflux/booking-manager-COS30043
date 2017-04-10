@@ -139,9 +139,6 @@ section {
 .selected-date {
 	background-color: #FFF3E0;
 }
-#room > div > div, #title, #description, #date, #time > div > div, #duration > div > div {
-	color: #424242 !important;
-}
 /* ===== Home Page CSS End ===== */
 
 
