@@ -44,30 +44,30 @@ const mapDispatchToProps = dispatch => {
 
 // Define the time slots available for booking (including header)
 const timeSlots = [
-	"Time",
-	"10.30am",
-	"11.30am",
-	"12.30pm",
-	"1.30pm",
-	"2.30pm",
-	"3.30pm",
-	"4.30pm",
-	"5.30pm",
-	"6.30pm",
-	"7.30pm",
-	"8.30pm",
-	"9.30pm",
-	"10.30pm"
+	'Time',
+	'10.30am',
+	'11.30am',
+	'12.30pm',
+	'1.30pm',
+	'2.30pm',
+	'3.30pm',
+	'4.30pm',
+	'5.30pm',
+	'6.30pm',
+	'7.30pm',
+	'8.30pm',
+	'9.30pm',
+	'10.30pm'
 ]
 
 // Define the days available for booking
 const bookingDays = [
-	"Mon",
-	"Tue",
-	"Wed",
-	"Thu",
-	"Fri",
-	"Sat"
+	'Mon',
+	'Tue',
+	'Wed',
+	'Thu',
+	'Fri',
+	'Sat'
 ]
 
 // Define the Booking Table component
@@ -130,12 +130,12 @@ class BookingTableComponent extends Component {
 
 															if (this.props.bookingsByDate[this.props.selectedDate]) {
 																// Filter for any bookings that are available on the current time slot
-																bookingsByTimeSlot = this.props.bookingsByDate[this.props.selectedDate].items.filter((booking) => booking.roomId == room.roomId && booking.timeSlot == index)
+																bookingsByTimeSlot = this.props.bookingsByDate[this.props.selectedDate].items.filter((booking) => booking.roomId === room.roomId && booking.timeSlot === index)
 
 																// Check whether any bookings overlap with the current time slot
-																timeSlotAvailable = !(this.props.bookingsByDate[this.props.selectedDate].items.filter((booking) => booking.roomId == room.roomId).some((booking) => {
+																timeSlotAvailable = !(this.props.bookingsByDate[this.props.selectedDate].items.filter((booking) => booking.roomId === room.roomId).some((booking) => {
 																	for (let i = 0; i < booking.duration; ++i) {
-																		if (booking.timeSlot + i == index) {
+																		if (booking.timeSlot + i === index) {
 																			return true
 																		}
 																	}
@@ -145,11 +145,11 @@ class BookingTableComponent extends Component {
 															}
 
 															return (
-																<div className={"col-xs" + (this.props.isLoggedIn && index != 0 && timeSlotAvailable ? " selectable" : "")} onTouchTap={() => this.props.isLoggedIn && index != 0 && timeSlotAvailable && bookingDialog.getWrappedInstance().show({roomId: room.roomId, timeSlot: index})} key={room.roomId}>
+																<div className={"col-xs" + (this.props.isLoggedIn && index !==0 && timeSlotAvailable ? " selectable" : "")} onTouchTap={() => this.props.isLoggedIn && index !==0 && timeSlotAvailable && bookingDialog.getWrappedInstance().show({roomId: room.roomId, timeSlot: index})} key={room.roomId}>
 																	{
 																		// If displaying the first row of the table, simply display it as a header
 																		// Else, display any bookings that exist for the time slot
-																		index == 0 ? (
+																		index === 0 ? (
 																			<strong>{room.roomName}</strong>
 																		) : (
 																			bookingsByTimeSlot.map((booking) => (
@@ -184,12 +184,12 @@ class BookingTableComponent extends Component {
 														bookingDays.map((day, dayIndex) => (
 															// If displaying the first row of the table, simply display it as a header
 															// Else, check if any bookings exist for the time slot and display it
-															index == 0 ? (
-																<div className={"col-xs clickable" + (dayIndex + 1 == moment(this.props.selectedDate, 'YYYY/M/D').isoWeekday() ? " selected-date" : "")} onTouchTap={() => this.props.onSelectDate(getSelectedDate(dayIndex))} key={dayIndex}>
+															index === 0 ? (
+																<div className={"col-xs clickable" + (dayIndex + 1 === moment(this.props.selectedDate, 'YYYY/M/D').isoWeekday() ? " selected-date" : "")} onTouchTap={() => this.props.onSelectDate(getSelectedDate(dayIndex))} key={dayIndex}>
 																	<strong>{day}</strong>
 																</div>
 															) : (
-																<div className={"col-xs" + (this.props.isLoggedIn ? " selectable" : "") + (dayIndex + 1 == moment(this.props.selectedDate, 'YYYY/M/D').isoWeekday() ? " selected-date" : "")} onTouchTap={() => this.props.isLoggedIn && bookingDialog.getWrappedInstance().show({date: getSelectedDate(dayIndex), timeSlot: index})} key={dayIndex}></div>
+																<div className={"col-xs" + (this.props.isLoggedIn ? " selectable" : "") + (dayIndex + 1 === moment(this.props.selectedDate, 'YYYY/M/D').isoWeekday() ? " selected-date" : "")} onTouchTap={() => this.props.isLoggedIn && bookingDialog.getWrappedInstance().show({date: getSelectedDate(dayIndex), timeSlot: index})} key={dayIndex}></div>
 															)
 														))
 													}

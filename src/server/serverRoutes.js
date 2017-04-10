@@ -51,7 +51,7 @@ const serverRoutes = app => {
 	injectTapEventPlugin()
 
 	// Helper function to check whether Mongoose has an open connection
-	const hasDBConnection = () => (Mongoose.connection.readyState == 1)
+	const hasDBConnection = () => (Mongoose.connection.readyState === 1)
 
 	app.post('/api/login', (req, res) => {
 		if (!hasDBConnection()) {

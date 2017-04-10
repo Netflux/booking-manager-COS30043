@@ -22,4 +22,4 @@ const NotFoundPage = () => (
 	</main>
 )
 
-export default NotFoundPage;
+export default NotFoundPage

@@ -15,11 +15,11 @@ const mapDispatchToProps = dispatch => {
 }
 
 // Define the Menubar component
-const MenubarComponent = ({title, onToggleMenu}) => (
+const MenubarComponent = ({ title, onToggleMenu }) => (
 	<Toolbar className="toolbar">
 		<ToolbarGroup>
-			<label className="clickable" htmlFor="menu"><FontIcon className="material-icons menu-icon" onTouchTap={() => onToggleMenu()} style={{color: theme.palette.alternateTextColor}}>menu</FontIcon></label>
-			<ToolbarTitle text={title} style={{color: theme.palette.alternateTextColor}} />
+			<label className="clickable" htmlFor="menu"><FontIcon className="material-icons menu-icon" onTouchTap={() => onToggleMenu()} style={{ color: theme.palette.alternateTextColor }}>menu</FontIcon></label>
+			<ToolbarTitle text={title} style={{ color: theme.palette.alternateTextColor }} />
 		</ToolbarGroup>
 	</Toolbar>
 )

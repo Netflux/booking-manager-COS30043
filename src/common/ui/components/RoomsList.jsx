@@ -53,7 +53,7 @@ class RoomsListComponent extends Component {
 												// Only display the Edit/Delete buttons if the user is logged in
 												this.props.isLoggedIn && (
 													<div>
-														<FlatButton label="Edit" secondary={true} onTouchTap={() => roomDialog.getWrappedInstance().show({dialogTitle: "Edit Room", editing: true, ...room})} />
+														<FlatButton label="Edit" secondary={true} onTouchTap={() => roomDialog.getWrappedInstance().show({ dialogTitle: 'Edit Room', editing: true, ...room })} />
 														<FlatButton label="Delete" secondary={true} onTouchTap={() => this.props.deleteRoom(room.roomId)} />
 													</div>
 												)

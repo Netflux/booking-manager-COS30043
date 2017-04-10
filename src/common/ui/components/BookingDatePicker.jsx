@@ -27,7 +27,7 @@ const mapDispatchToProps = dispatch => {
 }
 
 // Define the Booking Date Picker component
-const BookingDatePickerComponent = ({selectedDate, onPreviousDate, onNextDate, onSelectDate}) => {
+const BookingDatePickerComponent = ({ selectedDate, onPreviousDate, onNextDate, onSelectDate }) => {
 	// Store a reference to the Date Picker Dialog component
 	// Used to show the dialog when the user clicks on the displayed date
 	let datePickerDialog

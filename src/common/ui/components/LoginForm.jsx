@@ -29,10 +29,10 @@ class LoginFormComponent extends Component {
 
 		// Initialize the default state
 		this.state = {
-			username: "",
-			usernameErrorText: "",
-			password: "",
-			passwordErrorText: ""
+			username: '',
+			usernameErrorText: '',
+			password: '',
+			passwordErrorText: ''
 		}
 
 		this.handleIsLoggedIn = (isLoggedIn) => {
@@ -54,24 +54,24 @@ class LoginFormComponent extends Component {
 	handleChange(value, stateName) {
 		this.setState({
 			[stateName]: value,
-			[stateName + "ErrorText"]: ""
+			[stateName + 'ErrorText']: ''
 		})
 	}
 
 	onLogin(event) {
 		// Prevent the default form submit action
-		event.preventDefault();
+		event.preventDefault()
 
 		if (!this.props.isLoggingIn) {
 			let hasError = false
 
-			if (this.state.username == "") {
-				this.setState({usernameErrorText: "This field is required"})
+			if (this.state.username === '') {
+				this.setState({ usernameErrorText: 'This field is required' })
 				hasError = true
 			}
 
-			if (this.state.password == "") {
-				this.setState({passwordErrorText: "This field is required"})
+			if (this.state.password === '') {
+				this.setState({ passwordErrorText: 'This field is required' })
 				hasError = true
 			}
 
@@ -98,8 +98,8 @@ class LoginFormComponent extends Component {
 								)
 							}
 
-							<TextField id="username" className="form-input" name="username" floatingLabelText="Username" floatingLabelFixed={true} errorText={this.state.usernameErrorText} onChange={(event) => this.handleChange(event.target.value, "username")} value={this.state.username} /><br />
-							<TextField id="password" className="form-input" name="password" floatingLabelText="Password" floatingLabelFixed={true} errorText={this.state.passwordErrorText} onChange={(event) => this.handleChange(event.target.value, "password")} value={this.state.password} type="password" /><br />
+							<TextField id="username" className="form-input" name="username" floatingLabelText="Username" floatingLabelFixed={true} errorText={this.state.usernameErrorText} onChange={(event) => this.handleChange(event.target.value, 'username')} value={this.state.username} /><br />
+							<TextField id="password" className="form-input" name="password" floatingLabelText="Password" floatingLabelFixed={true} errorText={this.state.passwordErrorText} onChange={(event) => this.handleChange(event.target.value, 'password')} value={this.state.password} type="password" /><br />
 
 							{
 								// If logging in, display the circular progress bar

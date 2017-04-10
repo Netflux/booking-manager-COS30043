@@ -12,8 +12,8 @@ const mapStateToProps = state => {
 }
 
 // Define the Base Page component
-const BasePageComponent = ({children, isOpen, isDocked}) => (
-	<div id="content" className={isOpen && isDocked ? "content-offset" : null}>
+const BasePageComponent = ({ children, isOpen, isDocked }) => (
+	<div id="content" className={isOpen && isDocked ? "content-offset" : ""}>
 		<Helmet>
 			<html lang="en" />
 			<meta name="viewport" content="width=device-width" />

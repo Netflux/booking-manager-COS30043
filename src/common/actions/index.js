@@ -28,7 +28,7 @@ const shouldFetchBookings = (state, date) => {
 	const bookings = state.bookingsByDate[date]
 
 	if (!bookings) {
-		return true;
+		return true
 	} else if (bookings.isFetching) {
 		return false
 	} else {
@@ -219,8 +219,8 @@ const deleteBooking = (date, bookingId) => {
 const shouldFetchRooms = (state) => {
 	const rooms = state.rooms
 
-	if (rooms.items.length == 0) {
-		return true;
+	if (rooms.items.length === 0) {
+		return true
 	} else if (rooms.isFetching) {
 		return false
 	} else {

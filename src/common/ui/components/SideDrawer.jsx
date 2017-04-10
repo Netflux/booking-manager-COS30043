@@ -21,10 +21,10 @@ const mapDispatchToProps = dispatch => {
 	return {
 		onNavigate: (shouldToggle) => {
 			dispatch(clearLoginError())
-			if (shouldToggle) dispatch(toggleDrawerOpen())
+			if (shouldToggle) { dispatch(toggleDrawerOpen()) }
 		},
 		onToggleMenu: (shouldToggle) => {
-			if (shouldToggle) dispatch(toggleDrawerOpen())
+			if (shouldToggle) { dispatch(toggleDrawerOpen()) }
 		},
 		onSelectDate: (date) => {
 			dispatch(selectDate(date))
@@ -34,11 +34,11 @@ const mapDispatchToProps = dispatch => {
 		},
 		onWindowResize: (isOpen, isDocked) => {
 			if (window.innerWidth >= 1024) {
-				if (!isOpen) dispatch(toggleDrawerOpen())
-				if (!isDocked) dispatch(toggleDrawerDocked())
+				if (!isOpen) { dispatch(toggleDrawerOpen()) }
+				if (!isDocked) { dispatch(toggleDrawerDocked()) }
 			} else {
-				if (isOpen) dispatch(toggleDrawerOpen())
-				if (isDocked) dispatch(toggleDrawerDocked())
+				if (isOpen) { dispatch(toggleDrawerOpen()) }
+				if (isDocked) { dispatch(toggleDrawerDocked()) }
 			}
 		}
 	}
@@ -77,7 +77,7 @@ class SideDrawerComponent extends Component {
 		return (
 			<Drawer className="side-drawer" open={this.props.isOpen} docked={this.props.isDocked} onRequestChange={() => this.props.onToggleMenu(true)} containerStyle={!(this.props.isOpen && this.props.isDocked) ? {transition: "transform 550ms cubic-bezier(0.23, 1, 0.32, 1) 10ms"} : null}>
 				<Toolbar className="menu-bar">
-					<ToolbarTitle text="Navigation" style={{color: theme.palette.alternateTextColor}} />
+					<ToolbarTitle text="Navigation" style={{ color: theme.palette.alternateTextColor }} />
 				</Toolbar>
 
 				<Link to="/" onTouchTap={() => this.props.onNavigate(!this.props.isDocked)}><MenuItem leftIcon={<FontIcon className="material-icons">home</FontIcon>}>Home</MenuItem></Link>

@@ -29,6 +29,7 @@ const mapDispatchToProps = dispatch => {
 	}
 }
 
+// Define the available modes for the Booking Dialog Component
 const MODE_ADD = 0
 const MODE_VIEW = 1
 const MODE_EDIT = 2
@@ -42,15 +43,15 @@ class BookingDialogComponent extends Component {
 		this.state = this.defaultState = {
 			open: false,
 			mode: MODE_ADD,
-			dialogTitle: "New Booking",
-			roomId: "",
-			roomIdErrorText: "",
-			bookingId: "",
-			bookingTitle: "",
-			bookingTitleErrorText: "",
-			bookingDesc: "",
-			timeSlotErrorText: "",
-			durationErrorText: "",
+			dialogTitle: 'New Booking',
+			roomId: '',
+			roomIdErrorText: '',
+			bookingId: '',
+			bookingTitle: '',
+			bookingTitleErrorText: '',
+			bookingDesc: '',
+			timeSlotErrorText: '',
+			durationErrorText: '',
 			date: this.props.selectedDate,
 			timeSlot: 1,
 			duration: 1
@@ -59,9 +60,7 @@ class BookingDialogComponent extends Component {
 
 	componentWillReceiveProps(nextProps) {
 		if (nextProps.selectedDate !== this.state.date) {
-			this.setState({
-				date: nextProps.selectedDate
-			})
+			this.setState({ date: nextProps.selectedDate })
 			this.defaultState.date = nextProps.selectedDate
 		}
 	}
@@ -69,7 +68,7 @@ class BookingDialogComponent extends Component {
 	handleChange(value, stateName) {
 		this.setState({
 			[stateName]: value,
-			[stateName + "ErrorText"]: ""
+			[stateName + 'ErrorText']: ''
 		})
 	}
 
@@ -81,20 +80,14 @@ class BookingDialogComponent extends Component {
 
 		switch (props.mode) {
 			case MODE_VIEW:
-				this.setState({
-					dialogTitle: "View Booking"
-				})
+				this.setState({ dialogTitle: 'View Booking' })
 				break
 			case MODE_EDIT:
-				this.setState({
-					dialogTitle: "Edit Booking"
-				})
+				this.setState({ dialogTitle: 'Edit Booking' })
 				break
 			case MODE_ADD:
 			default:
-				this.setState({
-					dialogTitle: this.defaultState.dialogTitle
-				})
+				this.setState({ dialogTitle: this.defaultState.dialogTitle })
 				break
 		}
 	}
@@ -111,7 +104,7 @@ class BookingDialogComponent extends Component {
 	edit() {
 		this.oldState = this.state
 		this.setState({
-			dialogTitle: "Edit Booking",
+			dialogTitle: 'Edit Booking',
 			mode: MODE_EDIT
 		})
 	}
@@ -127,21 +120,21 @@ class BookingDialogComponent extends Component {
 	accept() {
 		// Reset all error text
 		this.setState({
-			roomIdErrorText: "",
-			bookingTitleErrorText: "",
-			timeSlotErrorText: "",
-			durationErrorText: ""
+			roomIdErrorText: '',
+			bookingTitleErrorText: '',
+			timeSlotErrorText: '',
+			durationErrorText: ''
 		})
 
 		let hasError = false
 
 		// Check whether there are any input errors
-		if (this.state.roomId == "") {
-			this.setState({roomIdErrorText: "This field is required"})
+		if (this.state.roomId === '') {
+			this.setState({ roomIdErrorText: 'This field is required' })
 			hasError = true
 		}
-		if (this.state.bookingTitle == "") {
-			this.setState({bookingTitleErrorText: "This field is required"})
+		if (this.state.bookingTitle === '') {
+			this.setState({ bookingTitleErrorText: 'This field is required' })
 			hasError = true
 		}
 		if (this.props.bookingsByDate[this.state.date]) {
@@ -149,9 +142,9 @@ class BookingDialogComponent extends Component {
 			this.props.bookingsByDate[this.state.date].items.filter((booking) => booking.roomId === this.state.roomId && booking.bookingId !== this.state.bookingId).some((booking) => {
 				if (booking.timeSlot <= this.state.timeSlot + (this.state.duration - 1) && this.state.timeSlot <= booking.timeSlot + (booking.duration - 1)) {
 					if (booking.timeSlot === this.state.timeSlot) {
-						this.setState({timeSlotErrorText: "Overlaps with other booking"})
+						this.setState({ timeSlotErrorText: 'Overlaps with other booking' })
 					} else {
-						this.setState({durationErrorText: "Overlaps with other booking"})
+						this.setState({ durationErrorText: 'Overlaps with other booking' })
 					}
 
 					hasError = true
@@ -203,48 +196,48 @@ class BookingDialogComponent extends Component {
 
 		// Define the time slots available for booking
 		const timeSlots = [
-			"10.30am",
-			"11.30am",
-			"12.30pm",
-			"1.30pm",
-			"2.30pm",
-			"3.30pm",
-			"4.30pm",
-			"5.30pm",
-			"6.30pm",
-			"7.30pm",
-			"8.30pm",
-			"9.30pm",
-			"10.30pm"
+			'10.30am',
+			'11.30am',
+			'12.30pm',
+			'1.30pm',
+			'2.30pm',
+			'3.30pm',
+			'4.30pm',
+			'5.30pm',
+			'6.30pm',
+			'7.30pm',
+			'8.30pm',
+			'9.30pm',
+			'10.30pm'
 		]
 
 		// Define the durations available for booking
 		const durations = [
-			"1 Hour",
-			"2 Hour",
-			"3 Hour"
+			'1 Hour',
+			'2 Hour',
+			'3 Hour'
 		]
 
 		return (
 			<Dialog contentClassName="dialog" title={this.state.dialogTitle} autoScrollBodyContent={true} actions={actions} open={this.state.open} onRequestClose={() => this.dismiss()}>
-				<SelectField id="room" className="form-input" floatingLabelText="Room" floatingLabelFixed={true} errorText={this.state.roomIdErrorText} disabled={this.state.mode === MODE_VIEW} onChange={(event, key, payload) => this.handleChange(payload, "roomId")} value={this.state.roomId}>
+				<SelectField id="room" className="form-input" floatingLabelText="Room" floatingLabelFixed={true} errorText={this.state.roomIdErrorText} disabled={this.state.mode === MODE_VIEW} onChange={(event, key, payload) => this.handleChange(payload, 'roomId')} value={this.state.roomId}>
 					{
 						this.props.rooms.items.filter((room) => room.isAvailable).map((room, index) => (
 							<MenuItem primaryText={room.roomName} value={room.roomId} key={index}/>
 						))
 					}
 				</SelectField><br />
-				<TextField id="title" className="form-input" floatingLabelText="Title" floatingLabelFixed={true} errorText={this.state.bookingTitleErrorText} disabled={this.state.mode === MODE_VIEW} onChange={(event) => this.handleChange(event.target.value, "bookingTitle")} value={this.state.bookingTitle} /><br />
-				<TextField id="description" className="form-input" floatingLabelText="Description" floatingLabelFixed={true} disabled={this.state.mode === MODE_VIEW} onChange={(event) => this.handleChange(event.target.value, "bookingDesc")} value={this.state.bookingDesc} /><br />
-				<DatePicker id="date" floatingLabelText="Date" floatingLabelFixed={true} formatDate={(date) => moment(date).format('D/M/YYYY')} disabled={this.state.mode === MODE_VIEW} onChange={(event, date) => this.handleChange(moment(date).format('YYYY/M/D'), "date")} value={moment(this.state.date, 'YYYY/M/D').toDate()} />
-				<SelectField id="time" className="form-input" floatingLabelText="Time" floatingLabelFixed={true} errorText={this.state.timeSlotErrorText} disabled={this.state.mode === MODE_VIEW} onChange={(event, key, payload) => this.handleChange(payload, "timeSlot")} value={this.state.timeSlot}>
+				<TextField id="title" className="form-input" floatingLabelText="Title" floatingLabelFixed={true} errorText={this.state.bookingTitleErrorText} disabled={this.state.mode === MODE_VIEW} onChange={(event) => this.handleChange(event.target.value, 'bookingTitle')} value={this.state.bookingTitle} /><br />
+				<TextField id="description" className="form-input" floatingLabelText="Description" floatingLabelFixed={true} disabled={this.state.mode === MODE_VIEW} onChange={(event) => this.handleChange(event.target.value, 'bookingDesc')} value={this.state.bookingDesc} /><br />
+				<DatePicker id="date" floatingLabelText="Date" floatingLabelFixed={true} formatDate={(date) => moment(date).format('D/M/YYYY')} disabled={this.state.mode === MODE_VIEW} onChange={(event, date) => this.handleChange(moment(date).format('YYYY/M/D'), 'date')} value={moment(this.state.date, 'YYYY/M/D').toDate()} />
+				<SelectField id="time" className="form-input" floatingLabelText="Time" floatingLabelFixed={true} errorText={this.state.timeSlotErrorText} disabled={this.state.mode === MODE_VIEW} onChange={(event, key, payload) => this.handleChange(payload, 'timeSlot')} value={this.state.timeSlot}>
 					{
 						timeSlots.map((time, index) => (
 							<MenuItem primaryText={time} value={index + 1} key={index}/>
 						))
 					}
 				</SelectField><br />
-			<SelectField id="duration" className="form-input" floatingLabelText="Duration" floatingLabelFixed={true} errorText={this.state.durationErrorText} disabled={this.state.mode === MODE_VIEW} onChange={(event, key, payload) => this.handleChange(payload, "duration")} value={this.state.duration}>
+			<SelectField id="duration" className="form-input" floatingLabelText="Duration" floatingLabelFixed={true} errorText={this.state.durationErrorText} disabled={this.state.mode === MODE_VIEW} onChange={(event, key, payload) => this.handleChange(payload, 'duration')} value={this.state.duration}>
 					{
 						durations.map((duration, index) => (
 							<MenuItem primaryText={duration} value={index + 1} key={index}/>
@@ -267,6 +260,6 @@ BookingDialogComponent.propTypes = {
 }
 
 // Define the container for the Booking Dialog component (maps state and dispatchers)
-const BookingDialog = connect(mapStateToProps, mapDispatchToProps, null, {withRef: true})(BookingDialogComponent)
+const BookingDialog = connect(mapStateToProps, mapDispatchToProps, null, { withRef: true })(BookingDialogComponent)
 
 export default BookingDialog

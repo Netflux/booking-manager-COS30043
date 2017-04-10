@@ -24,10 +24,8 @@ delete window.__DEFAULT_STATE__
 // Initialize the store with the default state
 const store = configureStore(defaultState)
 
-// Create the default theme
-const muiTheme = getMuiTheme({
-	...theme
-})
+// Generate the default theme
+const muiTheme = getMuiTheme({ ...theme })
 
 // Render the application in the document body
 render(

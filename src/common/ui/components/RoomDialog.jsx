@@ -29,11 +29,11 @@ class RoomDialogComponent extends Component {
 		this.state = this.defaultState = {
 			open: false,
 			editing: false,
-			dialogTitle: "New Room",
-			roomId: "",
-			roomName: "",
-			roomNameErrorText: "",
-			roomDesc: "",
+			dialogTitle: 'New Room',
+			roomId: '',
+			roomName: '',
+			roomNameErrorText: '',
+			roomDesc: '',
 			isAvailable: true
 		}
 	}
@@ -41,7 +41,7 @@ class RoomDialogComponent extends Component {
 	handleChange(value, stateName) {
 		this.setState({
 			[stateName]: value,
-			[stateName + "ErrorText"]: ""
+			[stateName + 'ErrorText']: ''
 		})
 	}
 
@@ -64,8 +64,8 @@ class RoomDialogComponent extends Component {
 	accept() {
 		let hasError = false
 
-		if (this.state.roomName == "") {
-			this.setState({roomNameErrorText: "This field is required"})
+		if (this.state.roomName === '') {
+			this.setState({ roomNameErrorText: 'This field is required' })
 			hasError = true
 		}
 
@@ -98,9 +98,9 @@ class RoomDialogComponent extends Component {
 
 		return (
 			<Dialog contentClassName="dialog" title={this.state.dialogTitle} autoScrollBodyContent={true} actions={actions} open={this.state.open} onRequestClose={() => this.dismiss()}>
-				<TextField id="name" className="form-input" floatingLabelText="Name" floatingLabelFixed={true} errorText={this.state.roomNameErrorText} onChange={(event) => this.handleChange(event.target.value, "roomName")} value={this.state.roomName} /><br />
-				<TextField id="description" className="form-input" floatingLabelText="Description" floatingLabelFixed={true} onChange={(event) => this.handleChange(event.target.value, "roomDesc")} value={this.state.roomDesc} /><br />
-				<Toggle label="Available for Booking" labelPosition="right" defaultToggled={this.state.isAvailable} onToggle={(event, isInputChecked) => this.handleChange(isInputChecked, "isAvailable")} value={this.state.isAvailable} />
+				<TextField id="name" className="form-input" floatingLabelText="Name" floatingLabelFixed={true} errorText={this.state.roomNameErrorText} onChange={(event) => this.handleChange(event.target.value, 'roomName')} value={this.state.roomName} /><br />
+				<TextField id="description" className="form-input" floatingLabelText="Description" floatingLabelFixed={true} onChange={(event) => this.handleChange(event.target.value, 'roomDesc')} value={this.state.roomDesc} /><br />
+				<Toggle label="Available for Booking" labelPosition="right" defaultToggled={this.state.isAvailable} onToggle={(event, isInputChecked) => this.handleChange(isInputChecked, 'isAvailable')} value={this.state.isAvailable} />
 			</Dialog>
 		)
 	}
@@ -114,6 +114,6 @@ RoomDialogComponent.propTypes = {
 }
 
 // Define the container for the Room Dialog component (maps dispatchers)
-const RoomDialog = connect(null, mapDispatchToProps, null, {withRef: true})(RoomDialogComponent)
+const RoomDialog = connect(null, mapDispatchToProps, null, { withRef: true })(RoomDialogComponent)
 
 export default RoomDialog
