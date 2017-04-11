@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react'
 import { Link } from 'react-router'
 import { connect } from 'react-redux'
 import moment from 'moment'
-import { Divider, Drawer, FontIcon, MenuItem, Subheader, Toolbar, ToolbarTitle } from 'material-ui'
+import { Divider, Drawer, FontIcon, Menu, MenuItem, Subheader, Toolbar, ToolbarTitle } from 'material-ui'
 
 import theme from '../theme'
 
@@ -80,41 +80,43 @@ class SideDrawerComponent extends Component {
 					<ToolbarTitle text="Navigation" style={{ color: theme.palette.alternateTextColor }} />
 				</Toolbar>
 
-				<Link to="/" onTouchTap={() => this.props.onNavigate(!this.props.isDocked)}><MenuItem leftIcon={<FontIcon className="material-icons">home</FontIcon>}>Home</MenuItem></Link>
-				<Link to="/about" onTouchTap={() => this.props.onNavigate(!this.props.isDocked)}><MenuItem leftIcon={<FontIcon className="material-icons">info</FontIcon>}>About</MenuItem></Link>
-				<Link to="/rooms" onTouchTap={() => this.props.onNavigate(!this.props.isDocked)}><MenuItem leftIcon={<FontIcon className="material-icons">room</FontIcon>}>Rooms</MenuItem></Link>
+				<Menu className="padding-none">
+					<Link to="/" onTouchTap={() => this.props.onNavigate(!this.props.isDocked)}><MenuItem leftIcon={<FontIcon className="material-icons">home</FontIcon>}>Home</MenuItem></Link>
+					<Link to="/about" onTouchTap={() => this.props.onNavigate(!this.props.isDocked)}><MenuItem leftIcon={<FontIcon className="material-icons">info</FontIcon>}>About</MenuItem></Link>
+					<Link to="/rooms" onTouchTap={() => this.props.onNavigate(!this.props.isDocked)}><MenuItem leftIcon={<FontIcon className="material-icons">room</FontIcon>}>Rooms</MenuItem></Link>
 
-				{
-					// Render either the login/logout button depending on the user login status
-					this.props.isLoggedIn ? (
-						<Link to="/logout" onTouchTap={(event) => {
-							event.preventDefault()
-							this.props.onNavigate(!this.props.isDocked)
-							this.props.onLogout()
-						}} onClick={(event) => event.preventDefault()}><MenuItem leftIcon={<FontIcon className="material-icons">power_settings_new</FontIcon>}>Logout</MenuItem></Link>
-					) : (
-						<Link to="/login" onTouchTap={() => this.props.onNavigate(!this.props.isDocked)}><MenuItem leftIcon={<FontIcon className="material-icons">account_circle</FontIcon>}>Login</MenuItem></Link>
-					)
-				}
+					{
+						// Render either the login/logout button depending on the user login status
+						this.props.isLoggedIn ? (
+							<Link to="/logout" onTouchTap={(event) => {
+								event.preventDefault()
+								this.props.onNavigate(!this.props.isDocked)
+								this.props.onLogout()
+							}} onClick={(event) => event.preventDefault()}><MenuItem leftIcon={<FontIcon className="material-icons">power_settings_new</FontIcon>}>Logout</MenuItem></Link>
+						) : (
+							<Link to="/login" onTouchTap={() => this.props.onNavigate(!this.props.isDocked)}><MenuItem leftIcon={<FontIcon className="material-icons">account_circle</FontIcon>}>Login</MenuItem></Link>
+						)
+					}
 
-				{
-					// Only render history list if there are entries to display
-					this.props.selectedDateHistory.length > 0 && (
-						<div>
-							<Divider />
-							<Subheader>Recently Viewed Dates</Subheader>
+					{
+						// Only render history list if there are entries to display
+						this.props.selectedDateHistory.length > 0 && (
+							<div>
+								<Divider />
+								<Subheader>Recently Viewed Dates</Subheader>
 
-							{
-								this.props.selectedDateHistory.map((date) => (
-									<Link to="/" onTouchTap={() => {
-										this.props.onNavigate(!this.props.isDocked)
-										this.props.onSelectDate(date)
-									}} key={date}><MenuItem>{moment(date, 'YYYY/M/D').format('D/M/YYYY')}</MenuItem></Link>
-								))
-							}
-						</div>
-					)
-				}
+								{
+									this.props.selectedDateHistory.map((date) => (
+										<Link to="/" onTouchTap={() => {
+											this.props.onNavigate(!this.props.isDocked)
+											this.props.onSelectDate(date)
+										}} key={date}><MenuItem>{moment(date, 'YYYY/M/D').format('D/M/YYYY')}</MenuItem></Link>
+									))
+								}
+							</div>
+						)
+					}
+				</Menu>
 			</Drawer>
 		)
 	}
