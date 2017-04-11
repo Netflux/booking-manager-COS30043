@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
 import moment from 'moment'
 import shortid from 'shortid'
-import { Dialog, FlatButton, MenuItem, SelectField, Snackbar, TextField, Toggle } from 'material-ui'
+import { Dialog, FlatButton, TextField, Toggle } from 'material-ui'
 
 import { handleAddRoom, handleUpdateRoom, handleDeleteRoom } from '../../actions'
 

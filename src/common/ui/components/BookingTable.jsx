@@ -1,5 +1,4 @@
 import React, { Component, PropTypes } from 'react'
-import { Link } from 'react-router'
 import { connect } from 'react-redux'
 import moment from 'moment'
 import { FloatingActionButton, FontIcon, Paper, RaisedButton, Tabs, Tab } from 'material-ui'
@@ -145,7 +144,7 @@ class BookingTableComponent extends Component {
 															}
 
 															return (
-																<div className={"col-xs" + (this.props.isLoggedIn && index !==0 && timeSlotAvailable ? " selectable" : "")} onTouchTap={() => this.props.isLoggedIn && index !==0 && timeSlotAvailable && bookingDialog.getWrappedInstance().show({roomId: room.roomId, timeSlot: index})} key={room.roomId}>
+																<div className={'col-xs' + (this.props.isLoggedIn && index !==0 && timeSlotAvailable ? ' selectable' : '')} onTouchTap={() => this.props.isLoggedIn && index !==0 && timeSlotAvailable && bookingDialog.getWrappedInstance().show({roomId: room.roomId, timeSlot: index})} key={room.roomId}>
 																	{
 																		// If displaying the first row of the table, simply display it as a header
 																		// Else, display any bookings that exist for the time slot
@@ -185,11 +184,11 @@ class BookingTableComponent extends Component {
 															// If displaying the first row of the table, simply display it as a header
 															// Else, check if any bookings exist for the time slot and display it
 															index === 0 ? (
-																<div className={"col-xs clickable" + (dayIndex + 1 === moment(this.props.selectedDate, 'YYYY/M/D').isoWeekday() ? " selected-date" : "")} onTouchTap={() => this.props.onSelectDate(getSelectedDate(dayIndex))} key={dayIndex}>
+																<div className={'col-xs clickable' + (dayIndex + 1 === moment(this.props.selectedDate, 'YYYY/M/D').isoWeekday() ? ' selected-date' : '')} onTouchTap={() => this.props.onSelectDate(getSelectedDate(dayIndex))} key={dayIndex}>
 																	<strong>{day}</strong>
 																</div>
 															) : (
-																<div className={"col-xs" + (this.props.isLoggedIn ? " selectable" : "") + (dayIndex + 1 === moment(this.props.selectedDate, 'YYYY/M/D').isoWeekday() ? " selected-date" : "")} onTouchTap={() => this.props.isLoggedIn && bookingDialog.getWrappedInstance().show({date: getSelectedDate(dayIndex), timeSlot: index})} key={dayIndex}></div>
+																<div className={'col-xs' + (this.props.isLoggedIn ? ' selectable' : '') + (dayIndex + 1 === moment(this.props.selectedDate, 'YYYY/M/D').isoWeekday() ? ' selected-date' : '')} onTouchTap={() => this.props.isLoggedIn && bookingDialog.getWrappedInstance().show({date: getSelectedDate(dayIndex), timeSlot: index})} key={dayIndex}></div>
 															)
 														))
 													}

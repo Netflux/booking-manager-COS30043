@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
-import { Card, CardActions, CardText, CardTitle, FlatButton, FloatingActionButton, FontIcon, Paper, RaisedButton } from 'material-ui'
+import { FlatButton, FloatingActionButton, FontIcon, Paper, RaisedButton } from 'material-ui'
 
 import RoomDialog from './RoomDialog'
 
@@ -46,8 +46,8 @@ class RoomsListComponent extends Component {
 									<div className="col-sm-6 col-xs-12" key={room.roomId}>
 										<Paper className="paper paper-solo">
 											<h1 className="room-header">{room.roomName}</h1>
-											<p>{room.roomDesc || "No description provided"}</p>
-											<p>Booking Allowed: {room.isAvailable ? "Yes" : "No"}</p>
+											<p>{room.roomDesc || 'No description provided'}</p>
+											<p>Booking Allowed: {room.isAvailable ? 'Yes' : 'No'}</p>
 
 											{
 												// Only display the Edit/Delete buttons if the user is logged in

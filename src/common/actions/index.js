@@ -63,7 +63,7 @@ const fetchBookings = date => {
 				throw new Error(`HTTP Error ${response.status}: Failed to fetch bookings (${date})`)
 			})
 			.then(json => dispatch(receiveBookings(date, json)))
-			.catch(error => {
+			.catch(() => {
 				dispatch(receiveBookingsError())
 			})
 	}
@@ -114,23 +114,23 @@ export const handleAddBooking = (booking) => {
 
 		// Send the booking entry to the server for storage
 		return fetch('/api/bookings', {
-				headers: {
-					'Accept': 'application/json',
-					'Content-Type': 'application/json'
-				},
-				method: 'POST',
-				credentials: 'include',
-				body: JSON.stringify(booking)
-			})
-			.then(response => {
-				if (response.ok) {
-					return // Add booking succeeded
-				}
-				throw new Error(`HTTP Error ${response.status}: Failed to add booking`)
-			})
-			.catch(error => {
-				// Add booking failed, no action required
-			})
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json'
+			},
+			method: 'POST',
+			credentials: 'include',
+			body: JSON.stringify(booking)
+		})
+		.then(response => {
+			if (response.ok) {
+				return // Add booking succeeded
+			}
+			throw new Error(`HTTP Error ${response.status}: Failed to add booking`)
+		})
+		.catch(() => {
+			// Add booking failed, no action required
+		})
 	}
 }
 
@@ -152,23 +152,23 @@ export const handleUpdateBooking = (booking) => {
 
 		// Send the updated booking entry to the server for storage
 		return fetch(`/api/bookings/${booking.bookingId}`, {
-				headers: {
-					'Accept': 'application/json',
-					'Content-Type': 'application/json'
-				},
-				method: 'PUT',
-				credentials: 'include',
-				body: JSON.stringify(booking)
-			})
-			.then(response => {
-				if (response.ok) {
-					return // Update booking succeeded
-				}
-				throw new Error(`HTTP Error ${response.status}: Failed to update booking`)
-			})
-			.catch(error => {
-				// Update booking failed, no action required
-			})
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json'
+			},
+			method: 'PUT',
+			credentials: 'include',
+			body: JSON.stringify(booking)
+		})
+		.then(response => {
+			if (response.ok) {
+				return // Update booking succeeded
+			}
+			throw new Error(`HTTP Error ${response.status}: Failed to update booking`)
+		})
+		.catch(() => {
+			// Update booking failed, no action required
+		})
 	}
 }
 
@@ -190,18 +190,18 @@ export const handleDeleteBooking = (date, bookingId) => {
 
 		// Delete the booking entry on the server
 		return fetch(`/api/bookings/${bookingId}`, {
-				method: 'DELETE',
-				credentials: 'include'
-			})
-			.then(response => {
-				if (response.ok) {
-					return // Delete booking succeeded
-				}
-				throw new Error(`HTTP Error ${response.status}: Failed to delete booking`)
-			})
-			.catch(error => {
-				// Delete booking failed, no action required
-			})
+			method: 'DELETE',
+			credentials: 'include'
+		})
+		.then(response => {
+			if (response.ok) {
+				return // Delete booking succeeded
+			}
+			throw new Error(`HTTP Error ${response.status}: Failed to delete booking`)
+		})
+		.catch(() => {
+			// Delete booking failed, no action required
+		})
 	}
 }
 
@@ -255,7 +255,7 @@ const fetchRooms = () => {
 				throw new Error(`HTTP Error ${response.status}: Failed to fetch rooms`)
 			})
 			.then(json => dispatch(receiveRooms(json)))
-			.catch(error => {
+			.catch(() => {
 				dispatch(receiveRoomsError())
 			})
 	}
@@ -303,23 +303,23 @@ export const handleAddRoom = (room) => {
 
 		// Send the room entry to the server for storage
 		return fetch('/api/rooms', {
-				headers: {
-					'Accept': 'application/json',
-					'Content-Type': 'application/json'
-				},
-				method: 'POST',
-				credentials: 'include',
-				body: JSON.stringify(room)
-			})
-			.then(response => {
-				if (response.ok) {
-					return // Add room succeeded
-				}
-				throw new Error(`HTTP Error ${response.status}: Failed to add room`)
-			})
-			.catch(error => {
-				// Add room failed, no action required
-			})
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json'
+			},
+			method: 'POST',
+			credentials: 'include',
+			body: JSON.stringify(room)
+		})
+		.then(response => {
+			if (response.ok) {
+				return // Add room succeeded
+			}
+			throw new Error(`HTTP Error ${response.status}: Failed to add room`)
+		})
+		.catch(() => {
+			// Add room failed, no action required
+		})
 	}
 }
 
@@ -340,23 +340,23 @@ export const handleUpdateRoom = (room) => {
 
 		// Send the updated room entry to the server for storage
 		return fetch(`/api/rooms/${room.roomId}`, {
-				headers: {
-					'Accept': 'application/json',
-					'Content-Type': 'application/json'
-				},
-				method: 'PUT',
-				credentials: 'include',
-				body: JSON.stringify(room)
-			})
-			.then(response => {
-				if (response.ok) {
-					return // Update room succeeded
-				}
-				throw new Error(`HTTP Error ${response.status}: Failed to update room`)
-			})
-			.catch(error => {
-				// Update room failed, no action required
-			})
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json'
+			},
+			method: 'PUT',
+			credentials: 'include',
+			body: JSON.stringify(room)
+		})
+		.then(response => {
+			if (response.ok) {
+				return // Update room succeeded
+			}
+			throw new Error(`HTTP Error ${response.status}: Failed to update room`)
+		})
+		.catch(() => {
+			// Update room failed, no action required
+		})
 	}
 }
 
@@ -377,18 +377,18 @@ export const handleDeleteRoom = (roomId) => {
 
 		// Delete the room entry on the server
 		return fetch(`/api/rooms/${roomId}`, {
-				method: 'DELETE',
-				credentials: 'include'
-			})
-			.then(response => {
-				if (response.ok) {
-					return // Delete room succeeded
-				}
-				throw new Error(`HTTP Error ${response.status}: Failed to delete room`)
-			})
-			.catch(error => {
-				// Delete room failed, no action required
-			})
+			method: 'DELETE',
+			credentials: 'include'
+		})
+		.then(response => {
+			if (response.ok) {
+				return // Delete room succeeded
+			}
+			throw new Error(`HTTP Error ${response.status}: Failed to delete room`)
+		})
+		.catch(() => {
+			// Delete room failed, no action required
+		})
 	}
 }
 
@@ -457,7 +457,7 @@ export const requestLogin = (username, password) => {
 			throw new Error(`HTTP Error ${response.status}: Failed to login`)
 		})
 		.then(json => dispatch(completeLogin(json)))
-		.catch(error => {
+		.catch(() => {
 			dispatch(completeLoginError())
 		})
 	}
@@ -481,7 +481,7 @@ export const requestLogout = () => {
 				}
 				throw new Error(`HTTP Error ${response.status}: Failed to logout`)
 			})
-			.catch(error => {
+			.catch(() => {
 				// Logout failed, no action required
 			})
 	}

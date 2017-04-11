@@ -3,7 +3,7 @@ import { Paper } from 'material-ui'
 
 // Define the Booking component
 const Booking = ({ booking, onTouchTap }) => (
-	<div className="booking clickable" style={{ height: (56 * booking.duration) + "px" }} onTouchTap={() => { onTouchTap ? onTouchTap() : null }}>
+	<div className="booking clickable" style={{ height: (56 * booking.duration) + 'px' }} onTouchTap={() => { onTouchTap ? onTouchTap() : null }}>
 		{
 			booking.duration === 1 ? (
 				<Paper className="paper paper-solo">
@@ -12,7 +12,7 @@ const Booking = ({ booking, onTouchTap }) => (
 			) : (
 				<Paper className="paper paper-solo">
 					<p><strong>{booking.bookingTitle}</strong></p>
-					<p>{booking.bookingDesc || "No description provided"}</p>
+					<p>{booking.bookingDesc || 'No description provided'}</p>
 				</Paper>
 			)
 		}

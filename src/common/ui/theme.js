@@ -5,7 +5,7 @@ const theme = {
 		primary1Color: blueGrey500,
 		primary2Color: blueGrey700,
 		accent1Color: orange500,
-    	pickerHeaderColor: blueGrey500,
+		pickerHeaderColor: blueGrey500,
 		textColor: grey800,
 		alternateTextColor: white
 	},

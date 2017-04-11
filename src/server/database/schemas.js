@@ -1,4 +1,4 @@
-import Mongoose, { Schema } from 'mongoose'
+import { Schema } from 'mongoose'
 
 // Schema for the User details
 const userSchema = new Schema({

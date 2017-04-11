@@ -53,7 +53,7 @@ class SideDrawerComponent extends Component {
 		this.handleResize = this.handleResize.bind(this)
 	}
 
-	handleResize(event) {
+	handleResize() {
 		// Set a timeout of 250ms for handling window resize events
 		if (!this.resizeTimer) {
 			this.props.onWindowResize(this.props.isOpen, this.props.isDocked)
@@ -75,7 +75,7 @@ class SideDrawerComponent extends Component {
 
 	render() {
 		return (
-			<Drawer className="side-drawer" open={this.props.isOpen} docked={this.props.isDocked} onRequestChange={() => this.props.onToggleMenu(true)} containerStyle={!(this.props.isOpen && this.props.isDocked) ? {transition: "transform 550ms cubic-bezier(0.23, 1, 0.32, 1) 10ms"} : null}>
+			<Drawer className="side-drawer" open={this.props.isOpen} docked={this.props.isDocked} onRequestChange={() => this.props.onToggleMenu(true)} containerStyle={!(this.props.isOpen && this.props.isDocked) ? {transition: 'transform 550ms cubic-bezier(0.23, 1, 0.32, 1) 10ms'} : null}>
 				<Toolbar className="menu-bar">
 					<ToolbarTitle text="Navigation" style={{ color: theme.palette.alternateTextColor }} />
 				</Toolbar>
@@ -88,10 +88,10 @@ class SideDrawerComponent extends Component {
 					// Render either the login/logout button depending on the user login status
 					this.props.isLoggedIn ? (
 						<Link to="/logout" onTouchTap={(event) => {
-								event.preventDefault()
-								this.props.onNavigate(!this.props.isDocked)
-								this.props.onLogout()
-							}} onClick={(event) => event.preventDefault()}><MenuItem leftIcon={<FontIcon className="material-icons">power_settings_new</FontIcon>}>Logout</MenuItem></Link>
+							event.preventDefault()
+							this.props.onNavigate(!this.props.isDocked)
+							this.props.onLogout()
+						}} onClick={(event) => event.preventDefault()}><MenuItem leftIcon={<FontIcon className="material-icons">power_settings_new</FontIcon>}>Logout</MenuItem></Link>
 					) : (
 						<Link to="/login" onTouchTap={() => this.props.onNavigate(!this.props.isDocked)}><MenuItem leftIcon={<FontIcon className="material-icons">account_circle</FontIcon>}>Login</MenuItem></Link>
 					)
@@ -107,9 +107,9 @@ class SideDrawerComponent extends Component {
 							{
 								this.props.selectedDateHistory.map((date) => (
 									<Link to="/" onTouchTap={() => {
-											this.props.onNavigate(!this.props.isDocked)
-											this.props.onSelectDate(date)
-										}} key={date}><MenuItem>{moment(date, 'YYYY/M/D').format('D/M/YYYY')}</MenuItem></Link>
+										this.props.onNavigate(!this.props.isDocked)
+										this.props.onSelectDate(date)
+									}} key={date}><MenuItem>{moment(date, 'YYYY/M/D').format('D/M/YYYY')}</MenuItem></Link>
 								))
 							}
 						</div>

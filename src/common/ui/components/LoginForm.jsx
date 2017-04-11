@@ -1,10 +1,10 @@
 import React, { Component, PropTypes } from 'react'
 import { browserHistory } from 'react-router'
 import { connect } from 'react-redux'
-import { CircularProgress, Divider, FontIcon, Paper, RaisedButton, TextField } from 'material-ui'
+import { CircularProgress, FontIcon, Paper, RaisedButton, TextField } from 'material-ui'
 import { red500 } from 'material-ui/styles/colors'
 
-import { requestLogin, clearLoginError } from '../../actions'
+import { requestLogin } from '../../actions'
 
 const mapStateToProps = state => {
 	return {

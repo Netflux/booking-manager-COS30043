@@ -2,9 +2,9 @@ import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
 import moment from 'moment'
 import shortid from 'shortid'
-import { DatePicker, Dialog, FlatButton, MenuItem, SelectField, Snackbar, TextField } from 'material-ui'
+import { DatePicker, Dialog, FlatButton, MenuItem, SelectField, TextField } from 'material-ui'
 
-import { handleAddBooking, handleUpdateBooking, handleDeleteBooking, fetchRoomsIfNeeded } from '../../actions'
+import { handleAddBooking, handleUpdateBooking, handleDeleteBooking } from '../../actions'
 
 const mapStateToProps = state => {
 	return {
@@ -79,16 +79,16 @@ class BookingDialogComponent extends Component {
 		})
 
 		switch (props.mode) {
-			case MODE_VIEW:
-				this.setState({ dialogTitle: 'View Booking' })
-				break
-			case MODE_EDIT:
-				this.setState({ dialogTitle: 'Edit Booking' })
-				break
-			case MODE_ADD:
-			default:
-				this.setState({ dialogTitle: this.defaultState.dialogTitle })
-				break
+		case MODE_VIEW:
+			this.setState({ dialogTitle: 'View Booking' })
+			break
+		case MODE_EDIT:
+			this.setState({ dialogTitle: 'Edit Booking' })
+			break
+		case MODE_ADD:
+		default:
+			this.setState({ dialogTitle: this.defaultState.dialogTitle })
+			break
 		}
 	}
 
@@ -252,6 +252,7 @@ class BookingDialogComponent extends Component {
 // Define the property types that the component expects to receive
 BookingDialogComponent.propTypes = {
 	selectedDate: PropTypes.string.isRequired,
+	bookingsByDate: PropTypes.object.isRequired,
 	rooms: PropTypes.object.isRequired,
 	isLoggedIn: PropTypes.bool.isRequired,
 	addBooking: PropTypes.func.isRequired,

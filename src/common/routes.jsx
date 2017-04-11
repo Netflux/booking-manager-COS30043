@@ -1,6 +1,5 @@
 import React from 'react'
 import { Route, IndexRoute } from 'react-router'
-import { Provider } from 'react-redux'
 
 // Import the main components
 import BasePage from '../common/ui/pages/BasePage'

@@ -32,7 +32,7 @@ Mongoose.connection.on('connected', () => {
 			{ userId: user.userId },
 			{ $setOnInsert: { ...user, password: hash } },
 			{ upsert: true },
-			(err, raw) => {
+			(err) => {
 				if (err) console.error(err)
 			}
 		)

@@ -141,7 +141,8 @@ const serverRoutes = app => {
 		const bookingId = req.params.bookingId
 
 		switch (req.method) {
-			case 'PUT':
+		case 'PUT':
+			{
 				if (!req.body) {
 					return res.sendStatus(400)
 				}
@@ -152,7 +153,7 @@ const serverRoutes = app => {
 					updatedDate: moment().format('YYYY/M/D')
 				}
 
-				BookingModel.findOneAndUpdate({ bookingId }, body, (err, booking) => {
+				BookingModel.findOneAndUpdate({ bookingId }, body, (err) => {
 					if (err) {
 						console.error(err)
 						return res.sendStatus(500)
@@ -161,19 +162,20 @@ const serverRoutes = app => {
 					return res.sendStatus(200)
 				})
 				break
-			case 'DELETE':
-				BookingModel.remove({ bookingId }, (err) => {
-					if (err) {
-						console.error(err)
-						return res.sendStatus(500)
-					}
+			}
+		case 'DELETE':
+			BookingModel.remove({ bookingId }, (err) => {
+				if (err) {
+					console.error(err)
+					return res.sendStatus(500)
+				}
 
-					return res.sendStatus(200)
-				})
-				break
-			default:
-				next() // Route does not handle other request types
-				break
+				return res.sendStatus(200)
+			})
+			break
+		default:
+			next() // Route does not handle other request types
+			break
 		}
 	})
 
@@ -212,7 +214,7 @@ const serverRoutes = app => {
 				updatedDate: moment().format('YYYY/M/D')
 			}
 
-			BookingModel.create(body, (err, booking) => {
+			BookingModel.create(body, (err) => {
 				if (err) {
 					console.error(err)
 					return res.sendStatus(500)
@@ -251,7 +253,8 @@ const serverRoutes = app => {
 		const roomId = req.params.roomId
 
 		switch (req.method) {
-			case 'PUT':
+		case 'PUT':
+			{
 				if (!req.body) {
 					return res.sendStatus(400)
 				}
@@ -262,7 +265,7 @@ const serverRoutes = app => {
 					updatedDate: moment().format('YYYY/M/D')
 				}
 
-				RoomModel.findOneAndUpdate({ roomId }, body, (err, room) => {
+				RoomModel.findOneAndUpdate({ roomId }, body, (err) => {
 					if (err) {
 						console.error(err)
 						return res.sendStatus(500)
@@ -271,19 +274,20 @@ const serverRoutes = app => {
 					return res.sendStatus(200)
 				})
 				break
-			case 'DELETE':
-				RoomModel.remove({ roomId }, (err) => {
-					if (err) {
-						console.error(err)
-						return res.sendStatus(500)
-					}
+			}
+		case 'DELETE':
+			RoomModel.remove({ roomId }, (err) => {
+				if (err) {
+					console.error(err)
+					return res.sendStatus(500)
+				}
 
-					return res.sendStatus(200)
-				})
-				break
-			default:
-				next() // Route does not handle other request types
-				break
+				return res.sendStatus(200)
+			})
+			break
+		default:
+			next() // Route does not handle other request types
+			break
 		}
 	})
 
@@ -306,7 +310,7 @@ const serverRoutes = app => {
 			updatedDate: moment().format('YYYY/M/D')
 		}
 
-		RoomModel.create(body, (err, room) => {
+		RoomModel.create(body, (err) => {
 			if (err) {
 				console.error(err)
 				return res.sendStatus(500)
@@ -337,14 +341,14 @@ const serverRoutes = app => {
 		// If in production, serve optimized version of the static content
 		if (process.env.NODE_ENV === 'production') {
 			switch (req.url) {
-				case '/static/bundle.js':
-					req.url = req.url + '.gz'
-					res.set('Content-Encoding', 'gzip')
-					break
+			case '/static/bundle.js':
+				req.url = req.url + '.gz'
+				res.set('Content-Encoding', 'gzip')
+				break
 
-				case '/static/style.css':
-					req.url = '/static/style.min.css'
-					break
+			case '/static/style.css':
+				req.url = '/static/style.min.css'
+				break
 			}
 		}
 

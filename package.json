@@ -4,8 +4,9 @@
   "description": "Booking Manager",
   "main": "dist/server/server.js",
   "scripts": {
-    "test": "nodemon src/server/server.js --exec babel-node",
     "clean": "rm -rf ./dist ./static/bundle.js ./static/*.gz ./static/*.min.css",
+    "lint": "./node_modules/.bin/eslint --ext .js,.jsx src",
+    "test": "nodemon src/server/server.js --exec babel-node",
     "build-dev": "babel src -d dist; webpack --config webpack.config.js",
     "build": "babel src -d dist; cleancss -02 -o ./static/style.min.css ./static/style.css; cleancss -02 -o ./static/style-nojs.min.css ./static/style-nojs.css; webpack -p --config webpack.config.prod.js",
     "start-dev": "node dist/server/server.js",
@@ -45,6 +46,8 @@
     "babel-preset-react": "^6.23.0",
     "clean-css-cli": "^4.0.10",
     "compression-webpack-plugin": "^0.3.2",
+    "eslint": "^3.19.0",
+    "eslint-plugin-react": "^6.10.3",
     "nodemon": "^1.11.0",
     "webpack": "^2.2.1"
   }

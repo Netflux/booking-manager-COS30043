@@ -1,7 +1,5 @@
-import Express from 'express'
 import Session from 'express-session'
 import ConnectMDB from 'connect-mongodb-session'
-import Mongoose from 'mongoose'
 import Passport from 'passport'
 import LocalStrategy from 'passport-local'
 import Bcrypt from 'bcrypt'
