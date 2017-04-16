@@ -182,15 +182,18 @@ class BookingDialogComponent extends Component {
 	render() {
 		// Define the action buttons to display in the dialog
 		const actions = [
-			<FlatButton label="Cancel" secondary={true} onTouchTap={() => this.cancel()} />,
 			<FlatButton label="Ok" secondary={true} onTouchTap={() => this.accept()} />
 		]
 
 		if (this.props.isLoggedIn) {
-			if (this.state.mode === MODE_VIEW) {
+			if (this.state.mode === MODE_ADD || this.state.mode === MODE_EDIT) {
+				actions.unshift(<FlatButton label="Cancel" secondary={true} onTouchTap={() => this.cancel()} />)
+				
+				if (this.state.mode === MODE_EDIT) {
+					actions.unshift(<FlatButton label="Delete" secondary={true} onTouchTap={() => this.delete()} />)
+				}
+			} else if (this.state.mode === MODE_VIEW) {
 				actions.unshift(<FlatButton label="Edit" secondary={true} onTouchTap={() => this.edit()} />)
-			} else if (this.state.mode === MODE_EDIT) {
-				actions.unshift(<FlatButton label="Delete" secondary={true} onTouchTap={() => this.delete()} />)
 			}
 		}
 

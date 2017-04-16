@@ -6,6 +6,7 @@ const mapStateToProps = state => {
 	return {
 		selectedDate: state.selectedDate,
 		bookingsByDate: state.bookingsByDate,
+		rooms: state.rooms,
 		isLoggedIn: state.user.isLoggedIn
 	}
 }
@@ -42,6 +43,24 @@ class BookingsListDialogComponent extends Component {
 	}
 
 	render() {
+		// Define the time slots available for booking (including header)
+		const timeSlots = [
+			'Time',
+			'10.30am',
+			'11.30am',
+			'12.30pm',
+			'1.30pm',
+			'2.30pm',
+			'3.30pm',
+			'4.30pm',
+			'5.30pm',
+			'6.30pm',
+			'7.30pm',
+			'8.30pm',
+			'9.30pm',
+			'10.30pm'
+		]
+
 		// Define the action buttons to display in the dialog
 		const actions = [
 			<FlatButton label="Ok" secondary={true} onTouchTap={() => this.dismiss()} />
@@ -52,7 +71,7 @@ class BookingsListDialogComponent extends Component {
 		}
 
 		return (
-			<Dialog contentClassName="dialog" title="Bookings" autoScrollBodyContent={true} actions={actions} open={this.state.open} onRequestClose={() => this.dismiss()}>
+			<Dialog contentClassName="dialog" title={`Bookings (${timeSlots[this.state.timeSlot]})`} autoScrollBodyContent={true} actions={actions} open={this.state.open} onRequestClose={() => this.dismiss()}>
 				{
 					// If bookings exist for the specific date and timeslot, display them in the list
 					// Else, display a message to the user
@@ -71,9 +90,14 @@ class BookingsListDialogComponent extends Component {
 							return (
 								<List>
 									{
-										bookingsByTimeSlot.map((booking) => (
-											<ListItem primaryText={booking.bookingTitle} secondaryText={booking.bookingDesc} onTouchTap={() => this.props.onClickBooking ? this.props.onClickBooking({ mode: 1, ...booking }) : null} key={booking.bookingId} />
-										))
+										bookingsByTimeSlot.map((booking) => {
+											const room = this.props.rooms.items.find((room) => room.roomId === booking.roomId)
+											const secondaryText = room ? `${room.roomName} -- ${booking.bookingDesc}` : booking.bookingDesc
+
+											return (
+												<ListItem primaryText={booking.bookingTitle} secondaryText={secondaryText} onTouchTap={() => this.props.onClickBooking ? this.props.onClickBooking({ mode: 1, ...booking }) : null} key={booking.bookingId} />
+											)
+										})
 									}
 								</List>
 							)
@@ -91,6 +115,7 @@ class BookingsListDialogComponent extends Component {
 BookingsListDialogComponent.propTypes = {
 	selectedDate: PropTypes.string.isRequired,
 	bookingsByDate: PropTypes.object.isRequired,
+	rooms: PropTypes.object.isRequired,
 	isLoggedIn: PropTypes.bool.isRequired,
 	onClickAdd: PropTypes.func,
 	onClickBooking: PropTypes.func
