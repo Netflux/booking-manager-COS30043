@@ -4,8 +4,9 @@ import moment from 'moment'
 import { FloatingActionButton, FontIcon, Paper, RaisedButton, Tabs, Tab } from 'material-ui'
 
 import BookingDatePicker from './BookingDatePicker'
-import BookingDialog from './BookingDialog'
 import Booking from './Booking'
+import BookingsListDialog from './BookingsListDialog'
+import BookingDialog from './BookingDialog'
 import RoomDialog from './RoomDialog'
 
 import { selectDate, fetchBookingsIfNeeded, fetchRoomsIfNeeded } from '../../actions'
@@ -41,34 +42,6 @@ const mapDispatchToProps = dispatch => {
 	}
 }
 
-// Define the time slots available for booking (including header)
-const timeSlots = [
-	'Time',
-	'10.30am',
-	'11.30am',
-	'12.30pm',
-	'1.30pm',
-	'2.30pm',
-	'3.30pm',
-	'4.30pm',
-	'5.30pm',
-	'6.30pm',
-	'7.30pm',
-	'8.30pm',
-	'9.30pm',
-	'10.30pm'
-]
-
-// Define the days available for booking
-const bookingDays = [
-	'Mon',
-	'Tue',
-	'Wed',
-	'Thu',
-	'Fri',
-	'Sat'
-]
-
 // Define the Booking Table component
 class BookingTableComponent extends Component {
 	componentDidMount() {
@@ -99,6 +72,38 @@ class BookingTableComponent extends Component {
 		// Store a reference to the Room Dialog component
 		// Used to show the dialog when the user clicks on a room
 		let roomDialog
+
+		// Store a reference to the Bookings List Dialog component
+		// Used to show the dialog when the user clicks on an occupied time slot in the Weekly View
+		let bookingsListDialog
+
+		// Define the time slots available for booking (including header)
+		const timeSlots = [
+			'Time',
+			'10.30am',
+			'11.30am',
+			'12.30pm',
+			'1.30pm',
+			'2.30pm',
+			'3.30pm',
+			'4.30pm',
+			'5.30pm',
+			'6.30pm',
+			'7.30pm',
+			'8.30pm',
+			'9.30pm',
+			'10.30pm'
+		]
+
+		// Define the days available for booking
+		const bookingDays = [
+			'Mon',
+			'Tue',
+			'Wed',
+			'Thu',
+			'Fri',
+			'Sat'
+		]
 
 		// Store a list of all available rooms
 		const availableRooms = this.props.rooms.items.filter((room) => room.isAvailable)
@@ -138,13 +143,12 @@ class BookingTableComponent extends Component {
 																			return true
 																		}
 																	}
-
 																	return false
 																}))
 															}
 
 															return (
-																<div className={'col-xs' + (this.props.isLoggedIn && index !==0 && timeSlotAvailable ? ' selectable' : '')} onTouchTap={() => this.props.isLoggedIn && index !==0 && timeSlotAvailable && bookingDialog.getWrappedInstance().show({roomId: room.roomId, timeSlot: index})} key={room.roomId}>
+																<div className={'col-xs' + (this.props.isLoggedIn && index !== 0 && timeSlotAvailable ? ' selectable' : '')} onTouchTap={() => this.props.isLoggedIn && index !== 0 && timeSlotAvailable && bookingDialog.getWrappedInstance().show({ roomId: room.roomId, timeSlot: index })} key={room.roomId}>
 																	{
 																		// If displaying the first row of the table, simply display it as a header
 																		// Else, display any bookings that exist for the time slot
@@ -152,7 +156,7 @@ class BookingTableComponent extends Component {
 																			<strong>{room.roomName}</strong>
 																		) : (
 																			bookingsByTimeSlot.map((booking) => (
-																				<Booking booking={booking} onTouchTap={() => bookingDialog.getWrappedInstance().show({mode: 1, ...booking})} key={booking.bookingId} />
+																				<Booking booking={booking} onTouchTap={() => bookingDialog.getWrappedInstance().show({ mode: 1, ...booking })} key={booking.bookingId} />
 																			))
 																		)
 																	}
@@ -180,17 +184,42 @@ class BookingTableComponent extends Component {
 													</div>
 
 													{
-														bookingDays.map((day, dayIndex) => (
+														bookingDays.map((day, dayIndex) => {
+															let bookingsByTimeSlot = []
+															let timeSlotAvailable = true
+
+															if (this.props.bookingsByDate[getSelectedDate(dayIndex)]) {
+																// Filter for any bookings that are available and overlapping the current time slot
+																bookingsByTimeSlot = this.props.bookingsByDate[getSelectedDate(dayIndex)].items.filter((booking) => {
+																	for (let i = 0; i < booking.duration; ++i) {
+																		if (booking.timeSlot + i === index) {
+																			return true
+																		}
+																	}
+
+																	return false
+																})
+
+																timeSlotAvailable = bookingsByTimeSlot.length === 0
+															}
+
 															// If displaying the first row of the table, simply display it as a header
-															// Else, check if any bookings exist for the time slot and display it
-															index === 0 ? (
+															// Else, display the total number of bookings for the time slot
+															return index === 0 ? (
 																<div className={'col-xs clickable' + (dayIndex + 1 === moment(this.props.selectedDate, 'YYYY/M/D').isoWeekday() ? ' selected-date' : '')} onTouchTap={() => this.props.onSelectDate(getSelectedDate(dayIndex))} key={dayIndex}>
 																	<strong>{day}</strong>
 																</div>
 															) : (
-																<div className={'col-xs' + (this.props.isLoggedIn ? ' selectable' : '') + (dayIndex + 1 === moment(this.props.selectedDate, 'YYYY/M/D').isoWeekday() ? ' selected-date' : '')} onTouchTap={() => this.props.isLoggedIn && bookingDialog.getWrappedInstance().show({date: getSelectedDate(dayIndex), timeSlot: index})} key={dayIndex}></div>
+																<div className={'col-xs' + (this.props.isLoggedIn ? ' selectable' : '') + (dayIndex + 1 === moment(this.props.selectedDate, 'YYYY/M/D').isoWeekday() ? ' selected-date' : '')} onTouchTap={() => this.props.isLoggedIn && timeSlotAvailable && bookingDialog.getWrappedInstance().show({ date: getSelectedDate(dayIndex), timeSlot: index })} key={dayIndex}>
+																	{
+																		// If any booking overlaps the current timeslot, display the total number of bookings for that timeslot
+																		!timeSlotAvailable && (
+																			<Booking booking={{ bookingTitle: `${bookingsByTimeSlot.length} Booking(s)`, duration: 1 }} onTouchTap={() => bookingsListDialog.getWrappedInstance().show({ date: getSelectedDate(dayIndex), timeSlot: index })} />
+																		)
+																	}
+																</div>
 															)
-														))
+														})
 													}
 												</div>
 											))
@@ -227,6 +256,7 @@ class BookingTableComponent extends Component {
 					)
 				}
 
+				<BookingsListDialog ref={(dialog) => bookingsListDialog = dialog} onClickAdd={(props) => bookingDialog.getWrappedInstance().show({ ...props })} onClickBooking={(props) => bookingDialog.getWrappedInstance().show({ ...props })} />
 				<BookingDialog ref={(dialog) => bookingDialog = dialog} />
 				<RoomDialog ref={(dialog) => roomDialog = dialog} />
 			</div>

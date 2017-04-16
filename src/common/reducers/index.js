@@ -42,7 +42,7 @@ const selectedDateHistory = (state = [moment().format('YYYY/M/D')], action) => {
 	case SELECT_DATE:
 		// Only add the new selected date if it doesn't exist, otherwise move it to the front of the list
 		// The list only stores a maximum of 5 selected dates
-		return state.includes(action.date) ? [action.date, ...state.filter((date) => date !==action.date)] : [action.date, ...state.slice(0, 4)]
+		return state.includes(action.date) ? [action.date, ...state.filter((date) => date !== action.date)] : [action.date, ...state.slice(0, 4)]
 	default:
 		return state
 	}
@@ -86,7 +86,7 @@ const handleBookings = (state = {
 	case DELETE_BOOKING:
 		return {
 			...state,
-			items: state.items.filter((booking) => booking.bookingId !==action.bookingId)
+			items: state.items.filter((booking) => booking.bookingId !== action.bookingId)
 		}
 	default:
 		return state
@@ -113,7 +113,7 @@ const bookingsByDate = (state = {}, action) => {
 				newState[date] = {
 					isFetching: state[date].isFetching,
 					didInvalidate: state[date].didInvalidate,
-					items: state[date].items.filter((booking) => booking.bookingId !==action.booking.bookingId)
+					items: state[date].items.filter((booking) => booking.bookingId !== action.booking.bookingId)
 				}
 			}
 
@@ -164,12 +164,12 @@ const rooms = (state = {
 	case UPDATE_ROOM:
 		return {
 			...state,
-			items: [...state.items.filter((room) => room.roomId !==action.room.roomId), action.room]
+			items: [...state.items.filter((room) => room.roomId !== action.room.roomId), action.room]
 		}
 	case DELETE_ROOM:
 		return {
 			...state,
-			items: state.items.filter((room) => room.roomId !==action.roomId)
+			items: state.items.filter((room) => room.roomId !== action.roomId)
 		}
 	default:
 		return state

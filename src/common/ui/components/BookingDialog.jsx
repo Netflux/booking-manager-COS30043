@@ -237,7 +237,7 @@ class BookingDialogComponent extends Component {
 						))
 					}
 				</SelectField><br />
-			<SelectField id="duration" className="form-input" floatingLabelText="Duration" floatingLabelFixed={true} errorText={this.state.durationErrorText} disabled={this.state.mode === MODE_VIEW} onChange={(event, key, payload) => this.handleChange(payload, 'duration')} value={this.state.duration}>
+				<SelectField id="duration" className="form-input" floatingLabelText="Duration" floatingLabelFixed={true} errorText={this.state.durationErrorText} disabled={this.state.mode === MODE_VIEW} onChange={(event, key, payload) => this.handleChange(payload, 'duration')} value={this.state.duration}>
 					{
 						durations.map((duration, index) => (
 							<MenuItem primaryText={duration} value={index + 1} key={index}/>
