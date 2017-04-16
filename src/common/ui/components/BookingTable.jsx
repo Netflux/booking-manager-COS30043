@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react'
+import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import moment from 'moment'
 import { FloatingActionButton, FontIcon, Paper, RaisedButton, Tabs, Tab } from 'material-ui'
@@ -119,7 +120,7 @@ class BookingTableComponent extends Component {
 								<section>
 									<BookingDatePicker />
 
-									<Paper className="booking-table paper text-center">
+									<Paper className="booking-table paper text-center padding-none">
 										{
 											timeSlots.map((time, index) => (
 												<div className="row" key={time}>
@@ -175,7 +176,7 @@ class BookingTableComponent extends Component {
 								<section>
 									<BookingDatePicker />
 
-									<Paper className="booking-table paper text-center">
+									<Paper className="booking-table paper text-center padding-none">
 										{
 											timeSlots.map((time, index) => (
 												<div className="row" key={time}>
@@ -210,7 +211,7 @@ class BookingTableComponent extends Component {
 																	<strong>{day}</strong>
 																</div>
 															) : (
-																<div className={'col-xs' + (this.props.isLoggedIn ? ' selectable' : '') + (dayIndex + 1 === moment(this.props.selectedDate, 'YYYY/M/D').isoWeekday() ? ' selected-date' : '')} onTouchTap={() => this.props.isLoggedIn && timeSlotAvailable && bookingDialog.getWrappedInstance().show({ date: getSelectedDate(dayIndex), timeSlot: index })} key={dayIndex}>
+																<div className={'col-xs' + (this.props.isLoggedIn && timeSlotAvailable ? ' selectable' : '') + (dayIndex + 1 === moment(this.props.selectedDate, 'YYYY/M/D').isoWeekday() ? ' selected-date' : '')} onTouchTap={() => this.props.isLoggedIn && timeSlotAvailable && bookingDialog.getWrappedInstance().show({ date: getSelectedDate(dayIndex), timeSlot: index })} key={dayIndex}>
 																	{
 																		// If any booking overlaps the current timeslot, display the total number of bookings for that timeslot
 																		!timeSlotAvailable && (

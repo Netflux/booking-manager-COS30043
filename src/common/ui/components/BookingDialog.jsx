@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react'
+import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import moment from 'moment'
 import shortid from 'shortid'
@@ -188,7 +189,7 @@ class BookingDialogComponent extends Component {
 		if (this.props.isLoggedIn) {
 			if (this.state.mode === MODE_ADD || this.state.mode === MODE_EDIT) {
 				actions.unshift(<FlatButton label="Cancel" secondary={true} onTouchTap={() => this.cancel()} />)
-				
+
 				if (this.state.mode === MODE_EDIT) {
 					actions.unshift(<FlatButton label="Delete" secondary={true} onTouchTap={() => this.delete()} />)
 				}
