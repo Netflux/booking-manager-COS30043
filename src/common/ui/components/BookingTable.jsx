@@ -211,7 +211,12 @@ class BookingTableComponent extends Component {
 																	<strong>{day}</strong>
 																</div>
 															) : (
-																<div className={'col-xs' + (this.props.isLoggedIn && timeSlotAvailable ? ' selectable' : '') + (dayIndex + 1 === moment(this.props.selectedDate, 'YYYY/M/D').isoWeekday() ? ' selected-date' : '')} onTouchTap={() => this.props.isLoggedIn && timeSlotAvailable && bookingDialog.getWrappedInstance().show({ date: getSelectedDate(dayIndex), timeSlot: index })} key={dayIndex}>
+																<div className={
+																	'col-xs' +
+																	(this.props.isLoggedIn && timeSlotAvailable ? ' selectable' : '') +
+																	(!timeSlotAvailable && bookingsByTimeSlot.length === this.props.rooms.items.length ? ' booking-red' : '') +
+																	(dayIndex + 1 === moment(this.props.selectedDate, 'YYYY/M/D').isoWeekday() ? ' selected-date' : '')
+																} onTouchTap={() => this.props.isLoggedIn && timeSlotAvailable && bookingDialog.getWrappedInstance().show({ date: getSelectedDate(dayIndex), timeSlot: index })} key={dayIndex}>
 																	{
 																		// If any booking overlaps the current timeslot, display the total number of bookings for that timeslot
 																		!timeSlotAvailable && (

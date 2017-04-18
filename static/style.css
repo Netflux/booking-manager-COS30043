@@ -122,6 +122,9 @@ section {
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
+.booking-red .paper {
+	background-color: #FFCDD2 !important;
+}
 .booking-date-picker {
 	margin: 16px 0 0 0;
 }
