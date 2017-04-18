@@ -41,8 +41,7 @@ const selectedDateHistory = (state = [moment().format('YYYY/M/D')], action) => {
 	switch (action.type) {
 	case SELECT_DATE:
 		// Only add the new selected date if it doesn't exist, otherwise move it to the front of the list
-		// The list only stores a maximum of 5 selected dates
-		return state.includes(action.date) ? [action.date, ...state.filter((date) => date !== action.date)] : [action.date, ...state.slice(0, 4)]
+		return state.includes(action.date) ? [action.date, ...state.filter((date) => date !== action.date)] : [action.date, ...state]
 	default:
 		return state
 	}

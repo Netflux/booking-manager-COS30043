@@ -14,6 +14,7 @@ const mapStateToProps = state => {
 		isOpen: state.sideDrawerState.isOpen,
 		isDocked: state.sideDrawerState.isDocked,
 		selectedDateHistory: state.selectedDateHistory,
+		bookingsByDate: state.bookingsByDate,
 		isLoggedIn: state.user.isLoggedIn
 	}
 }
@@ -75,6 +76,9 @@ class SideDrawerComponent extends Component {
 	}
 
 	render() {
+		// Store a list of selected dates which have 1 or more bookings (limited to 5 dates)
+		const selectedDateList = this.props.selectedDateHistory.filter((date) => this.props.bookingsByDate[date] && this.props.bookingsByDate[date].items.length > 0).slice(0, 4)
+
 		return (
 			<Drawer className="side-drawer" open={this.props.isOpen} docked={this.props.isDocked} onRequestChange={() => this.props.onToggleMenu(true)} containerStyle={!(this.props.isOpen && this.props.isDocked) ? {transition: 'transform 550ms cubic-bezier(0.23, 1, 0.32, 1) 10ms'} : null}>
 				<Toolbar className="menu-bar">
@@ -101,13 +105,13 @@ class SideDrawerComponent extends Component {
 
 					{
 						// Only render history list if there are entries to display
-						this.props.selectedDateHistory.length > 0 && (
+						selectedDateList.length > 0 && (
 							<div>
 								<Divider />
 								<Subheader>Recently Viewed Dates</Subheader>
 
 								{
-									this.props.selectedDateHistory.map((date) => (
+									selectedDateList.map((date) => (
 										<Link to="/" onTouchTap={() => {
 											this.props.onNavigate(!this.props.isDocked)
 											this.props.onSelectDate(date)
@@ -128,6 +132,7 @@ SideDrawerComponent.propTypes = {
 	isOpen: PropTypes.bool.isRequired,
 	isDocked: PropTypes.bool.isRequired,
 	selectedDateHistory: PropTypes.array.isRequired,
+	bookingsByDate: PropTypes.object.isRequired,
 	isLoggedIn: PropTypes.bool.isRequired,
 	onNavigate: PropTypes.func.isRequired,
 	onToggleMenu: PropTypes.func.isRequired,
