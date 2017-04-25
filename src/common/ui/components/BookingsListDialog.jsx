@@ -20,6 +20,7 @@ class BookingsListDialogComponent extends Component {
 		// Initialize the default state
 		this.state = this.defaultState = {
 			open: false,
+			canAdd: true,
 			date: this.props.selectedDate,
 			timeSlot: 1
 		}
@@ -67,7 +68,7 @@ class BookingsListDialogComponent extends Component {
 			<FlatButton label="Ok" secondary={true} onTouchTap={() => this.dismiss()} />
 		]
 
-		if (this.props.isLoggedIn && this.props.onClickAdd) {
+		if (this.props.isLoggedIn && this.props.onClickAdd && this.state.canAdd) {
 			actions.unshift(<FlatButton label="Add" secondary={true} onTouchTap={() => this.props.onClickAdd ? this.props.onClickAdd({ date: this.state.date, timeSlot: this.state.timeSlot }) : null} />)
 		}
 
