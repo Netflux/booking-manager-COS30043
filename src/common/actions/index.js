@@ -486,3 +486,100 @@ export const requestLogout = () => {
 			})
 	}
 }
+
+// Action when the user is fetching search results
+export const fetchSearchResults = query => {
+	return dispatch => {
+		// Dispatch a 'Clear Search Results' action
+		dispatch(clearSearchResults())
+
+		// Dispatch a 'Request Search Results' action
+		dispatch(requestSearchResults(query))
+
+		// Fetch the search results and dispatch a 'Receive Search Results' action
+		return fetch(`/api/search/${query}`, { credentials: 'include' })
+			.then(response => {
+				if (response.ok) {
+					return response.json()
+				}
+				throw new Error(`HTTP Error ${response.status}: Failed to fetch search results (${query})`)
+			})
+			.then(json => dispatch(receiveSearchResults(json)))
+			.catch(() => {
+				// If online search failed, search for results locally
+				dispatch(fetchSearchResultsLocal(query))
+			})
+	}
+}
+
+// Action when the user is fetching search results (local)
+const fetchSearchResultsLocal = query => {
+	return (dispatch, getState) => {
+		let state = getState()
+
+		let results = {
+			bookings: [],
+			rooms: []
+		}
+
+		if (state.search.query !== '') {
+			let regexp = new RegExp(state.search.query)
+
+			for (let key in state.bookingsByDate) {
+				for (let i = 0; i < state.bookingsByDate[key].items.length; ++i) {
+					let booking = state.bookingsByDate[key].items[i]
+
+					if (regexp.test(booking.bookingId) || regexp.test(booking.bookingTitle) || regexp.test(booking.bookingDesc) || regexp.test(booking.roomId) || regexp.test(booking.date)) {
+						results.bookings.push(booking)
+					}
+				}
+			}
+
+			for (let i = 0; i < state.rooms.items.length; ++i) {
+				let room = state.rooms.items[i]
+
+				if (regexp.test(room.roomId) || regexp.test(room.roomName) || regexp.test(room.roomDesc)) {
+					results.rooms.push(room)
+				}
+			}
+		}
+
+		dispatch(receiveSearchResults(results))
+	}
+}
+
+// Action when the user requests search results
+export const REQUEST_SEARCH_RESULTS = 'REQUEST_SEARCH_RESULTS'
+const requestSearchResults = (query) => {
+	return {
+		type: REQUEST_SEARCH_RESULTS,
+		query
+	}
+}
+
+// Action when the user requests search results (local)
+export const REQUEST_SEARCH_RESULTS_LOCAL = 'REQUEST_SEARCH_RESULTS_LOCAL'
+const requestSearchResultsLocal = (query) => {
+	return {
+		type: REQUEST_SEARCH_RESULTS_LOCAL,
+		query
+	}
+}
+
+// Action when the user receives search results
+export const RECEIVE_SEARCH_RESULTS = 'RECEIVE_SEARCH_RESULTS'
+const receiveSearchResults = (json) => {
+	return {
+		type: RECEIVE_SEARCH_RESULTS,
+		bookings: json.bookings,
+		rooms: json.rooms
+	}
+}
+
+// Action when the search results are no longer required
+export const CLEAR_SEARCH_RESULTS = 'CLEAR_SEARCH_RESULTS'
+export const clearSearchResults = () => {
+	return {
+		type: CLEAR_SEARCH_RESULTS
+	}
+}

@@ -41,16 +41,19 @@ section {
 .paper:not(.paper-solo):not(.booking-table):last-of-type {
 	margin-bottom: 16px;
 }
+.search-box {
+	width: 100% !important;
+}
+/* ===== General CSS End ===== */
+
+
+/* ===== Utility CSS Start ===== */
 .clickable, .selectable {
 	cursor: pointer;
 }
 .selectable:hover {
 	background-color: rgba(66, 66, 66, 0.1);
 }
-/* ===== General CSS End ===== */
-
-
-/* ===== Utility CSS Start ===== */
 .text-center {
 	text-align: center !important;
 }

@@ -337,6 +337,58 @@ const serverRoutes = app => {
 			})
 	})
 
+	app.get('/api/search/:query', (req, res) => {
+		if (!hasDBConnection()) {
+			return res.sendStatus(500)
+		}
+
+		let result = {
+			bookings: [],
+			rooms: []
+		}
+
+		const searchQuery = new RegExp(req.params.query)
+
+		// Search database based on query
+		BookingModel.find({
+			$or: [
+				{ bookingId: searchQuery },
+				{ bookingTitle: searchQuery },
+				{ bookingDesc: searchQuery },
+				{ roomId: searchQuery },
+				{ date: searchQuery }
+			]
+		})
+		.select('bookingId bookingTitle bookingDesc roomId date timeSlot duration')
+		.exec((err, bookings) => {
+			if (err) {
+				console.error(err)
+				return res.sendStatus(500)
+			}
+
+			result.bookings = bookings
+
+			RoomModel.find({
+				$or: [
+					{ roomId: searchQuery },
+					{ roomName: searchQuery },
+					{ roomDesc: searchQuery }
+				]
+			})
+			.select('roomId roomName roomDesc isAvailable')
+			.exec((err, rooms) => {
+				if (err) {
+					console.error(err)
+					return res.sendStatus(500)
+				}
+
+				result.rooms = rooms
+
+				return res.json(result)
+			})
+		})
+	})
+
 	app.get('/static/*', (req, res) => {
 		// If in production, serve optimized version of the static content
 		if (process.env.NODE_ENV === 'production') {

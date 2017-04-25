@@ -3,7 +3,8 @@ import moment from 'moment'
 import { TOGGLE_DRAWER_OPEN, TOGGLE_DRAWER_DOCKED, SELECT_DATE,
 	REQUEST_BOOKINGS, RECEIVE_BOOKINGS, RECEIVE_BOOKINGS_ERROR, INVALIDATE_BOOKINGS, ADD_BOOKING, UPDATE_BOOKING, DELETE_BOOKING,
 	REQUEST_ROOMS, RECEIVE_ROOMS, RECEIVE_ROOMS_ERROR, INVALIDATE_ROOMS, ADD_ROOM, UPDATE_ROOM, DELETE_ROOM,
-	BEGIN_LOGIN, COMPLETE_LOGIN, COMPLETE_LOGIN_ERROR, CLEAR_LOGIN_ERROR, COMPLETE_LOGOUT } from '../actions'
+	BEGIN_LOGIN, COMPLETE_LOGIN, COMPLETE_LOGIN_ERROR, CLEAR_LOGIN_ERROR, COMPLETE_LOGOUT,
+	REQUEST_SEARCH_RESULTS, REQUEST_SEARCH_RESULTS_LOCAL, RECEIVE_SEARCH_RESULTS, CLEAR_SEARCH_RESULTS } from '../actions'
 
 // Reducer for side drawer-related actions
 const sideDrawerState = (state = {
@@ -216,6 +217,66 @@ const user = (state = {
 	}
 }
 
+// Reducer for search-related actions
+const search = (state = {
+	query: '',
+	isFetching: false,
+	bookings: [],
+	rooms: []
+}, action) => {
+	switch (action.type) {
+	case REQUEST_SEARCH_RESULTS:
+	case REQUEST_SEARCH_RESULTS_LOCAL:
+		return {
+			...state,
+			query: action.query,
+			isFetching: true
+		}
+	case RECEIVE_SEARCH_RESULTS:
+		return {
+			...state,
+			isFetching: false,
+			bookings: action.bookings,
+			rooms: action.rooms,
+		}
+	case CLEAR_SEARCH_RESULTS:
+		return {
+			...state,
+			query: '',
+			bookings: [],
+			rooms: []
+		}
+	case UPDATE_BOOKING:
+		return {
+			...state,
+			bookings: [...state.bookings.filter((booking) => booking.bookingId !== action.booking.bookingId), action.booking].filter((booking) => {
+				let regexp = new RegExp(state.query)
+				return regexp.test(booking.bookingId) || regexp.test(booking.bookingTitle) || regexp.test(booking.bookingDesc) || regexp.test(booking.roomId) || regexp.test(booking.date)
+			})
+		}
+	case DELETE_BOOKING:
+		return {
+			...state,
+			bookings: state.bookings.filter((booking) => booking.bookingId !== action.bookingId)
+		}
+	case UPDATE_ROOM:
+		return {
+			...state,
+			rooms: [...state.rooms.filter((room) => room.roomId !== action.room.roomId), action.room].filter((room) => {
+				let regexp = new RegExp(state.query)
+				return regexp.test(room.roomId) || regexp.test(room.roomName) || regexp.test(room.roomDesc)
+			})
+		}
+	case DELETE_ROOM:
+		return {
+			...state,
+			rooms: state.rooms.filter((room) => room.roomId !== action.roomId)
+		}
+	default:
+		return state
+	}
+}
+
 // Combine all reducers into a singular root reducer
 const rootReducer = combineReducers({
 	sideDrawerState,
@@ -223,7 +284,8 @@ const rootReducer = combineReducers({
 	selectedDateHistory,
 	bookingsByDate,
 	rooms,
-	user
+	user,
+	search
 })
 
 export default rootReducer
