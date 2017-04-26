@@ -7,6 +7,12 @@ import { Dialog, FlatButton, TextField, Toggle } from 'material-ui'
 
 import { handleAddRoom, handleUpdateRoom, handleDeleteRoom } from '../../actions'
 
+const mapStateToProps = state => {
+	return {
+		isLoggedIn: state.user.isLoggedIn
+	}
+}
+
 const mapDispatchToProps = dispatch => {
 	return {
 		addRoom: (room) => {
@@ -21,6 +27,11 @@ const mapDispatchToProps = dispatch => {
 	}
 }
 
+// Define the available modes for the Room Dialog Component
+const MODE_ADD = 0
+const MODE_VIEW = 1
+const MODE_EDIT = 2
+
 // Define the Room Dialog component
 class RoomDialogComponent extends Component {
 	constructor(props) {
@@ -29,7 +40,7 @@ class RoomDialogComponent extends Component {
 		// Initialize the default state
 		this.state = this.defaultState = {
 			open: false,
-			editing: false,
+			mode: MODE_ADD,
 			dialogTitle: 'New Room',
 			roomId: '',
 			roomName: '',
@@ -51,6 +62,19 @@ class RoomDialogComponent extends Component {
 			...props,
 			open: true
 		})
+
+		switch (props.mode) {
+		case MODE_VIEW:
+			this.setState({ dialogTitle: 'View Room' })
+			break
+		case MODE_EDIT:
+			this.setState({ dialogTitle: 'Edit Room' })
+			break
+		case MODE_ADD:
+		default:
+			this.setState({ dialogTitle: this.defaultState.dialogTitle })
+			break
+		}
 	}
 
 	dismiss() {
@@ -60,6 +84,22 @@ class RoomDialogComponent extends Component {
 	delete() {
 		this.props.deleteRoom(this.state.roomId)
 		this.dismiss()
+	}
+
+	edit() {
+		this.oldState = this.state
+		this.setState({
+			dialogTitle: 'Edit Room',
+			mode: MODE_EDIT
+		})
+	}
+
+	cancel() {
+		if (this.state.mode === MODE_EDIT) {
+			this.setState(this.oldState)
+		} else {
+			this.dismiss()
+		}
 	}
 
 	accept() {
@@ -78,9 +118,9 @@ class RoomDialogComponent extends Component {
 				isAvailable: this.state.isAvailable
 			}
 
-			if (this.state.editing) {
+			if (this.state.mode === MODE_EDIT) {
 				this.props.updateRoom(room)
-			} else {
+			} else if (this.state.mode === MODE_ADD) {
 				room.roomId = shortid.generate() + moment().format('ss')
 				this.props.addRoom(room)
 			}
@@ -91,17 +131,25 @@ class RoomDialogComponent extends Component {
 
 	render() {
 		// Define the action buttons to display in the dialog
-		const actions = [
-			<FlatButton label="Delete" secondary={true} disabled={!this.state.editing} onTouchTap={() => this.delete()} />,
-			<FlatButton label="Cancel" secondary={true} onTouchTap={() => this.dismiss()} />,
-			<FlatButton label="Ok" secondary={true} onTouchTap={() => this.accept()} />
-		]
+		const actions = [ <FlatButton label="Ok" secondary={true} onTouchTap={() => this.accept()} /> ]
+
+		if (this.props.isLoggedIn) {
+			if (this.state.mode === MODE_ADD || this.state.mode === MODE_EDIT) {
+				actions.unshift(<FlatButton label="Cancel" secondary={true} onTouchTap={() => this.cancel()} />)
+
+				if (this.state.mode === MODE_EDIT) {
+					actions.unshift(<FlatButton label="Delete" secondary={true} onTouchTap={() => this.delete()} />)
+				}
+			} else if (this.state.mode === MODE_VIEW) {
+				actions.unshift(<FlatButton label="Edit" secondary={true} onTouchTap={() => this.edit()} />)
+			}
+		}
 
 		return (
 			<Dialog contentClassName="dialog" title={this.state.dialogTitle} autoScrollBodyContent={true} actions={actions} open={this.state.open} onRequestClose={() => this.dismiss()}>
-				<TextField id="name" className="form-input" floatingLabelText="Name" floatingLabelFixed={true} errorText={this.state.roomNameErrorText} onChange={(event) => this.handleChange(event.target.value, 'roomName')} value={this.state.roomName} /><br />
-				<TextField id="description" className="form-input" floatingLabelText="Description" floatingLabelFixed={true} onChange={(event) => this.handleChange(event.target.value, 'roomDesc')} value={this.state.roomDesc} /><br />
-				<Toggle label="Available for Booking" labelPosition="right" defaultToggled={this.state.isAvailable} onToggle={(event, isInputChecked) => this.handleChange(isInputChecked, 'isAvailable')} value={this.state.isAvailable} />
+				<TextField id="name" className="form-input" floatingLabelText="Name" floatingLabelFixed={true} errorText={this.state.roomNameErrorText} disabled={this.state.mode === MODE_VIEW} onChange={(event) => this.handleChange(event.target.value, 'roomName')} value={this.state.roomName} /><br />
+				<TextField id="description" className="form-input" floatingLabelText="Description" floatingLabelFixed={true} disabled={this.state.mode === MODE_VIEW} onChange={(event) => this.handleChange(event.target.value, 'roomDesc')} value={this.state.roomDesc} /><br />
+				<Toggle label="Available for Booking" labelPosition="right" defaultToggled={this.state.isAvailable} disabled={this.state.mode === MODE_VIEW} onToggle={(event, isInputChecked) => this.handleChange(isInputChecked, 'isAvailable')} value={this.state.isAvailable} />
 			</Dialog>
 		)
 	}
@@ -109,12 +157,13 @@ class RoomDialogComponent extends Component {
 
 // Define the property types that the component expects to receive
 RoomDialogComponent.propTypes = {
+	isLoggedIn: PropTypes.bool.isRequired,
 	addRoom: PropTypes.func.isRequired,
 	updateRoom: PropTypes.func.isRequired,
 	deleteRoom: PropTypes.func.isRequired
 }
 
-// Define the container for the Room Dialog component (maps dispatchers)
-const RoomDialog = connect(null, mapDispatchToProps, null, { withRef: true })(RoomDialogComponent)
+// Define the container for the Room Dialog component (maps state and dispatchers)
+const RoomDialog = connect(mapStateToProps, mapDispatchToProps, null, { withRef: true })(RoomDialogComponent)
 
 export default RoomDialog

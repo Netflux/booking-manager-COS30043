@@ -490,9 +490,6 @@ export const requestLogout = () => {
 // Action when the user is fetching search results
 export const fetchSearchResults = query => {
 	return dispatch => {
-		// Dispatch a 'Clear Search Results' action
-		dispatch(clearSearchResults())
-
 		// Dispatch a 'Request Search Results' action
 		dispatch(requestSearchResults(query))
 
@@ -515,6 +512,9 @@ export const fetchSearchResults = query => {
 // Action when the user is fetching search results (local)
 const fetchSearchResultsLocal = query => {
 	return (dispatch, getState) => {
+		// Dispatch a 'Request Search Results' action (local)
+		dispatch(requestSearchResultsLocal(query))
+
 		let state = getState()
 
 		let results = {
@@ -523,7 +523,7 @@ const fetchSearchResultsLocal = query => {
 		}
 
 		if (state.search.query !== '') {
-			let regexp = new RegExp(state.search.query)
+			let regexp = new RegExp(query)
 
 			for (let key in state.bookingsByDate) {
 				for (let i = 0; i < state.bookingsByDate[key].items.length; ++i) {

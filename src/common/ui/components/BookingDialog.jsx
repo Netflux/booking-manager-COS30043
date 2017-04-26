@@ -182,9 +182,7 @@ class BookingDialogComponent extends Component {
 
 	render() {
 		// Define the action buttons to display in the dialog
-		const actions = [
-			<FlatButton label="Ok" secondary={true} onTouchTap={() => this.accept()} />
-		]
+		const actions = [ <FlatButton label="Ok" secondary={true} onTouchTap={() => this.accept()} /> ]
 
 		if (this.props.isLoggedIn) {
 			if (this.state.mode === MODE_ADD || this.state.mode === MODE_EDIT) {

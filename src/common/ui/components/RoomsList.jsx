@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { FlatButton, FloatingActionButton, FontIcon, Paper, RaisedButton } from 'material-ui'
+import { FloatingActionButton, FontIcon, Paper, RaisedButton } from 'material-ui'
 
 import RoomDialog from './RoomDialog'
 
@@ -45,20 +45,10 @@ class RoomsListComponent extends Component {
 							{
 								this.props.rooms.items.map((room) => (
 									<div className="col-sm-6 col-xs-12" key={room.roomId}>
-										<Paper className="paper paper-solo">
+										<Paper className={'paper paper-solo' + (this.props.isLoggedIn ? ' selectable' : '')} onTouchTap={() => roomDialog.getWrappedInstance().show({ mode: 1, ...room })}>
 											<h1 className="room-header">{room.roomName}</h1>
 											<p>{room.roomDesc || 'No description provided'}</p>
 											<p>Booking Allowed: {room.isAvailable ? 'Yes' : 'No'}</p>
-
-											{
-												// Only display the Edit/Delete buttons if the user is logged in
-												this.props.isLoggedIn && (
-													<div>
-														<FlatButton label="Edit" secondary={true} onTouchTap={() => roomDialog.getWrappedInstance().show({ dialogTitle: 'Edit Room', editing: true, ...room })} />
-														<FlatButton label="Delete" secondary={true} onTouchTap={() => this.props.deleteRoom(room.roomId)} />
-													</div>
-												)
-											}
 										</Paper>
 									</div>
 								))

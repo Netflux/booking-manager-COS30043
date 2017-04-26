@@ -1,8 +1,6 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import moment from 'moment'
-import shortid from 'shortid'
 import { Dialog, Divider, FlatButton, List, ListItem, Subheader, TextField } from 'material-ui'
 
 import BookingDialog from './BookingDialog'
@@ -21,10 +19,10 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
 	return {
-		handleSearch: (query) => {
+		onSearch: (query) => {
 			dispatch(fetchSearchResults(query))
 		},
-		handleClearSearch: () => {
+		onClearSearch: () => {
 			dispatch(clearSearchResults())
 		}
 	}
@@ -40,11 +38,28 @@ class SearchDialogComponent extends Component {
 			open: false,
 			searchQuery: ''
 		}
+
+		// Bind "this" to the function
+		this.handleSearch = this.handleSearch.bind(this)
 	}
 
 	handleChange(value, stateName) {
 		this.setState({ [stateName]: value })
-		this.props.handleSearch(value)
+		this.handleSearch(value)
+	}
+
+	handleSearch(query) {
+		clearTimeout(this.searchTimer)
+
+		if (query === '') {
+			this.props.onClearSearch()
+		} else {
+			// Set a delay of 200ms for handling search requests
+			this.searchTimer = setTimeout(() => {
+				this.props.onSearch(query)
+			}, 200)
+		}
+
 	}
 
 	show(props) {
@@ -55,7 +70,7 @@ class SearchDialogComponent extends Component {
 	}
 
 	dismiss() {
-		this.props.handleClearSearch()
+		this.props.onClearSearch()
 
 		this.setState(this.defaultState)
 	}
@@ -105,6 +120,7 @@ class SearchDialogComponent extends Component {
 				}
 
 				{
+					// Display a divider if both bookings and rooms are available
 					this.props.search.bookings.length > 0 && this.props.search.rooms.length > 0 && (
 						<Divider />
 					)
@@ -117,7 +133,7 @@ class SearchDialogComponent extends Component {
 							<Subheader>Rooms</Subheader>
 							{
 								this.props.search.rooms.map((room) => (
-									<ListItem primaryText={room.roomName} secondaryText={room.roomDesc} onTouchTap={() => roomDialog.getWrappedInstance().show({ dialogTitle: 'Edit Room', editing: true, ...room })} key={room.roomId} />
+									<ListItem primaryText={room.roomName} secondaryText={room.roomDesc} onTouchTap={() => roomDialog.getWrappedInstance().show({ mode: 1, ...room })} key={room.roomId} />
 								))
 							}
 						</List>
@@ -137,8 +153,8 @@ SearchDialogComponent.propTypes = {
 	rooms: PropTypes.object.isRequired,
 	isLoggedIn: PropTypes.bool.isRequired,
 	search: PropTypes.object.isRequired,
-	handleSearch: PropTypes.func.isRequired,
-	handleClearSearch: PropTypes.func.isRequired
+	onSearch: PropTypes.func.isRequired,
+	onClearSearch: PropTypes.func.isRequired
 }
 
 // Define the container for the Search Dialog component (maps state and dispatchers)
