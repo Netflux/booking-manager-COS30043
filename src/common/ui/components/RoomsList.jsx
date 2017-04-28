@@ -41,12 +41,12 @@ class RoomsListComponent extends Component {
 			<section className="room-table">
 				{
 					this.props.rooms.items.length > 0 ? (
-						<div className="row center-xs start-sm">
+						<div className="row center-xs start-sm padding-bottom">
 							{
 								this.props.rooms.items.map((room) => (
 									<div className="col-sm-6 col-xs-12" key={room.roomId}>
-										<Paper className={'paper paper-solo' + (this.props.isLoggedIn ? ' selectable' : '')} onTouchTap={() => roomDialog.getWrappedInstance().show({ mode: 1, ...room })}>
-											<h1 className="room-header">{room.roomName}</h1>
+										<Paper className="paper paper-solo selectable" onTouchTap={() => roomDialog.getWrappedInstance().show({ mode: 1, ...room })}>
+											<h1 className="header">{room.roomName}</h1>
 											<p>{room.roomDesc || 'No description provided'}</p>
 											<p>Booking Allowed: {room.isAvailable ? 'Yes' : 'No'}</p>
 										</Paper>

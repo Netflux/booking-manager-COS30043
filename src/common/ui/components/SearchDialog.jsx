@@ -96,7 +96,7 @@ class SearchDialogComponent extends Component {
 				{
 					// Display a message if no results are available
 					this.props.search.bookings.length === 0 && this.props.search.rooms.length === 0 && (
-						<h1 className="text-center">No results</h1>
+						<h1 className="text-center">{this.props.search.query === '' ? 'Enter a search query' : 'No results'}</h1>
 					)
 				}
 

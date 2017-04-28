@@ -87,7 +87,7 @@ class LoginFormComponent extends Component {
 			<section>
 				<div className="row center-xs">
 					<Paper className="paper">
-						<h1 className="login-header text-center">Login</h1>
+						<h1 className="header text-center">Login</h1>
 						<form action="/login" method="post" onSubmit={(event) => this.onLogin(event)}>
 							{
 								// If there is a login error, display it

@@ -91,6 +91,13 @@ class SideDrawerComponent extends Component {
 					<Link to="/rooms" onTouchTap={() => this.props.onNavigate(!this.props.isDocked)}><MenuItem leftIcon={<FontIcon className="material-icons">room</FontIcon>}>Rooms</MenuItem></Link>
 
 					{
+						// Render the statistics button if the user is logged in
+						this.props.isLoggedIn && (
+							<Link to="/statistics" onTouchTap={() => this.props.onNavigate(!this.props.isDocked)}><MenuItem leftIcon={<FontIcon className="material-icons">insert_chart</FontIcon>}>Statistics</MenuItem></Link>
+						)
+					}
+
+					{
 						// Render either the login/logout button depending on the user login status
 						this.props.isLoggedIn ? (
 							<Link to="/logout" onTouchTap={(event) => {
