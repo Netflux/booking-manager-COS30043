@@ -8,7 +8,7 @@ import SearchDialog from './SearchDialog'
 
 import theme from '../theme'
 
-import { toggleDrawerOpen, fetchBookings, invalidateBookings, fetchRooms, invalidateRooms, fetchStatistics, invalidateStatistics } from '../../actions'
+import { toggleDrawerOpen, fetchBookings, fetchRooms, fetchStatistics } from '../../actions'
 
 const mapStateToProps = state => {
 	return {

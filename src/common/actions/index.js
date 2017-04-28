@@ -53,7 +53,6 @@ export const fetchBookings = date => {
 	return dispatch => {
 		// Dispatch a 'Request Bookings' action
 		dispatch(requestBookings(date))
-		console.log('Fetching bookings')
 
 		// Fetch the booking entries and dispatch a 'Receive Bookings' action
 		return fetch(`/api/bookings/${date}`, { credentials: 'include' })
@@ -255,7 +254,6 @@ export const fetchRooms = () => {
 	return dispatch => {
 		// Dispatch a 'Request Rooms' action
 		dispatch(requestRooms())
-		console.log('Fetching rooms')
 
 		// Fetch the room entries and dispatch a 'Receive Rooms' action
 		return fetch('/api/rooms', { credentials: 'include' })
@@ -634,7 +632,6 @@ export const fetchStatistics = () => {
 	return dispatch => {
 		// Dispatch a 'Request Statistics' action
 		dispatch(requestStatistics())
-		console.log('Fetching statistics')
 
 		// Fetch the statistics and dispatch a 'Receive Statistics' action
 		return fetch('/api/statistics', { credentials: 'include' })
