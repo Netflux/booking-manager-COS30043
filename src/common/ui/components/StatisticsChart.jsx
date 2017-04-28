@@ -13,14 +13,16 @@ class StatisticsChart extends Component {
 
 	render() {
 		return (
-			<canvas className="chart" width="400" height="400" ref={(canvas) => this.canvas = canvas} />
+			<canvas className="chart" width={this.props.width || 400} height={this.props.height || 400} ref={(canvas) => this.canvas = canvas} />
 		)
 	}
 }
 
 // Define the property types that the component expects to receive
 StatisticsChart.propTypes = {
-	options: PropTypes.object.isRequired
+	options: PropTypes.object.isRequired,
+	width: PropTypes.oneOfType([ PropTypes.number, PropTypes.string ]),
+	height: PropTypes.oneOfType([ PropTypes.number, PropTypes.string ])
 }
 
 export default StatisticsChart

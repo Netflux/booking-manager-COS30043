@@ -180,8 +180,10 @@ section {
 /* ===== Statistics Page CSS End ===== */
 .chart {
 	max-width: 400px;
-	max-height: 400px;
 	margin: auto;
+}
+.paper-fullheight {
+	height: calc(100% - 16px);
 }
 /* ===== Statistics Page CSS End ===== */
 
@@ -208,13 +210,13 @@ section {
 
 
 /* ===== Media Query CSS Start ===== */
-@media (max-width: 1366px) {
+@media (max-width: 1365px) {
 	section {
 		padding: 0 5%;
 	}
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767px) {
 	.paper {
 		padding: 8px;
 	}
@@ -223,7 +225,7 @@ section {
 	}
 }
 
-@media (max-width: 640px) {
+@media (max-width: 639px) {
 	.booking-table.paper {
 		padding: 0;
 	}
