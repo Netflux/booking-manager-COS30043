@@ -250,26 +250,34 @@ const search = (state = {
 			rooms: []
 		}
 	case UPDATE_BOOKING:
-		return {
-			...state,
-			bookings: [...state.bookings.filter((booking) => booking.bookingId !== action.booking.bookingId), action.booking].filter((booking) => {
-				let regexp = new RegExp(state.query)
-				return regexp.test(booking.bookingId) || regexp.test(booking.bookingTitle) || regexp.test(booking.bookingDesc) || regexp.test(booking.roomId) || regexp.test(booking.date)
-			})
+		if (state.bookings.filter((booking) => booking.bookingId === action.booking.bookingId).length !== 0) {
+			return {
+				...state,
+				bookings: [...state.bookings.filter((booking) => booking.bookingId !== action.booking.bookingId), action.booking].filter((booking) => {
+					let regexp = new RegExp(state.query)
+					return regexp.test(booking.bookingId) || regexp.test(booking.bookingTitle) || regexp.test(booking.bookingDesc) || regexp.test(booking.roomId) || regexp.test(booking.date)
+				})
+			}
 		}
+
+		return state
 	case DELETE_BOOKING:
 		return {
 			...state,
 			bookings: state.bookings.filter((booking) => booking.bookingId !== action.bookingId)
 		}
 	case UPDATE_ROOM:
-		return {
-			...state,
-			rooms: [...state.rooms.filter((room) => room.roomId !== action.room.roomId), action.room].filter((room) => {
-				let regexp = new RegExp(state.query)
-				return regexp.test(room.roomId) || regexp.test(room.roomName) || regexp.test(room.roomDesc)
-			})
+		if (state.rooms.filter((room) => room.roomId === action.room.roomId) !== 0) {
+			return {
+				...state,
+				rooms: [...state.rooms.filter((room) => room.roomId !== action.room.roomId), action.room].filter((room) => {
+					let regexp = new RegExp(state.query)
+					return regexp.test(room.roomId) || regexp.test(room.roomName) || regexp.test(room.roomDesc)
+				})
+			}
 		}
+
+		return state
 	case DELETE_ROOM:
 		return {
 			...state,

@@ -52,8 +52,8 @@ const MenubarComponent = ({ title, selectedDate, onToggleMenu, onRefresh }) => {
 				<ToolbarTitle text={title} style={{ color: theme.palette.alternateTextColor }} />
 			</ToolbarGroup>
 			<ToolbarGroup>
-				<FontIcon className="material-icons" onTouchTap={() => searchDialog.getWrappedInstance().show()} style={{ color: theme.palette.alternateTextColor }}>search</FontIcon>
 				<FontIcon className="material-icons" onTouchTap={() => onRefresh(selectedDate)} style={{ color: theme.palette.alternateTextColor }}>refresh</FontIcon>
+				<FontIcon className="material-icons" onTouchTap={() => searchDialog.getWrappedInstance().show()} style={{ color: theme.palette.alternateTextColor }}>search</FontIcon>
 				<SearchDialog ref={(dialog) => searchDialog = dialog} />
 			</ToolbarGroup>
 		</Toolbar>
