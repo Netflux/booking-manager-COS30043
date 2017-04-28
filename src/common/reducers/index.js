@@ -4,7 +4,8 @@ import { TOGGLE_DRAWER_OPEN, TOGGLE_DRAWER_DOCKED, SELECT_DATE,
 	REQUEST_BOOKINGS, RECEIVE_BOOKINGS, RECEIVE_BOOKINGS_ERROR, INVALIDATE_BOOKINGS, ADD_BOOKING, UPDATE_BOOKING, DELETE_BOOKING,
 	REQUEST_ROOMS, RECEIVE_ROOMS, RECEIVE_ROOMS_ERROR, INVALIDATE_ROOMS, ADD_ROOM, UPDATE_ROOM, DELETE_ROOM,
 	BEGIN_LOGIN, COMPLETE_LOGIN, COMPLETE_LOGIN_ERROR, CLEAR_LOGIN_ERROR, COMPLETE_LOGOUT,
-	REQUEST_SEARCH_RESULTS, REQUEST_SEARCH_RESULTS_LOCAL, RECEIVE_SEARCH_RESULTS, CLEAR_SEARCH_RESULTS } from '../actions'
+	REQUEST_SEARCH_RESULTS, REQUEST_SEARCH_RESULTS_LOCAL, RECEIVE_SEARCH_RESULTS, CLEAR_SEARCH_RESULTS,
+	REQUEST_STATISTICS, RECEIVE_STATISTICS, RECEIVE_STATISTICS_ERROR, INVALIDATE_STATISTICS } from '../actions'
 
 // Reducer for side drawer-related actions
 const sideDrawerState = (state = {
@@ -64,6 +65,7 @@ const handleBookings = (state = {
 		return {
 			...state,
 			isFetching: false,
+			didInvalidate: false,
 			items: action.bookings,
 			lastUpdated: action.receivedAt
 		}
@@ -143,6 +145,7 @@ const rooms = (state = {
 		return {
 			...state,
 			isFetching: false,
+			didInvalidate: false,
 			items: action.rooms,
 			lastUpdated: action.receivedAt
 		}
@@ -277,6 +280,43 @@ const search = (state = {
 	}
 }
 
+
+
+// Reducer for statistics-related actions
+const statistics = (state = {
+	isFetching: false,
+	didInvalidate: false,
+	data: false
+}, action) => {
+	switch (action.type) {
+	case REQUEST_STATISTICS:
+		return {
+			...state,
+			isFetching: true
+		}
+	case RECEIVE_STATISTICS:
+		return {
+			...state,
+			isFetching: false,
+			didInvalidate: false,
+			data: action.data,
+			lastUpdated: action.receivedAt
+		}
+	case RECEIVE_STATISTICS_ERROR:
+		return {
+			...state,
+			isFetching: false
+		}
+	case INVALIDATE_STATISTICS:
+		return {
+			...state,
+			didInvalidate: true
+		}
+	default:
+		return state
+	}
+}
+
 // Combine all reducers into a singular root reducer
 const rootReducer = combineReducers({
 	sideDrawerState,
@@ -285,7 +325,8 @@ const rootReducer = combineReducers({
 	bookingsByDate,
 	rooms,
 	user,
-	search
+	search,
+	statistics
 })
 
 export default rootReducer

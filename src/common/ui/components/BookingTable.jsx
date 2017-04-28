@@ -87,149 +87,149 @@ class BookingTableComponent extends Component {
 		// Store a list of all available rooms
 		const availableRooms = this.props.rooms.items.filter((room) => room.isAvailable)
 
+
+		// If no rooms are available, display a message
+		if (availableRooms.length === 0) {
+			return (
+				<section>
+					<Paper className="paper text-center">
+						<h1>No rooms available!</h1>
+
+						{
+							// If logged in, display the 'Add New Room' button
+							// Else, display a message to the user
+							this.props.isLoggedIn ? (
+								<RaisedButton label="Add New Room" secondary={true} onTouchTap={() => roomDialog.getWrappedInstance().show()} />
+							) : (
+								<p>If you're seeing this message, please contact the system administrator.</p>
+							)
+						}
+					</Paper>
+				</section>
+			)
+		}
+
 		return (
 			<div>
-				{
-					// If at least 1 room is available, display the booking table
-					// Else, display a message indicating that no rooms are available
-					availableRooms.length > 0 ? (
-						<Tabs className="tabbar">
-							<Tab label="Room View">
-								<section>
-									<BookingDatePicker />
-
-									<Paper className="booking-table paper text-center padding-none">
-										{
-											timeSlots.map((time, index) => (
-												<div className="row" key={time}>
-													<div className="col-xs">
-														<strong>{time}</strong>
-													</div>
-
-													{
-														availableRooms.map((room) => {
-															let bookingsByTimeSlot = []
-															let timeSlotAvailable = true
-
-															if (this.props.bookingsByDate[this.props.selectedDate]) {
-																// Filter for any bookings that are available on the current time slot
-																bookingsByTimeSlot = this.props.bookingsByDate[this.props.selectedDate].items.filter((booking) => booking.roomId === room.roomId && booking.timeSlot === index)
-
-																// Check whether any bookings overlap with the current time slot
-																timeSlotAvailable = !(this.props.bookingsByDate[this.props.selectedDate].items.filter((booking) => booking.roomId === room.roomId).some((booking) => {
-																	for (let i = 0; i < booking.duration; ++i) {
-																		if (booking.timeSlot + i === index) {
-																			return true
-																		}
-																	}
-																	return false
-																}))
-															}
-
-															return (
-																<div className={'col-xs' + (this.props.isLoggedIn && index !== 0 && timeSlotAvailable ? ' selectable' : '')} onTouchTap={() => this.props.isLoggedIn && index !== 0 && timeSlotAvailable && bookingDialog.getWrappedInstance().show({ roomId: room.roomId, timeSlot: index })} key={room.roomId}>
-																	{
-																		// If displaying the first row of the table, simply display it as a header
-																		// Else, display any bookings that exist for the time slot
-																		index === 0 ? (
-																			<strong>{room.roomName}</strong>
-																		) : (
-																			bookingsByTimeSlot.map((booking) => (
-																				<Booking booking={booking} onTouchTap={() => bookingDialog.getWrappedInstance().show({ mode: 1, ...booking })} key={booking.bookingId} />
-																			))
-																		)
-																	}
-																</div>
-															)
-														})
-													}
-												</div>
-											))
-										}
-									</Paper>
-								</section>
-							</Tab>
-
-							<Tab label="Weekly View">
-								<section>
-									<BookingDatePicker />
-
-									<Paper className="booking-table paper text-center padding-none">
-										{
-											timeSlots.map((time, index) => (
-												<div className="row" key={time}>
-													<div className="col-xs">
-														<strong>{time}</strong>
-													</div>
-
-													{
-														bookingDays.map((day, dayIndex) => {
-															let bookingsByTimeSlot = []
-															let timeSlotAvailable = true
-
-															if (this.props.bookingsByDate[getSelectedDate(dayIndex)]) {
-																// Filter for any bookings that are available and overlapping the current time slot
-																bookingsByTimeSlot = this.props.bookingsByDate[getSelectedDate(dayIndex)].items.filter((booking) => {
-																	for (let i = 0; i < booking.duration; ++i) {
-																		if (booking.timeSlot + i === index) {
-																			return true
-																		}
-																	}
-
-																	return false
-																})
-
-																timeSlotAvailable = bookingsByTimeSlot.length === 0
-															}
-
-															// If displaying the first row of the table, simply display it as a header
-															// Else, display the total number of bookings for the time slot
-															return index === 0 ? (
-																<div className={'col-xs clickable' + (dayIndex + 1 === moment(this.props.selectedDate, 'YYYY/M/D').isoWeekday() ? ' selected-date' : '')} onTouchTap={() => this.props.onSelectDate(getSelectedDate(dayIndex))} key={dayIndex}>
-																	<strong>{day}</strong>
-																</div>
-															) : (
-																<div className={
-																	'col-xs' +
-																	(this.props.isLoggedIn && timeSlotAvailable ? ' selectable' : '') +
-																	(bookingsByTimeSlot.length === this.props.rooms.items.length ? ' booking-red' : '') +
-																	(dayIndex + 1 === moment(this.props.selectedDate, 'YYYY/M/D').isoWeekday() ? ' selected-date' : '')
-																} onTouchTap={() => this.props.isLoggedIn && timeSlotAvailable && bookingDialog.getWrappedInstance().show({ date: getSelectedDate(dayIndex), timeSlot: index })} key={dayIndex}>
-																	{
-																		// If any booking overlaps the current timeslot, display the total number of bookings for that timeslot
-																		!timeSlotAvailable && (
-																			<Booking booking={{ bookingTitle: `${bookingsByTimeSlot.length} Booking(s)`, duration: 1 }} onTouchTap={() => bookingsListDialog.getWrappedInstance().show({ canAdd: bookingsByTimeSlot.length !== this.props.rooms.items.length, date: getSelectedDate(dayIndex), timeSlot: index })} />
-																		)
-																	}
-																</div>
-															)
-														})
-													}
-												</div>
-											))
-										}
-									</Paper>
-								</section>
-							</Tab>
-						</Tabs>
-					) : (
+				<Tabs className="tabbar">
+					<Tab label="Room View">
 						<section>
-							<Paper className="paper text-center">
-								<h1>No rooms available!</h1>
+							<BookingDatePicker />
 
+							<Paper className="booking-table paper text-center padding-none">
 								{
-									// If logged in, display the 'Add New Room' button
-									// Else, display a message to the user
-									this.props.isLoggedIn ? (
-										<RaisedButton label="Add New Room" secondary={true} onTouchTap={() => roomDialog.getWrappedInstance().show()} />
-									) : (
-										<p>If you're seeing this message, please contact the system administrator.</p>
-									)
+									timeSlots.map((time, index) => (
+										<div className="row" key={time}>
+											<div className="col-xs">
+												<strong>{time}</strong>
+											</div>
+
+											{
+												availableRooms.map((room) => {
+													let bookingsByTimeSlot = []
+													let timeSlotAvailable = true
+
+													if (this.props.bookingsByDate[this.props.selectedDate]) {
+														// Filter for any bookings that are available on the current time slot
+														bookingsByTimeSlot = this.props.bookingsByDate[this.props.selectedDate].items.filter((booking) => booking.roomId === room.roomId && booking.timeSlot === index)
+
+														// Check whether any bookings overlap with the current time slot
+														timeSlotAvailable = !(this.props.bookingsByDate[this.props.selectedDate].items.filter((booking) => booking.roomId === room.roomId).some((booking) => {
+															for (let i = 0; i < booking.duration; ++i) {
+																if (booking.timeSlot + i === index) {
+																	return true
+																}
+															}
+															return false
+														}))
+													}
+
+													return (
+														<div className={'col-xs' + (this.props.isLoggedIn && index !== 0 && timeSlotAvailable ? ' selectable' : '')} onTouchTap={() => this.props.isLoggedIn && index !== 0 && timeSlotAvailable && bookingDialog.getWrappedInstance().show({ roomId: room.roomId, timeSlot: index })} key={room.roomId}>
+															{
+																// If displaying the first row of the table, simply display it as a header
+																// Else, display any bookings that exist for the time slot
+																index === 0 ? (
+																	<strong>{room.roomName}</strong>
+																) : (
+																	bookingsByTimeSlot.map((booking) => (
+																		<Booking booking={booking} onTouchTap={() => bookingDialog.getWrappedInstance().show({ mode: 1, ...booking })} key={booking.bookingId} />
+																	))
+																)
+															}
+														</div>
+													)
+												})
+											}
+										</div>
+									))
 								}
 							</Paper>
 						</section>
-					)
-				}
+					</Tab>
+
+					<Tab label="Weekly View">
+						<section>
+							<BookingDatePicker />
+
+							<Paper className="booking-table paper text-center padding-none">
+								{
+									timeSlots.map((time, index) => (
+										<div className="row" key={time}>
+											<div className="col-xs">
+												<strong>{time}</strong>
+											</div>
+
+											{
+												bookingDays.map((day, dayIndex) => {
+													let bookingsByTimeSlot = []
+													let timeSlotAvailable = true
+
+													if (this.props.bookingsByDate[getSelectedDate(dayIndex)]) {
+														// Filter for any bookings that are available and overlapping the current time slot
+														bookingsByTimeSlot = this.props.bookingsByDate[getSelectedDate(dayIndex)].items.filter((booking) => {
+															for (let i = 0; i < booking.duration; ++i) {
+																if (booking.timeSlot + i === index) {
+																	return true
+																}
+															}
+
+															return false
+														})
+
+														timeSlotAvailable = bookingsByTimeSlot.length === 0
+													}
+
+													// If displaying the first row of the table, simply display it as a header
+													// Else, display the total number of bookings for the time slot
+													return index === 0 ? (
+														<div className={'col-xs clickable' + (dayIndex + 1 === moment(this.props.selectedDate, 'YYYY/M/D').isoWeekday() ? ' selected-date' : '')} onTouchTap={() => this.props.onSelectDate(getSelectedDate(dayIndex))} key={dayIndex}>
+															<strong>{day}</strong>
+														</div>
+													) : (
+														<div className={
+															'col-xs' +
+															(this.props.isLoggedIn && timeSlotAvailable ? ' selectable' : '') +
+															(bookingsByTimeSlot.length === this.props.rooms.items.length ? ' booking-red' : '') +
+															(dayIndex + 1 === moment(this.props.selectedDate, 'YYYY/M/D').isoWeekday() ? ' selected-date' : '')
+														} onTouchTap={() => this.props.isLoggedIn && timeSlotAvailable && bookingDialog.getWrappedInstance().show({ date: getSelectedDate(dayIndex), timeSlot: index })} key={dayIndex}>
+															{
+																// If any booking overlaps the current timeslot, display the total number of bookings for that timeslot
+																!timeSlotAvailable && (
+																	<Booking booking={{ bookingTitle: `${bookingsByTimeSlot.length} Booking(s)`, duration: 1 }} onTouchTap={() => bookingsListDialog.getWrappedInstance().show({ canAdd: bookingsByTimeSlot.length !== this.props.rooms.items.length, date: getSelectedDate(dayIndex), timeSlot: index })} />
+																)
+															}
+														</div>
+													)
+												})
+											}
+										</div>
+									))
+								}
+							</Paper>
+						</section>
+					</Tab>
+				</Tabs>
 
 				{
 					// If logged in, display the FAB for adding new rooms/bookings

@@ -39,7 +39,7 @@ const shouldFetchBookings = (state, date) => {
 // Action when the user needs to fetch booking entries
 export const fetchBookingsIfNeeded = date => {
 	return (dispatch, getState) => {
-		// Fetch booking entries if not in memory, else return a resolved promise
+		// Fetch booking entries if not in memory or invalidated, else return a resolved promise
 		if (shouldFetchBookings(getState(), date)) {
 			return dispatch(fetchBookings(date))
 		} else {
@@ -49,10 +49,11 @@ export const fetchBookingsIfNeeded = date => {
 }
 
 // Action when the user is fetching booking entries
-const fetchBookings = date => {
+export const fetchBookings = date => {
 	return dispatch => {
 		// Dispatch a 'Request Bookings' action
 		dispatch(requestBookings(date))
+		console.log('Fetching bookings')
 
 		// Fetch the booking entries and dispatch a 'Receive Bookings' action
 		return fetch(`/api/bookings/${date}`, { credentials: 'include' })
@@ -97,7 +98,7 @@ const receiveBookingsError = () => {
 	}
 }
 
-// Action when the booking entries have become invalid (after add/delete)
+// Action when the booking entries have become invalid
 export const INVALIDATE_BOOKINGS = 'INVALIDATE_BOOKINGS'
 export const invalidateBookings = date => {
 	return {
@@ -107,7 +108,7 @@ export const invalidateBookings = date => {
 }
 
 // Action when the user adds a booking entry (server-side)
-export const handleAddBooking = (booking) => {
+export const handleAddBooking = booking => {
 	return dispatch => {
 		// Dispatch a 'Add Booking' action
 		dispatch(addBooking(booking.date, booking))
@@ -124,6 +125,9 @@ export const handleAddBooking = (booking) => {
 		})
 		.then(response => {
 			if (response.ok) {
+				// Dispatch a 'Invalidate Statistics' action
+				dispatch(invalidateStatistics())
+
 				return // Add booking succeeded
 			}
 			throw new Error(`HTTP Error ${response.status}: Failed to add booking`)
@@ -145,7 +149,7 @@ const addBooking = (date, booking) => {
 }
 
 // Action when the user updates a booking entry (server-side)
-export const handleUpdateBooking = (booking) => {
+export const handleUpdateBooking = booking => {
 	return dispatch => {
 		// Dispatch a 'Update Booking' action
 		dispatch(updateBooking(booking.date, booking))
@@ -162,6 +166,9 @@ export const handleUpdateBooking = (booking) => {
 		})
 		.then(response => {
 			if (response.ok) {
+				// Dispatch a 'Invalidate Statistics' action
+				dispatch(invalidateStatistics())
+
 				return // Update booking succeeded
 			}
 			throw new Error(`HTTP Error ${response.status}: Failed to update booking`)
@@ -195,6 +202,9 @@ export const handleDeleteBooking = (date, bookingId) => {
 		})
 		.then(response => {
 			if (response.ok) {
+				// Dispatch a 'Invalidate Statistics' action
+				dispatch(invalidateStatistics())
+
 				return // Delete booking succeeded
 			}
 			throw new Error(`HTTP Error ${response.status}: Failed to delete booking`)
@@ -216,7 +226,7 @@ const deleteBooking = (date, bookingId) => {
 }
 
 // Helper function to determine whether room entries need to be fetched
-const shouldFetchRooms = (state) => {
+const shouldFetchRooms = state => {
 	const rooms = state.rooms
 
 	if (rooms.items.length === 0) {
@@ -231,7 +241,7 @@ const shouldFetchRooms = (state) => {
 // Action when the user needs to fetch room entries
 export const fetchRoomsIfNeeded = () => {
 	return (dispatch, getState) => {
-		// Fetch room entries if not in memory, else return a resolved promise
+		// Fetch room entries if not in memory or invalidated, else return a resolved promise
 		if (shouldFetchRooms(getState())) {
 			return dispatch(fetchRooms())
 		} else {
@@ -241,10 +251,11 @@ export const fetchRoomsIfNeeded = () => {
 }
 
 // Action when the user is fetching room entries
-const fetchRooms = () => {
+export const fetchRooms = () => {
 	return dispatch => {
 		// Dispatch a 'Request Rooms' action
 		dispatch(requestRooms())
+		console.log('Fetching rooms')
 
 		// Fetch the room entries and dispatch a 'Receive Rooms' action
 		return fetch('/api/rooms', { credentials: 'include' })
@@ -271,7 +282,7 @@ const requestRooms = () => {
 
 // Action when the user receives room entries
 export const RECEIVE_ROOMS = 'RECEIVE_ROOMS'
-const receiveRooms = (json) => {
+const receiveRooms = json => {
 	return {
 		type: RECEIVE_ROOMS,
 		rooms: json,
@@ -287,7 +298,7 @@ const receiveRoomsError = () => {
 	}
 }
 
-// Action when the room entries have become invalid (after add/delete)
+// Action when the room entries have become invalid
 export const INVALIDATE_ROOMS = 'INVALIDATE_ROOMS'
 export const invalidateRooms = () => {
 	return {
@@ -296,7 +307,7 @@ export const invalidateRooms = () => {
 }
 
 // Action when the user adds a room entry (server-side)
-export const handleAddRoom = (room) => {
+export const handleAddRoom = room => {
 	return dispatch => {
 		// Dispatch a 'Add Room' action
 		dispatch(addRoom(room))
@@ -313,6 +324,9 @@ export const handleAddRoom = (room) => {
 		})
 		.then(response => {
 			if (response.ok) {
+				// Dispatch a 'Invalidate Statistics' action
+				dispatch(invalidateStatistics())
+
 				return // Add room succeeded
 			}
 			throw new Error(`HTTP Error ${response.status}: Failed to add room`)
@@ -325,7 +339,7 @@ export const handleAddRoom = (room) => {
 
 // Action when the user adds a room entry (client-side)
 export const ADD_ROOM = 'ADD_ROOM'
-const addRoom = (room) => {
+const addRoom = room => {
 	return {
 		type: ADD_ROOM,
 		room
@@ -333,7 +347,7 @@ const addRoom = (room) => {
 }
 
 // Action when the user updates a room entry (server-side)
-export const handleUpdateRoom = (room) => {
+export const handleUpdateRoom = room => {
 	return dispatch => {
 		// Dispatch a 'Update Room' action
 		dispatch(updateRoom(room))
@@ -350,6 +364,9 @@ export const handleUpdateRoom = (room) => {
 		})
 		.then(response => {
 			if (response.ok) {
+				// Dispatch a 'Invalidate Statistics' action
+				dispatch(invalidateStatistics())
+
 				return // Update room succeeded
 			}
 			throw new Error(`HTTP Error ${response.status}: Failed to update room`)
@@ -362,7 +379,7 @@ export const handleUpdateRoom = (room) => {
 
 // Action when the user updates a room entry (client-side)
 export const UPDATE_ROOM = 'UPDATE_ROOM'
-const updateRoom = (room) => {
+const updateRoom = room => {
 	return {
 		type: UPDATE_ROOM,
 		room
@@ -370,7 +387,7 @@ const updateRoom = (room) => {
 }
 
 // Action when the user deletes a room entry (server-side)
-export const handleDeleteRoom = (roomId) => {
+export const handleDeleteRoom = roomId => {
 	return dispatch => {
 		// Dispatch a 'Delete Room' action
 		dispatch(deleteRoom(roomId))
@@ -382,6 +399,9 @@ export const handleDeleteRoom = (roomId) => {
 		})
 		.then(response => {
 			if (response.ok) {
+				// Dispatch a 'Invalidate Statistics' action
+				dispatch(invalidateStatistics())
+
 				return // Delete room succeeded
 			}
 			throw new Error(`HTTP Error ${response.status}: Failed to delete room`)
@@ -394,7 +414,7 @@ export const handleDeleteRoom = (roomId) => {
 
 // Action when the user deletes a room entry (client-side)
 export const DELETE_ROOM = 'DELETE_ROOM'
-const deleteRoom = (roomId) => {
+const deleteRoom = roomId => {
 	return {
 		type: DELETE_ROOM,
 		roomId
@@ -411,7 +431,7 @@ const beginLogin = () => {
 
 // Action when the login process has been completed
 export const COMPLETE_LOGIN = 'COMPLETE_LOGIN'
-const completeLogin = (json) => {
+const completeLogin = json => {
 	return {
 		type: COMPLETE_LOGIN,
 		response: json
@@ -550,7 +570,7 @@ const fetchSearchResultsLocal = query => {
 
 // Action when the user requests search results
 export const REQUEST_SEARCH_RESULTS = 'REQUEST_SEARCH_RESULTS'
-const requestSearchResults = (query) => {
+const requestSearchResults = query => {
 	return {
 		type: REQUEST_SEARCH_RESULTS,
 		query
@@ -559,7 +579,7 @@ const requestSearchResults = (query) => {
 
 // Action when the user requests search results (local)
 export const REQUEST_SEARCH_RESULTS_LOCAL = 'REQUEST_SEARCH_RESULTS_LOCAL'
-const requestSearchResultsLocal = (query) => {
+const requestSearchResultsLocal = query => {
 	return {
 		type: REQUEST_SEARCH_RESULTS_LOCAL,
 		query
@@ -568,7 +588,7 @@ const requestSearchResultsLocal = (query) => {
 
 // Action when the user receives search results
 export const RECEIVE_SEARCH_RESULTS = 'RECEIVE_SEARCH_RESULTS'
-const receiveSearchResults = (json) => {
+const receiveSearchResults = json => {
 	return {
 		type: RECEIVE_SEARCH_RESULTS,
 		bookings: json.bookings,
@@ -581,5 +601,85 @@ export const CLEAR_SEARCH_RESULTS = 'CLEAR_SEARCH_RESULTS'
 export const clearSearchResults = () => {
 	return {
 		type: CLEAR_SEARCH_RESULTS
+	}
+}
+
+// Helper function to determine whether statistics need to be fetched
+const shouldFetchStatistics = state => {
+	const statistics = state.statistics
+
+	if (!statistics.data) {
+		return true
+	} else if (statistics.isFetching) {
+		return false
+	} else {
+		return statistics.didInvalidate
+	}
+}
+
+// Action when the user needs to fetch statistics
+export const fetchStatisticsIfNeeded = () => {
+	return (dispatch, getState) => {
+		// Fetch statistics if not in memory or invalidated, else return a resolved promise
+		if (shouldFetchStatistics(getState())) {
+			return dispatch(fetchStatistics())
+		} else {
+			return Promise.resolve()
+		}
+	}
+}
+
+// Action when the user is fetching statistics
+export const fetchStatistics = () => {
+	return dispatch => {
+		// Dispatch a 'Request Statistics' action
+		dispatch(requestStatistics())
+		console.log('Fetching statistics')
+
+		// Fetch the statistics and dispatch a 'Receive Statistics' action
+		return fetch('/api/statistics', { credentials: 'include' })
+			.then(response => {
+				if (response.ok) {
+					return response.json()
+				}
+				throw new Error(`HTTP Error ${response.status}: Failed to fetch statistics`)
+			})
+			.then(json => dispatch(receiveStatistics(json)))
+			.catch(() => {
+				dispatch(receiveStatisticsError())
+			})
+	}
+}
+
+// Action when the user requests statistics
+export const REQUEST_STATISTICS = 'REQUEST_STATISTICS'
+const requestStatistics = () => {
+	return {
+		type: REQUEST_STATISTICS
+	}
+}
+
+// Action when the user receives statistics
+export const RECEIVE_STATISTICS = 'RECEIVE_STATISTICS'
+const receiveStatistics = json => {
+	return {
+		type: RECEIVE_STATISTICS,
+		data: json
+	}
+}
+
+// Action when the statistics request action encounters an error
+export const RECEIVE_STATISTICS_ERROR = 'RECEIVE_STATISTICS_ERROR'
+const receiveStatisticsError = () => {
+	return {
+		type: RECEIVE_STATISTICS_ERROR
+	}
+}
+
+// Action when the statistics have become invalid
+export const INVALIDATE_STATISTICS = 'INVALIDATE_STATISTICS'
+export const invalidateStatistics = () => {
+	return {
+		type: INVALIDATE_STATISTICS
 	}
 }

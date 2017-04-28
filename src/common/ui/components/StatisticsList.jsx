@@ -1,10 +1,33 @@
 import React, { Component } from 'react'
+import PropTypes from 'prop-types'
+import { connect } from 'react-redux'
 import { Paper } from 'material-ui'
 
 import StatisticsChart from '../components/StatisticsChart'
 
+import { fetchStatisticsIfNeeded } from '../../actions'
+
+const mapStateToProps = state => {
+	return {
+		statistics: state.statistics
+	}
+}
+
+const mapDispatchToProps = dispatch => {
+	return {
+		fetchStatistics: () => {
+			dispatch(fetchStatisticsIfNeeded())
+		}
+	}
+}
+
 // Define the Statistics List component
-class StatisticsList extends Component {
+class StatisticsListComponent extends Component {
+	componentDidMount() {
+		// Fetch the statistics
+		this.props.fetchStatistics()
+	}
+
 	render() {
 		const datasetPie = {
 			backgroundColor: [
@@ -143,6 +166,47 @@ class StatisticsList extends Component {
 			borderWidth: 1
 		}
 
+		// If no statistics are available, display a message
+		if (!this.props.statistics.data) {
+			return (
+				<section>
+					<Paper className="paper text-center">
+						<h1>No statistics available!</h1>
+						<p>Statistics will appear here as bookings and rooms are added.</p>
+					</Paper>
+				</section>
+			)
+		}
+
+		// Generate chart data from statistics
+		let thisMonth = {
+			labels: [],
+			data: []
+		}
+		let byMonth = {
+			labels: [],
+			data: []
+		}
+
+		let days = { '1': 0, '2': 0, '3': 0, '4': 0, '5': 0, '6': 0, '7': 0, '8': 0, '9': 0, '10': 0, '11': 0, '12': 0, '13': 0, '14': 0, '15': 0, '16': 0, '17': 0, '18': 0, '19': 0, '20': 0, '21': 0, '22': 0, '23': 0, '24': 0, '25': 0, '26': 0, '27': 0, '28': 0, '29': 0, '30': 0, '31': 0 }
+		let months = { 'January': 0, 'February': 0, 'March': 0, 'April': 0, 'May': 0, 'June': 0, 'July': 0, 'August': 0, 'September': 0, 'October': 0, 'November': 0, 'December': 0 }
+
+		for (let i = 0; i < this.props.statistics.data.bookings.thisMonth.labels.length; ++i) {
+			days[this.props.statistics.data.bookings.thisMonth.labels[i]] = this.props.statistics.data.bookings.thisMonth.data[i]
+		}
+		for (let i = 0; i < this.props.statistics.data.bookings.byMonth.labels.length; ++i) {
+			months[this.props.statistics.data.bookings.byMonth.labels[i]] = this.props.statistics.data.bookings.byMonth.data[i]
+		}
+
+		for (let key in days) {
+			thisMonth.labels.push(key)
+			thisMonth.data.push(days[key])
+		}
+		for (let key in months) {
+			byMonth.labels.push(key)
+			byMonth.data.push(months[key])
+		}
+
 		return (
 			<section>
 				<div className="row center-xs start-sm padding-bottom">
@@ -152,15 +216,29 @@ class StatisticsList extends Component {
 							<StatisticsChart options={{
 								type: 'horizontalBar',
 								data: {
-									labels: [ '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31' ],
+									labels: thisMonth.labels,
 									datasets: [{
 										...datasetBar,
-										data: [ 65, 59, 80, 81, 56, 55, 40, 67, 34, 42, 20, 72, 65, 59, 80, 81, 56, 55, 40, 67, 34, 42, 20, 72, 65, 59, 80, 81, 56, 55, 40, 67 ]
+										data: thisMonth.data
 									}]
 								},
 								options: {
 									legend: {
 										display: false
+									},
+									scales: {
+										xAxes: [{
+											scaleLabel: {
+												display: true,
+												labelString: 'Bookings'
+											}
+										}],
+										yAxes: [{
+											scaleLabel: {
+												display: true,
+												labelString: 'Day of the Month'
+											}
+										}]
 									}
 								}
 							}} height="880" />
@@ -175,10 +253,10 @@ class StatisticsList extends Component {
 									<StatisticsChart options={{
 										type: 'pie',
 										data: {
-											labels: [ 'Room 1', 'Room 2', 'Room 3', 'Room 4', 'Room 5', 'Room 6', 'Room 7', 'Room 8', 'Room 9', 'Room 10', 'Room 11', 'Room 12' ],
+											labels: this.props.statistics.data.bookings.byRoom.labels,
 											datasets: [{
 												...datasetPie,
-												data: [ 300, 50, 100, 200, 100, 100, 100, 100, 100, 100, 100, 100 ]
+												data: this.props.statistics.data.bookings.byRoom.data
 											}]
 										}
 									}} />
@@ -191,15 +269,23 @@ class StatisticsList extends Component {
 									<StatisticsChart options={{
 										type: 'bar',
 										data: {
-											labels: [ 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December' ],
+											labels: byMonth.labels,
 											datasets: [{
 												...datasetBar,
-												data: [ 65, 59, 80, 81, 56, 55, 40, 67, 34, 42, 20, 72 ]
+												data: byMonth.data
 											}]
 										},
 										options: {
 											legend: {
 												display: false
+											},
+											scales: {
+												yAxes: [{
+													scaleLabel: {
+														display: true,
+														labelString: 'Bookings'
+													}
+												}]
 											}
 										}
 									}} />
@@ -214,18 +300,18 @@ class StatisticsList extends Component {
 							<div className="row center-xs start-sm">
 								<div className="col-sm-6 col-xs-12">
 									<h2>Bookings</h2>
-									<p>Total: 4</p>
-									<p>Most Popular Day: Monday</p>
-									<p>Most Popular Time: 10:30am</p>
-									<p>Most Popular Duration: 1 hour(s)</p>
+									<p>Total: {this.props.statistics.data.bookings.total}</p>
+									<p>Most Popular Day: {this.props.statistics.data.bookings.mostPopular.day.label}</p>
+									<p>Most Popular Time: {this.props.statistics.data.bookings.mostPopular.time.label}</p>
+									<p>Most Popular Duration: {this.props.statistics.data.bookings.mostPopular.duration.label} hour(s)</p>
 								</div>
 
 								<div className="col-sm-6 col-xs-12">
 									<h2>Rooms</h2>
-									<p>Total: 3</p>
-									<p>Available for Booking: 2</p>
-									<p>Not Available for Booking: 1</p>
-									<p>Most Popular: Room 1</p>
+									<p>Total: {this.props.statistics.data.rooms.total}</p>
+									<p>Available for Booking: {this.props.statistics.data.rooms.available}</p>
+									<p>Not Available for Booking: {this.props.statistics.data.rooms.notAvailable}</p>
+									<p>Most Popular: {this.props.statistics.data.rooms.mostPopular.label}</p>
 								</div>
 							</div>
 						</Paper>
@@ -237,8 +323,12 @@ class StatisticsList extends Component {
 }
 
 // Define the property types that the component expects to receive
-StatisticsList.propTypes = {
-
+StatisticsListComponent.propTypes = {
+	statistics: PropTypes.object.isRequired,
+	fetchStatistics: PropTypes.func.isRequired
 }
+
+// Define the container for the Statistics List component (maps state and dispatchers)
+const StatisticsList = connect(mapStateToProps, mapDispatchToProps)(StatisticsListComponent)
 
 export default StatisticsList

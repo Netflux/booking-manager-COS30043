@@ -531,7 +531,7 @@ const serverRoutes = app => {
 				for (let key in countList.byRoom) {
 					if (countList.byRoom[key] > result.rooms.mostPopular.count) {
 						result.rooms.mostPopular.label = key
-						result.rooms.mostPopular.count = countList.duration[key]
+						result.rooms.mostPopular.count = countList.byRoom[key]
 					}
 
 					result.bookings.byRoom.labels.push(key)
