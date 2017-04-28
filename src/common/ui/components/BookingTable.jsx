@@ -79,32 +79,10 @@ class BookingTableComponent extends Component {
 		let bookingsListDialog
 
 		// Define the time slots available for booking (including header)
-		const timeSlots = [
-			'Time',
-			'10.30am',
-			'11.30am',
-			'12.30pm',
-			'1.30pm',
-			'2.30pm',
-			'3.30pm',
-			'4.30pm',
-			'5.30pm',
-			'6.30pm',
-			'7.30pm',
-			'8.30pm',
-			'9.30pm',
-			'10.30pm'
-		]
+		const timeSlots = [ 'Time', '10.30am', '11.30am', '12.30pm', '1.30pm', '2.30pm', '3.30pm', '4.30pm', '5.30pm', '6.30pm', '7.30pm', '8.30pm', '9.30pm', '10.30pm' ]
 
 		// Define the days available for booking
-		const bookingDays = [
-			'Mon',
-			'Tue',
-			'Wed',
-			'Thu',
-			'Fri',
-			'Sat'
-		]
+		const bookingDays = [ 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat' ]
 
 		// Store a list of all available rooms
 		const availableRooms = this.props.rooms.items.filter((room) => room.isAvailable)

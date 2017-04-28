@@ -360,15 +360,11 @@ const serverRoutes = app => {
 			]
 		})
 		.select('bookingId bookingTitle bookingDesc roomId date timeSlot duration')
-		.exec((err, bookings) => {
-			if (err) {
-				console.error(err)
-				return res.sendStatus(500)
-			}
-
+		.exec()
+		.then((bookings) => {
 			result.bookings = bookings
 
-			RoomModel.find({
+			return RoomModel.find({
 				$or: [
 					{ roomId: searchQuery },
 					{ roomName: searchQuery },
@@ -376,17 +372,183 @@ const serverRoutes = app => {
 				]
 			})
 			.select('roomId roomName roomDesc isAvailable')
-			.exec((err, rooms) => {
-				if (err) {
-					console.error(err)
-					return res.sendStatus(500)
+			.exec()
+		})
+		.then((rooms) => {
+			result.rooms = rooms
+
+			res.json(result)
+		})
+		.catch(err => {
+			console.error(err)
+			return res.sendStatus(500)
+		})
+	})
+
+	app.get('/api/statistics', (req, res) => {
+		let dbEntries = {
+			bookings: [],
+			rooms: []
+		}
+
+		let result = {
+			bookings: {
+				total: 0,
+				mostPopular: {
+					day: {
+						label: '',
+						count: 0
+					},
+					time: {
+						label: '',
+						count: 0
+					},
+					duration: {
+						label: '',
+						count: 0
+					}
+				},
+				thisMonth: {
+					labels: [],
+					data: []
+				},
+				byRoom: {
+					labels: [],
+					data: []
+				},
+				byMonth: {
+					labels: [],
+					data: []
+				}
+			},
+			rooms: {
+				total: 0,
+				available: 0,
+				notAvailable: 0,
+				mostPopular: {
+					label: '',
+					count: 0
+				}
+			}
+		}
+
+		// Fetch all bookings and rooms from database
+		BookingModel.find()
+			.select('bookingId bookingTitle bookingDesc roomId date timeSlot duration')
+			.exec()
+			.then((bookings) => {
+				dbEntries.bookings = bookings
+
+				return RoomModel.find()
+					.select('roomId roomName roomDesc isAvailable')
+					.exec()
+			})
+			.then((rooms) => {
+				dbEntries.rooms = rooms
+
+				// Lookup Tables for room names
+				let roomsList = {}
+
+				// List to store statistic counts
+				let countList = {
+					day: { 'Monday': 0, 'Tuesday': 0, 'Wednesday': 0, 'Thursday': 0, 'Friday': 0, 'Saturday': 0, 'Sunday': 0 },
+					time: { '10.30am': 0, '11.30am': 0, '12.30pm': 0, '1.30pm': 0, '2.30pm': 0, '3.30pm': 0, '4.30pm': 0, '5.30pm': 0, '6.30pm': 0, '7.30pm': 0, '8.30pm': 0, '9.30pm': 0, '10.30pm': 0 },
+					duration: { '1': 0, '2': 0, '3': 0 },
+					thisMonth: {},
+					byRoom: {},
+					byMonth: {}
 				}
 
-				result.rooms = rooms
+				let date = moment()
 
-				return res.json(result)
+				// Generate statistics for rooms
+				for (let room of dbEntries.rooms) {
+					if (room.isAvailable) {
+						result.rooms.available += 1
+					} else {
+						result.rooms.notAvailable += 1
+					}
+
+					// Populate lookup table with room name
+					roomsList[room.roomId] = room.roomName
+				}
+
+				// Generate statistics for bookings
+				for (let booking of dbEntries.bookings) {
+					let bookingDate = moment(booking.date, 'YYYY/M/D')
+
+					// Define the time slots available for booking (including header)
+					const timeSlots = [ 'Time', '10.30am', '11.30am', '12.30pm', '1.30pm', '2.30pm', '3.30pm', '4.30pm', '5.30pm', '6.30pm', '7.30pm', '8.30pm', '9.30pm', '10.30pm' ]
+
+					// Define the days available for booking
+					const bookingDays = [ 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday' ]
+
+					// Increment the count for days, timeslot, duration and month with an associated booking
+					countList.day[bookingDays[bookingDate.isoWeekday() - 1]] += 1
+					countList.time[timeSlots[booking.timeSlot]] += 1
+					countList.duration[booking.duration] += 1
+					countList.byMonth[bookingDate.format('MMMM')] ? countList.byMonth[bookingDate.format('MMMM')] += 1 : countList.byMonth[bookingDate.format('MMMM')] = 1
+
+					// Increment the count for the current month with an associated booking
+					if (date.month() === bookingDate.month()) {
+						countList.thisMonth[bookingDate.date()] ? countList.thisMonth[bookingDate.date()] += 1 : countList.thisMonth[bookingDate.date()] = 1
+					}
+
+					// Increment the count for rooms with an associated booking
+					countList.byRoom[roomsList[booking.roomId]] ? countList.byRoom[roomsList[booking.roomId]] += 1 : countList.byRoom[roomsList[booking.roomId]] = 1
+				}
+
+				// Store the results and send as JSON
+				result.rooms.total = dbEntries.rooms.length
+				result.bookings.total = dbEntries.bookings.length
+
+				for (let key in countList.day) {
+					if (countList.day[key] > result.bookings.mostPopular.day.count) {
+						result.bookings.mostPopular.day.label = key
+						result.bookings.mostPopular.day.count = countList.day[key]
+					}
+				}
+
+				for (let key in countList.time) {
+					if (countList.time[key] > result.bookings.mostPopular.time.count) {
+						result.bookings.mostPopular.time.label = key
+						result.bookings.mostPopular.time.count = countList.time[key]
+					}
+				}
+
+				for (let key in countList.duration) {
+					if (countList.duration[key] > result.bookings.mostPopular.duration.count) {
+						result.bookings.mostPopular.duration.label = key
+						result.bookings.mostPopular.duration.count = countList.duration[key]
+					}
+				}
+
+				for (let key in countList.thisMonth) {
+					result.bookings.thisMonth.labels.push(key)
+					result.bookings.thisMonth.data.push(countList.thisMonth[key])
+				}
+
+				for (let key in countList.byRoom) {
+					if (countList.byRoom[key] > result.rooms.mostPopular.count) {
+						result.rooms.mostPopular.label = key
+						result.rooms.mostPopular.count = countList.duration[key]
+					}
+
+					result.bookings.byRoom.labels.push(key)
+					result.bookings.byRoom.data.push(countList.byRoom[key])
+				}
+
+				for (let key in countList.byMonth) {
+					result.bookings.byMonth.labels.push(key)
+					result.bookings.byMonth.data.push(countList.byMonth[key])
+				}
+
+				res.json(result)
 			})
-		})
+			.catch(err => {
+				console.error(err)
+				return res.sendStatus(500)
+			})
 	})
 
 	app.get('/static/*', (req, res) => {
