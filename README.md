@@ -1,12 +1,17 @@
 # Booking Manager
 Booking manager powered by NodeJS. The application stack consists of:
 
-1. [React](https://facebook.github.io/react/)
-2. [Redux](http://redux.js.org/)
-3. [ExpressJS](http://expressjs.com/)
+| Client                                      | Server                                         | Shared                                           |
+| ------------------------------------------- | ---------------------------------------------- | ------------------------------------------------ |
+| [React](https://facebook.github.io/react/)  | [ExpressJS](http://expressjs.com/)             | [MomentJS](https://momentjs.com/)                |
+| [Redux](http://redux.js.org/)               | [Mongoose](http://mongoosejs.com/)             | [shortid](https://www.npmjs.com/package/shortid) |
+| [Material-UI](http://www.material-ui.com/)  | [PassportJS](http://passportjs.org/)           | -                                                |
+| [ChartJS](http://www.chartjs.org/)          | [Bcrypt](https://www.npmjs.com/package/bcrypt) | -                                                |
 
 ### Table of Contents
 * [Installation](#installation)
+* [Commands](#commands)
+* [Configuration](#configuration)
 * [License](#license)
 
 ## Installation
@@ -14,6 +19,27 @@ Booking manager powered by NodeJS. The application stack consists of:
 2. Install NPM dependencies using `npm install`.
 3. Compile the client/server files using `npm run build`.
 4. Start the server using `npm start`. The default port is 3000.
+
+\* The login system and booking/room storage require a valid MongoDB connection.
+
+## Commands
+| Command             | Description                                                                |
+| ------------------- | -------------------------------------------------------------------------- |
+| `npm run clean`     | Clean up all compiled/compressed files (dist and static folders)           |
+| `npm run lint`      | Run code linting (uses ESLint)                                             |
+| `npm run test`      | Run server with live file reloading (client bundle must be built manually) |
+| `npm run build-dev` | Compile JSX and build client/server bundle                                 |
+| `npm run start-dev` | Run the server in development mode                                         |
+| `npm run build`     | Compile JSX and build client/server bundle with production optimizations   |
+| `npm run start`     | Run the server in production mode                                          |
+
+## Configuration
+Environment variables can be provided when starting the server with `npm run start-dev` / `npm run start`.
+
+| Environment Variable | Default                               | Description                              |
+| -------------------- | ------------------------------------- | ---------------------------------------- |
+| `PORT`               | `3000`                                | Port used by the server to serve content |
+| `DB_URI`             | `mongodb://localhost/booking-manager` | URI pointing to the MongoDB database     |
 
 ## License
 Copyright (C) 2017 Netflux

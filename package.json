@@ -8,8 +8,8 @@
     "lint": "./node_modules/.bin/eslint --ext .js,.jsx src",
     "test": "nodemon src/server/server.js --exec babel-node",
     "build-dev": "babel src -d dist; webpack --config webpack.config.js",
-    "build": "babel src -d dist; cleancss -02 -o ./static/style.min.css ./static/style.css; cleancss -02 -o ./static/style-nojs.min.css ./static/style-nojs.css; webpack -p --config webpack.config.prod.js",
     "start-dev": "node dist/server/server.js",
+    "build": "babel src -d dist; cleancss -02 -o ./static/style.min.css ./static/style.css; cleancss -02 -o ./static/style-nojs.min.css ./static/style-nojs.css; webpack -p --config webpack.config.prod.js",
     "start": "NODE_ENV='production' node dist/server/server.js"
   },
   "author": "Netflux",
