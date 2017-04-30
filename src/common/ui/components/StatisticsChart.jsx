@@ -5,9 +5,22 @@ import PropTypes from 'prop-types'
 class StatisticsChart extends Component {
 	componentDidMount() {
 		if (window !== 'undefined') {
-			let Chart = require('chart.js')
+			const Chart = require('chart.js')
 
-			new Chart(this.canvas, this.props.options)
+			this.chart = new Chart(this.canvas, this.props.options)
+		}
+	}
+
+	componentDidUpdate() {
+		if (this.chart) {
+			this.chart.data.datasets[0].data = this.props.options.data.datasets[0].data
+			this.chart.update()
+		}
+	}
+
+	componentWillUnmount() {
+		if (this.chart) {
+			this.chart.destroy()
 		}
 	}
 

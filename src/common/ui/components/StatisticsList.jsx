@@ -28,6 +28,13 @@ class StatisticsListComponent extends Component {
 		this.props.fetchStatistics()
 	}
 
+	componentDidUpdate() {
+		// Fetch the statistics if outdated
+		if (this.props.statistics.didInvalidate && !this.props.statistics.isFetching) {
+			this.props.fetchStatistics()
+		}
+	}
+
 	render() {
 		const datasetPie = {
 			backgroundColor: [
@@ -179,17 +186,17 @@ class StatisticsListComponent extends Component {
 		}
 
 		// Generate chart data from statistics
-		let thisMonth = {
+		const thisMonth = {
 			labels: [],
 			data: []
 		}
-		let byMonth = {
+		const byMonth = {
 			labels: [],
 			data: []
 		}
 
-		let days = { '1': 0, '2': 0, '3': 0, '4': 0, '5': 0, '6': 0, '7': 0, '8': 0, '9': 0, '10': 0, '11': 0, '12': 0, '13': 0, '14': 0, '15': 0, '16': 0, '17': 0, '18': 0, '19': 0, '20': 0, '21': 0, '22': 0, '23': 0, '24': 0, '25': 0, '26': 0, '27': 0, '28': 0, '29': 0, '30': 0, '31': 0 }
-		let months = { 'January': 0, 'February': 0, 'March': 0, 'April': 0, 'May': 0, 'June': 0, 'July': 0, 'August': 0, 'September': 0, 'October': 0, 'November': 0, 'December': 0 }
+		const days = { '1': 0, '2': 0, '3': 0, '4': 0, '5': 0, '6': 0, '7': 0, '8': 0, '9': 0, '10': 0, '11': 0, '12': 0, '13': 0, '14': 0, '15': 0, '16': 0, '17': 0, '18': 0, '19': 0, '20': 0, '21': 0, '22': 0, '23': 0, '24': 0, '25': 0, '26': 0, '27': 0, '28': 0, '29': 0, '30': 0, '31': 0 }
+		const months = { 'January': 0, 'February': 0, 'March': 0, 'April': 0, 'May': 0, 'June': 0, 'July': 0, 'August': 0, 'September': 0, 'October': 0, 'November': 0, 'December': 0 }
 
 		for (let i = 0; i < this.props.statistics.data.bookings.thisMonth.labels.length; ++i) {
 			days[this.props.statistics.data.bookings.thisMonth.labels[i]] = this.props.statistics.data.bookings.thisMonth.data[i]

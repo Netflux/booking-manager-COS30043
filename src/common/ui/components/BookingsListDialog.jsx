@@ -63,7 +63,7 @@ class BookingsListDialogComponent extends Component {
 					// If bookings exist for the specific date and timeslot, display them in the list
 					// Else, display a message to the user
 					this.props.bookingsByDate[this.state.date] && (() => {
-						let bookingsByTimeSlot = this.props.bookingsByDate[this.state.date].items.filter((booking) => {
+						const bookingsByTimeSlot = this.props.bookingsByDate[this.state.date].items.filter((booking) => {
 							for (let i = 0; i < booking.duration; ++i) {
 								if (booking.timeSlot + i === this.state.timeSlot) {
 									return true

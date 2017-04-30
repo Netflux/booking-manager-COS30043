@@ -109,7 +109,7 @@ const bookingsByDate = (state = {}, action) => {
 		}
 	case UPDATE_BOOKING:
 		{
-			let newState = {}
+			const newState = {}
 
 			for (let date in state) {
 				newState[date] = {
@@ -251,10 +251,11 @@ const search = (state = {
 		}
 	case UPDATE_BOOKING:
 		if (state.bookings.filter((booking) => booking.bookingId === action.booking.bookingId).length !== 0) {
+			const regexp = new RegExp(state.query)
+
 			return {
 				...state,
 				bookings: [...state.bookings.filter((booking) => booking.bookingId !== action.booking.bookingId), action.booking].filter((booking) => {
-					let regexp = new RegExp(state.query)
 					return regexp.test(booking.bookingId) || regexp.test(booking.bookingTitle) || regexp.test(booking.bookingDesc) || regexp.test(booking.roomId) || regexp.test(booking.date)
 				})
 			}
@@ -268,10 +269,11 @@ const search = (state = {
 		}
 	case UPDATE_ROOM:
 		if (state.rooms.filter((room) => room.roomId === action.room.roomId) !== 0) {
+			const regexp = new RegExp(state.query)
+
 			return {
 				...state,
 				rooms: [...state.rooms.filter((room) => room.roomId !== action.room.roomId), action.room].filter((room) => {
-					let regexp = new RegExp(state.query)
 					return regexp.test(room.roomId) || regexp.test(room.roomName) || regexp.test(room.roomDesc)
 				})
 			}
@@ -287,8 +289,6 @@ const search = (state = {
 		return state
 	}
 }
-
-
 
 // Reducer for statistics-related actions
 const statistics = (state = {

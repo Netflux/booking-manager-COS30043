@@ -533,19 +533,19 @@ const fetchSearchResultsLocal = query => {
 		// Dispatch a 'Request Search Results' action (local)
 		dispatch(requestSearchResultsLocal(query))
 
-		let state = getState()
+		const state = getState()
 
-		let results = {
+		const results = {
 			bookings: [],
 			rooms: []
 		}
 
 		if (state.search.query !== '') {
-			let regexp = new RegExp(query)
+			const regexp = new RegExp(query)
 
 			for (let key in state.bookingsByDate) {
 				for (let i = 0; i < state.bookingsByDate[key].items.length; ++i) {
-					let booking = state.bookingsByDate[key].items[i]
+					const booking = state.bookingsByDate[key].items[i]
 
 					if (regexp.test(booking.bookingId) || regexp.test(booking.bookingTitle) || regexp.test(booking.bookingDesc) || regexp.test(booking.roomId) || regexp.test(booking.date)) {
 						results.bookings.push(booking)
@@ -554,7 +554,7 @@ const fetchSearchResultsLocal = query => {
 			}
 
 			for (let i = 0; i < state.rooms.items.length; ++i) {
-				let room = state.rooms.items[i]
+				const room = state.rooms.items[i]
 
 				if (regexp.test(room.roomId) || regexp.test(room.roomName) || regexp.test(room.roomDesc)) {
 					results.rooms.push(room)

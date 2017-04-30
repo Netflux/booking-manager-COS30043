@@ -5,7 +5,7 @@ import moment from 'moment'
 import shortid from 'shortid'
 import { DatePicker, Dialog, FlatButton, MenuItem, SelectField, TextField } from 'material-ui'
 
-import { handleAddBooking, handleUpdateBooking, handleDeleteBooking } from '../../actions'
+import { handleAddBooking, handleUpdateBooking, handleDeleteBooking, fetchRoomsIfNeeded } from '../../actions'
 
 const mapStateToProps = state => {
 	return {
@@ -26,6 +26,9 @@ const mapDispatchToProps = dispatch => {
 		},
 		deleteBooking: (date, bookingId) => {
 			dispatch(handleDeleteBooking(date, bookingId))
+		},
+		fetchRooms: () => {
+			dispatch(fetchRoomsIfNeeded())
 		}
 	}
 }
@@ -57,6 +60,11 @@ class BookingDialogComponent extends Component {
 			timeSlot: 1,
 			duration: 1
 		}
+	}
+
+	componentDidMount() {
+		// Fetch the rooms
+		this.props.fetchRooms()
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -159,7 +167,7 @@ class BookingDialogComponent extends Component {
 
 		// If there are no input errors, add/update the booking
 		if (!hasError) {
-			let booking = {
+			const booking = {
 				bookingId: this.state.bookingId,
 				bookingTitle: this.state.bookingTitle,
 				bookingDesc: this.state.bookingDesc,
@@ -245,7 +253,8 @@ BookingDialogComponent.propTypes = {
 	isLoggedIn: PropTypes.bool.isRequired,
 	addBooking: PropTypes.func.isRequired,
 	updateBooking: PropTypes.func.isRequired,
-	deleteBooking: PropTypes.func.isRequired
+	deleteBooking: PropTypes.func.isRequired,
+	fetchRooms: PropTypes.func.isRequired
 }
 
 // Define the container for the Booking Dialog component (maps state and dispatchers)

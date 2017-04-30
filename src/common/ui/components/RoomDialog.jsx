@@ -111,7 +111,7 @@ class RoomDialogComponent extends Component {
 		}
 
 		if (!hasError) {
-			let room = {
+			const room = {
 				roomId: this.state.roomId,
 				roomName: this.state.roomName,
 				roomDesc: this.state.roomDesc,

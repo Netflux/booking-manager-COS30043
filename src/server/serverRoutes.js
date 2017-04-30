@@ -147,7 +147,7 @@ const serverRoutes = app => {
 					return res.sendStatus(400)
 				}
 
-				let body = {
+				const body = {
 					...req.body,
 					updatedBy: req.user.userId,
 					updatedDate: moment().format('YYYY/M/D')
@@ -198,7 +198,7 @@ const serverRoutes = app => {
 			}
 
 			// Check whether any bookings overlap with the new booking entry
-			let hasOverlap = bookings.filter((booking) => booking.roomId === req.body.roomId).some((booking) => {
+			const hasOverlap = bookings.filter((booking) => booking.roomId === req.body.roomId).some((booking) => {
 				return booking.timeSlot <= req.body.timeSlot + (req.body.duration - 1) && req.body.timeSlot <= booking.timeSlot + (booking.duration - 1)
 			})
 
@@ -206,7 +206,7 @@ const serverRoutes = app => {
 				return res.sendStatus(400)
 			}
 
-			let body = {
+			const body = {
 				...req.body,
 				createdBy: req.user.userId,
 				createdDate: moment().format('YYYY/M/D'),
@@ -259,7 +259,7 @@ const serverRoutes = app => {
 					return res.sendStatus(400)
 				}
 
-				let body = {
+				const body = {
 					...req.body,
 					updatedBy: req.user.userId,
 					updatedDate: moment().format('YYYY/M/D')
@@ -302,7 +302,7 @@ const serverRoutes = app => {
 			return res.sendStatus(400)
 		}
 
-		let body = {
+		const body = {
 			...req.body,
 			createdBy: req.user.userId,
 			createdDate: moment().format('YYYY/M/D'),
@@ -342,7 +342,7 @@ const serverRoutes = app => {
 			return res.sendStatus(500)
 		}
 
-		let result = {
+		const result = {
 			bookings: [],
 			rooms: []
 		}
@@ -386,12 +386,12 @@ const serverRoutes = app => {
 	})
 
 	app.get('/api/statistics', (req, res) => {
-		let dbEntries = {
+		const dbEntries = {
 			bookings: [],
 			rooms: []
 		}
 
-		let result = {
+		const result = {
 			bookings: {
 				total: 0,
 				mostPopular: {
@@ -445,12 +445,13 @@ const serverRoutes = app => {
 			})
 			.then((rooms) => {
 				dbEntries.rooms = rooms
-
+			})
+			.then(() => {
 				// Lookup Tables for room names
-				let roomsList = {}
+				const roomsList = {}
 
 				// List to store statistic counts
-				let countList = {
+				const countList = {
 					day: { 'Monday': 0, 'Tuesday': 0, 'Wednesday': 0, 'Thursday': 0, 'Friday': 0, 'Saturday': 0, 'Sunday': 0 },
 					time: { '10.30am': 0, '11.30am': 0, '12.30pm': 0, '1.30pm': 0, '2.30pm': 0, '3.30pm': 0, '4.30pm': 0, '5.30pm': 0, '6.30pm': 0, '7.30pm': 0, '8.30pm': 0, '9.30pm': 0, '10.30pm': 0 },
 					duration: { '1': 0, '2': 0, '3': 0 },
@@ -459,7 +460,7 @@ const serverRoutes = app => {
 					byMonth: {}
 				}
 
-				let date = moment()
+				const date = moment()
 
 				// Generate statistics for rooms
 				for (let room of dbEntries.rooms) {
@@ -475,7 +476,7 @@ const serverRoutes = app => {
 
 				// Generate statistics for bookings
 				for (let booking of dbEntries.bookings) {
-					let bookingDate = moment(booking.date, 'YYYY/M/D')
+					const bookingDate = moment(booking.date, 'YYYY/M/D')
 
 					// Define the time slots available for booking (including header)
 					const timeSlots = [ 'Time', '10.30am', '11.30am', '12.30pm', '1.30pm', '2.30pm', '3.30pm', '4.30pm', '5.30pm', '6.30pm', '7.30pm', '8.30pm', '9.30pm', '10.30pm' ]
