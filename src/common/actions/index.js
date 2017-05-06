@@ -1,3 +1,5 @@
+import moment from 'moment'
+
 // Action when the user opens/closes the side drawer
 export const TOGGLE_DRAWER_OPEN = 'TOGGLE_DRAWER_OPEN'
 export const toggleDrawerOpen = () => {
@@ -55,7 +57,7 @@ export const fetchBookings = date => {
 		dispatch(requestBookings(date))
 
 		// Fetch the booking entries and dispatch a 'Receive Bookings' action
-		return fetch(`/api/bookings/${date}`, { credentials: 'include' })
+		return fetch(`/api/bookings/${moment(date, 'D/M/YYYY').format('YYYY/M/D')}`, { credentials: 'include' })
 			.then(response => {
 				if (response.ok) {
 					return response.json()
@@ -543,21 +545,50 @@ const fetchSearchResultsLocal = query => {
 		if (state.search.query !== '') {
 			const regexp = new RegExp(query)
 
-			for (let key in state.bookingsByDate) {
-				for (let i = 0; i < state.bookingsByDate[key].items.length; ++i) {
-					const booking = state.bookingsByDate[key].items[i]
-
-					if (regexp.test(booking.bookingId) || regexp.test(booking.bookingTitle) || regexp.test(booking.bookingDesc) || regexp.test(booking.roomId) || regexp.test(booking.date)) {
-						results.bookings.push(booking)
-					}
-				}
-			}
-
 			for (let i = 0; i < state.rooms.items.length; ++i) {
 				const room = state.rooms.items[i]
 
 				if (regexp.test(room.roomId) || regexp.test(room.roomName) || regexp.test(room.roomDesc)) {
 					results.rooms.push(room)
+				}
+			}
+
+			// Define the time slots available for booking (including header)
+			const timeSlots = [ '10.30am', '11.30am', '12.30pm', '1.30pm', '2.30pm', '3.30pm', '4.30pm', '5.30pm', '6.30pm', '7.30pm', '8.30pm', '9.30pm', '10.30pm' ]
+
+			// Define the list of time slots that match the search query
+			const timeSlotList = []
+			for (let i = 0; i < timeSlots.length; ++i) {
+				if (timeSlots[i].includes(query)) {
+					timeSlotList.push(i + 1)
+				}
+			}
+
+			// Define the durations available for booking
+			const durations = [ '1 Hour', '2 Hour', '3 Hour' ]
+
+			// Define the list of durations that match the search query
+			const durationList = []
+			for (let i = 0; i < durations.length; ++i) {
+				if (durations[i].includes(query)) {
+					durationList.push(i + 1)
+				}
+			}
+
+			for (let key in state.bookingsByDate) {
+				for (let i = 0; i < state.bookingsByDate[key].items.length; ++i) {
+					const booking = state.bookingsByDate[key].items[i]
+
+					if (regexp.test(booking.bookingId) ||
+						regexp.test(booking.bookingTitle) ||
+						regexp.test(booking.bookingDesc) ||
+						results.rooms.some(room => booking.roomId === room.roomId) ||
+						regexp.test(booking.date) ||
+						timeSlotList.some(time => booking.timeSlot === time) ||
+						durationList.some(duration => booking.duration === duration)) {
+
+						results.bookings.push(booking)
+					}
 				}
 			}
 		}

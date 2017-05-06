@@ -63,17 +63,19 @@ class RoomDialogComponent extends Component {
 			open: true
 		})
 
-		switch (props.mode) {
-		case MODE_VIEW:
-			this.setState({ dialogTitle: 'View Room' })
-			break
-		case MODE_EDIT:
-			this.setState({ dialogTitle: 'Edit Room' })
-			break
-		case MODE_ADD:
-		default:
-			this.setState({ dialogTitle: this.defaultState.dialogTitle })
-			break
+		if (props) {
+			switch (props.mode) {
+			case MODE_VIEW:
+				this.setState({ dialogTitle: 'View Room' })
+				break
+			case MODE_EDIT:
+				this.setState({ dialogTitle: 'Edit Room' })
+				break
+			case MODE_ADD:
+			default:
+				this.setState({ dialogTitle: this.defaultState.dialogTitle })
+				break
+			}
 		}
 	}
 

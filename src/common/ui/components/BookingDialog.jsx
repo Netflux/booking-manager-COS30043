@@ -87,17 +87,19 @@ class BookingDialogComponent extends Component {
 			open: true
 		})
 
-		switch (props.mode) {
-		case MODE_VIEW:
-			this.setState({ dialogTitle: 'View Booking' })
-			break
-		case MODE_EDIT:
-			this.setState({ dialogTitle: 'Edit Booking' })
-			break
-		case MODE_ADD:
-		default:
-			this.setState({ dialogTitle: this.defaultState.dialogTitle })
-			break
+		if (props) {
+			switch (props.mode) {
+			case MODE_VIEW:
+				this.setState({ dialogTitle: 'View Booking' })
+				break
+			case MODE_EDIT:
+				this.setState({ dialogTitle: 'Edit Booking' })
+				break
+			case MODE_ADD:
+			default:
+				this.setState({ dialogTitle: this.defaultState.dialogTitle })
+				break
+			}
 		}
 	}
 
@@ -225,7 +227,7 @@ class BookingDialogComponent extends Component {
 				</SelectField><br />
 				<TextField id="title" className="form-input" floatingLabelText="Title" floatingLabelFixed={true} errorText={this.state.bookingTitleErrorText} disabled={this.state.mode === MODE_VIEW} onChange={(event) => this.handleChange(event.target.value, 'bookingTitle')} value={this.state.bookingTitle} /><br />
 				<TextField id="description" className="form-input" floatingLabelText="Description" floatingLabelFixed={true} disabled={this.state.mode === MODE_VIEW} onChange={(event) => this.handleChange(event.target.value, 'bookingDesc')} value={this.state.bookingDesc} /><br />
-				<DatePicker id="date" floatingLabelText="Date" floatingLabelFixed={true} formatDate={(date) => moment(date).format('D/M/YYYY')} disabled={this.state.mode === MODE_VIEW} onChange={(event, date) => this.handleChange(moment(date).format('YYYY/M/D'), 'date')} value={moment(this.state.date, 'YYYY/M/D').toDate()} />
+				<DatePicker id="date" floatingLabelText="Date" floatingLabelFixed={true} formatDate={(date) => moment(date).format('D/M/YYYY')} disabled={this.state.mode === MODE_VIEW} onChange={(event, date) => this.handleChange(moment(date).format('D/M/YYYY'), 'date')} value={moment(this.state.date, 'D/M/YYYY').toDate()} />
 				<SelectField id="time" className="form-input" floatingLabelText="Time" floatingLabelFixed={true} errorText={this.state.timeSlotErrorText} disabled={this.state.mode === MODE_VIEW} onChange={(event, key, payload) => this.handleChange(payload, 'timeSlot')} value={this.state.timeSlot}>
 					{
 						timeSlots.map((time, index) => (

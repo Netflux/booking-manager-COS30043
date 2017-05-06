@@ -29,7 +29,7 @@ const sideDrawerState = (state = {
 }
 
 // Reducer for the selected date action
-const selectedDate = (state = moment().format('YYYY/M/D'), action) => {
+const selectedDate = (state = moment().format('D/M/YYYY'), action) => {
 	switch (action.type) {
 	case SELECT_DATE:
 		return action.date
@@ -39,7 +39,7 @@ const selectedDate = (state = moment().format('YYYY/M/D'), action) => {
 }
 
 // Reducer for the selected date history list
-const selectedDateHistory = (state = [moment().format('YYYY/M/D')], action) => {
+const selectedDateHistory = (state = [moment().format('D/M/YYYY')], action) => {
 	switch (action.type) {
 	case SELECT_DATE:
 		// Only add the new selected date if it doesn't exist, otherwise move it to the front of the list

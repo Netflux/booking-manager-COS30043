@@ -308,9 +308,9 @@ class StatisticsListComponent extends Component {
 								<div className="col-sm-6 col-xs-12">
 									<h2>Bookings</h2>
 									<p>Total: {this.props.statistics.data.bookings.total}</p>
-									<p>Most Popular Day: {this.props.statistics.data.bookings.mostPopular.day.label}</p>
-									<p>Most Popular Time: {this.props.statistics.data.bookings.mostPopular.time.label}</p>
-									<p>Most Popular Duration: {this.props.statistics.data.bookings.mostPopular.duration.label} hour(s)</p>
+									<p>Most Popular Day: {this.props.statistics.data.bookings.mostPopular.day.label || 'None'}</p>
+									<p>Most Popular Time: {this.props.statistics.data.bookings.mostPopular.time.label || 'None'}</p>
+									<p>Most Popular Duration: {this.props.statistics.data.bookings.mostPopular.duration.label ? `${this.props.statistics.data.bookings.mostPopular.duration.label} hour(s)` : 'None'}</p>
 								</div>
 
 								<div className="col-sm-6 col-xs-12">
@@ -318,7 +318,7 @@ class StatisticsListComponent extends Component {
 									<p>Total: {this.props.statistics.data.rooms.total}</p>
 									<p>Available for Booking: {this.props.statistics.data.rooms.available}</p>
 									<p>Not Available for Booking: {this.props.statistics.data.rooms.notAvailable}</p>
-									<p>Most Popular: {this.props.statistics.data.rooms.mostPopular.label}</p>
+									<p>Most Popular: {this.props.statistics.data.rooms.mostPopular.label || 'None'}</p>
 								</div>
 							</div>
 						</Paper>

@@ -16,10 +16,10 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
 	return {
 		onPreviousDate: (date) => {
-			dispatch(selectDate(moment(date, 'YYYY/M/D').subtract(1, 'days').format('YYYY/M/D')))
+			dispatch(selectDate(moment(date, 'D/M/YYYY').subtract(1, 'days').format('D/M/YYYY')))
 		},
 		onNextDate: (date) => {
-			dispatch(selectDate(moment(date, 'YYYY/M/D').add(1, 'days').format('YYYY/M/D')))
+			dispatch(selectDate(moment(date, 'D/M/YYYY').add(1, 'days').format('D/M/YYYY')))
 		},
 		onSelectDate: (date) => {
 			dispatch(selectDate(date))
@@ -36,10 +36,10 @@ const BookingDatePickerComponent = ({ selectedDate, onPreviousDate, onNextDate, 
 	return (
 		<div className="booking-date-picker row between-xs">
 			<p className="text-center vertical-center selectable" onTouchTap={() => onPreviousDate(selectedDate)}><FontIcon className="material-icons">arrow_back</FontIcon></p>
-			<h1 className="text-center col-xs selectable" onTouchTap={() => datePickerDialog.show()}>{moment(selectedDate, 'YYYY/M/D').format('D/M/YYYY')}</h1>
+			<h1 className="text-center col-xs selectable" onTouchTap={() => datePickerDialog.show()}>{moment(selectedDate, 'D/M/YYYY').format('D/M/YYYY')}</h1>
 			<p className="text-center vertical-center selectable" onTouchTap={() => onNextDate(selectedDate)}><FontIcon className="material-icons">arrow_forward</FontIcon></p>
 
-			<DatePickerDialog ref={(dialog) => datePickerDialog = dialog} initialDate={moment(selectedDate, 'YYYY/M/D').toDate()} firstDayOfWeek={1} onAccept={(date) => onSelectDate(moment(date).format('YYYY/M/D'))}/>
+			<DatePickerDialog ref={(dialog) => datePickerDialog = dialog} initialDate={moment(selectedDate, 'D/M/YYYY').toDate()} firstDayOfWeek={1} onAccept={(date) => onSelectDate(moment(date).format('D/M/YYYY'))}/>
 		</div>
 	)
 }

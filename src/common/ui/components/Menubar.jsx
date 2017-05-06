@@ -23,12 +23,12 @@ const mapDispatchToProps = dispatch => {
 		},
 		onRefresh: (date) => {
 			// Fetch the bookings for the entire week of the selected date
-			const startOfWeek = moment(date, 'YYYY/M/D').startOf('isoWeek')
-			const endOfWeek = moment(date, 'YYYY/M/D').endOf('isoWeek')
+			const startOfWeek = moment(date, 'D/M/YYYY').startOf('isoWeek')
+			const endOfWeek = moment(date, 'D/M/YYYY').endOf('isoWeek')
 			let day = startOfWeek
 
 			while (day <= endOfWeek) {
-				dispatch(fetchBookings(day.format('YYYY/M/D')))
+				dispatch(fetchBookings(day.format('D/M/YYYY')))
 				day = day.clone().add(1, 'days')
 			}
 

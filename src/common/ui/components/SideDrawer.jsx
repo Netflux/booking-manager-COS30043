@@ -122,7 +122,7 @@ class SideDrawerComponent extends Component {
 										<Link to="/" onTouchTap={() => {
 											this.props.onNavigate(!this.props.isDocked)
 											this.props.onSelectDate(date)
-										}} key={date}><MenuItem>{moment(date, 'YYYY/M/D').format('D/M/YYYY')}</MenuItem></Link>
+										}} key={date}><MenuItem>{moment(date, 'D/M/YYYY').format('D/M/YYYY')}</MenuItem></Link>
 									))
 								}
 							</div>

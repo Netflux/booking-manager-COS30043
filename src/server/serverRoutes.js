@@ -150,7 +150,7 @@ const serverRoutes = app => {
 				const body = {
 					...req.body,
 					updatedBy: req.user.userId,
-					updatedDate: moment().format('YYYY/M/D')
+					updatedDate: moment().format('D/M/YYYY')
 				}
 
 				BookingModel.findOneAndUpdate({ bookingId }, body, (err) => {
@@ -209,9 +209,9 @@ const serverRoutes = app => {
 			const body = {
 				...req.body,
 				createdBy: req.user.userId,
-				createdDate: moment().format('YYYY/M/D'),
+				createdDate: moment().format('D/M/YYYY'),
 				updatedBy: req.user.userId,
-				updatedDate: moment().format('YYYY/M/D')
+				updatedDate: moment().format('D/M/YYYY')
 			}
 
 			BookingModel.create(body, (err) => {
@@ -262,7 +262,7 @@ const serverRoutes = app => {
 				const body = {
 					...req.body,
 					updatedBy: req.user.userId,
-					updatedDate: moment().format('YYYY/M/D')
+					updatedDate: moment().format('D/M/YYYY')
 				}
 
 				RoomModel.findOneAndUpdate({ roomId }, body, (err) => {
@@ -282,7 +282,14 @@ const serverRoutes = app => {
 					return res.sendStatus(500)
 				}
 
-				return res.sendStatus(200)
+				BookingModel.remove({ roomId }, (err) => {
+					if (err) {
+						console.error(err)
+						return res.sendStatus(500)
+					}
+
+					return res.sendStatus(200)
+				})
 			})
 			break
 		default:
@@ -305,9 +312,9 @@ const serverRoutes = app => {
 		const body = {
 			...req.body,
 			createdBy: req.user.userId,
-			createdDate: moment().format('YYYY/M/D'),
+			createdDate: moment().format('D/M/YYYY'),
 			updatedBy: req.user.userId,
-			updatedDate: moment().format('YYYY/M/D')
+			updatedDate: moment().format('D/M/YYYY')
 		}
 
 		RoomModel.create(body, (err) => {
@@ -347,35 +354,60 @@ const serverRoutes = app => {
 			rooms: []
 		}
 
+		// Convert the search query into a regular expression
 		const searchQuery = new RegExp(req.params.query)
 
+		// Define the time slots available for booking (including header)
+		const timeSlots = [ '10.30am', '11.30am', '12.30pm', '1.30pm', '2.30pm', '3.30pm', '4.30pm', '5.30pm', '6.30pm', '7.30pm', '8.30pm', '9.30pm', '10.30pm' ]
+
+		// Define the list of time slots that match the search query
+		const timeSlotList = []
+		for (let i = 0; i < timeSlots.length; ++i) {
+			if (timeSlots[i].includes(req.params.query)) {
+				timeSlotList.push(i + 1)
+			}
+		}
+
+		// Define the durations available for booking
+		const durations = [ '1 Hour', '2 Hour', '3 Hour' ]
+
+		// Define the list of durations that match the search query
+		const durationList = []
+		for (let i = 0; i < durations.length; ++i) {
+			if (durations[i].includes(req.params.query)) {
+				durationList.push(i + 1)
+			}
+		}
+
 		// Search database based on query
-		BookingModel.find({
+		RoomModel.find({
 			$or: [
-				{ bookingId: searchQuery },
-				{ bookingTitle: searchQuery },
-				{ bookingDesc: searchQuery },
 				{ roomId: searchQuery },
-				{ date: searchQuery }
+				{ roomName: searchQuery },
+				{ roomDesc: searchQuery }
 			]
 		})
-		.select('bookingId bookingTitle bookingDesc roomId date timeSlot duration')
+		.select('roomId roomName roomDesc isAvailable')
 		.exec()
-		.then((bookings) => {
-			result.bookings = bookings
-
-			return RoomModel.find({
-				$or: [
-					{ roomId: searchQuery },
-					{ roomName: searchQuery },
-					{ roomDesc: searchQuery }
-				]
-			})
-			.select('roomId roomName roomDesc isAvailable')
-			.exec()
-		})
 		.then((rooms) => {
 			result.rooms = rooms
+
+			return BookingModel.find({
+				$or: [
+					{ bookingId: searchQuery },
+					{ bookingTitle: searchQuery },
+					{ bookingDesc: searchQuery },
+					{ roomId: { $in: rooms.map(room => room.roomId) } },
+					{ date: searchQuery },
+					{ timeSlot: { $in: timeSlotList } },
+					{ duration: { $in: durationList } }
+				]
+			})
+			.select('bookingId bookingTitle bookingDesc roomId date timeSlot duration')
+			.exec()
+		})
+		.then((bookings) => {
+			result.bookings = bookings
 
 			res.json(result)
 		})
@@ -460,8 +492,6 @@ const serverRoutes = app => {
 					byMonth: {}
 				}
 
-				const date = moment()
-
 				// Generate statistics for rooms
 				for (let room of dbEntries.rooms) {
 					if (room.isAvailable) {
@@ -476,7 +506,7 @@ const serverRoutes = app => {
 
 				// Generate statistics for bookings
 				for (let booking of dbEntries.bookings) {
-					const bookingDate = moment(booking.date, 'YYYY/M/D')
+					const bookingDate = moment(booking.date, 'D/M/YYYY')
 
 					// Define the time slots available for booking (including header)
 					const timeSlots = [ 'Time', '10.30am', '11.30am', '12.30pm', '1.30pm', '2.30pm', '3.30pm', '4.30pm', '5.30pm', '6.30pm', '7.30pm', '8.30pm', '9.30pm', '10.30pm' ]
@@ -491,7 +521,7 @@ const serverRoutes = app => {
 					countList.byMonth[bookingDate.format('MMMM')] ? countList.byMonth[bookingDate.format('MMMM')] += 1 : countList.byMonth[bookingDate.format('MMMM')] = 1
 
 					// Increment the count for the current month with an associated booking
-					if (date.month() === bookingDate.month()) {
+					if (moment().month() === bookingDate.month()) {
 						countList.thisMonth[bookingDate.date()] ? countList.thisMonth[bookingDate.date()] += 1 : countList.thisMonth[bookingDate.date()] = 1
 					}
 
@@ -594,11 +624,11 @@ const serverRoutes = app => {
 				}
 
 				// Fetch bookings and rooms from database
-				BookingModel.find({ date: moment().format('YYYY/M/D') })
+				BookingModel.find({ date: moment().format('D/M/YYYY') })
 					.select('bookingId bookingTitle bookingDesc roomId date timeSlot duration')
 					.exec()
 					.then((bookings) => {
-						defaultState.bookingsByDate[moment().format('YYYY/M/D')] = {
+						defaultState.bookingsByDate[moment().format('D/M/YYYY')] = {
 							isFetching: false,
 							didInvalidate: false,
 							items: bookings
