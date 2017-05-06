@@ -580,6 +580,12 @@ const serverRoutes = app => {
 			} else if (renderProps) {
 				// Generate the default state
 				const defaultState = {
+					bookingsByDate: {},
+					rooms: {
+						isFetching: false,
+						didInvalidate: false,
+						items: []
+					},
 					user: {
 						isLoggingIn: false,
 						isLoggedIn: req.user ? true : false,
@@ -587,29 +593,53 @@ const serverRoutes = app => {
 					}
 				}
 
-				// Create a new Redux store instance
-				const store = configureStore(defaultState)
+				// Fetch bookings and rooms from database
+				BookingModel.find({ date: moment().format('YYYY/M/D') })
+					.select('bookingId bookingTitle bookingDesc roomId date timeSlot duration')
+					.exec()
+					.then((bookings) => {
+						defaultState.bookingsByDate[moment().format('YYYY/M/D')] = {
+							isFetching: false,
+							didInvalidate: false,
+							items: bookings
+						}
 
-				// Create the default theme (store the user agent when using SSR)
-				const muiTheme = getMuiTheme({
-					...theme,
-					userAgent: req.get('user-agent')
-				})
+						return RoomModel.find()
+							.select('roomId roomName roomDesc isAvailable')
+							.exec()
+					})
+					.then((rooms) => {
+						defaultState.rooms.items = rooms
+					})
+					.then(() => {
+						// Create a new Redux store instance
+						const store = configureStore(defaultState)
 
-				// Get the React components as a string
-				const html = renderToString(
-					<Provider store={store}>
-						<MuiThemeProvider muiTheme={muiTheme}>
-							<RouterContext {...renderProps} />
-						</MuiThemeProvider>
-					</Provider>
-				)
+						// Create the default theme (store the user agent when using SSR)
+						const muiTheme = getMuiTheme({
+							...theme,
+							userAgent: req.get('user-agent')
+						})
 
-				// Get the current state of the store
-				const currentState = store.getState()
+						// Get the React components as a string
+						const html = renderToString(
+							<Provider store={store}>
+								<MuiThemeProvider muiTheme={muiTheme}>
+									<RouterContext {...renderProps} />
+								</MuiThemeProvider>
+							</Provider>
+						)
 
-				// Send the rendered page to the client
-				res.send(renderPage(html, currentState))
+						// Get the current state of the store
+						const currentState = store.getState()
+
+						// Send the rendered page to the client
+						res.send(renderPage(html, currentState))
+					})
+					.catch(err => {
+						console.error(err)
+						return res.sendStatus(500)
+					})
 			} else {
 				res.status(404).send('Error 404: Not found')
 			}
