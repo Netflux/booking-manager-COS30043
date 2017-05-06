@@ -58,21 +58,36 @@ const serverRoutes = app => {
 			return res.json({ success: false, error: 'An error occured when logging in' })
 		}
 
-		Passport.authenticate('local', (err, user, info) => {
-			if (err) {
-				console.error(err)
+		// Input Validation
+		req.checkBody('username', 'Invalid username').notEmpty().isString()
+		req.checkBody('password', 'Invalid password').notEmpty().isString()
+
+		// Get the result of input validation
+		req.getValidationResult().then(result => {
+			if (!result.isEmpty()) {
 				return res.json({ success: false, error: 'An error occured when logging in' })
 			}
-			if (!user) { return res.json({ success: false, error: info.message }) }
 
-			req.login(user, err => {
+			// Input Sanitization
+			req.sanitizeBody('username').escape()
+			req.sanitizeBody('password').escape()
+
+			Passport.authenticate('local', (err, user, info) => {
 				if (err) {
 					console.error(err)
 					return res.json({ success: false, error: 'An error occured when logging in' })
 				}
-				return res.json({ success: true, error: '' })
-			})
-		})(req, res)
+				if (!user) { return res.json({ success: false, error: info.message }) }
+
+				req.login(user, err => {
+					if (err) {
+						console.error(err)
+						return res.json({ success: false, error: 'An error occured when logging in' })
+					}
+					return res.json({ success: true, error: '' })
+				})
+			})(req, res)
+		})
 	})
 
 	app.get('/api/logout', (req, res) => {
@@ -87,26 +102,42 @@ const serverRoutes = app => {
 			return res.redirect('/login')
 		}
 
-		Passport.authenticate('local', (err, user, info) => {
-			if (err) {
-				console.error(err)
+		// Input Validation
+		req.checkBody('username', 'Invalid username').notEmpty().isString()
+		req.checkBody('password', 'Invalid password').notEmpty().isString()
+
+		// Get the result of input validation
+		req.getValidationResult().then(result => {
+			if (!result.isEmpty()) {
 				req.session.loginError = 'An error occured when logging in'
 				return res.redirect('/login')
 			}
-			if (!user) {
-				req.session.loginError = info.message
-				return res.redirect('/login')
-			}
 
-			req.login(user, err => {
+			// Input Sanitization
+			req.sanitizeBody('username').escape()
+			req.sanitizeBody('password').escape()
+
+			Passport.authenticate('local', (err, user, info) => {
 				if (err) {
 					console.error(err)
 					req.session.loginError = 'An error occured when logging in'
 					return res.redirect('/login')
 				}
-				return res.redirect('/')
-			})
-		})(req, res)
+				if (!user) {
+					req.session.loginError = info.message
+					return res.redirect('/login')
+				}
+
+				req.login(user, err => {
+					if (err) {
+						console.error(err)
+						req.session.loginError = 'An error occured when logging in'
+						return res.redirect('/login')
+					}
+					return res.redirect('/')
+				})
+			})(req, res)
+		})
 	})
 	app.get('/logout', (req, res) => {
 		req.logout()
@@ -118,16 +149,33 @@ const serverRoutes = app => {
 			return res.sendStatus(500)
 		}
 
-		BookingModel.find({ date: `${req.params.year}/${req.params.month}/${req.params.day}` })
-			.select('bookingId bookingTitle bookingDesc roomId date timeSlot duration')
-			.exec((err, bookings) => {
-				if (err) {
-					console.error(err)
-					return res.sendStatus(500)
-				}
+		// Input Validation
+		req.checkParams('year', 'Invalid year').notEmpty().isString()
+		req.checkParams('month', 'Invalid month').notEmpty().isString()
+		req.checkParams('day', 'Invalid day').notEmpty().isString()
 
-				return res.json(bookings)
-			})
+		// Get the result of input validation
+		req.getValidationResult().then(result => {
+			if (!result.isEmpty()) {
+				return res.sendStatus(400)
+			}
+
+			// Input Sanitization
+			req.sanitizeParams('year').escape()
+			req.sanitizeParams('month').escape()
+			req.sanitizeParams('day').escape()
+
+			BookingModel.find({ date: `${req.params.day}/${req.params.month}/${req.params.year}` })
+				.select('bookingId bookingTitle bookingDesc roomId date timeSlot duration')
+				.exec((err, bookings) => {
+					if (err) {
+						console.error(err)
+						return res.sendStatus(500)
+					}
+
+					return res.json(bookings)
+				})
+		})
 	})
 
 	app.all('/api/bookings/:bookingId', (req, res, next) => {
@@ -138,22 +186,45 @@ const serverRoutes = app => {
 			return res.sendStatus(403)
 		}
 
-		const bookingId = req.params.bookingId
+		// Input Validation
+		req.checkParams('bookingId', 'Invalid booking ID').notEmpty().isString()
 
-		switch (req.method) {
-		case 'PUT':
-			{
-				if (!req.body) {
-					return res.sendStatus(400)
+		// Get the result of input validation
+		req.getValidationResult().then(result => {
+			if (!result.isEmpty()) {
+				return res.sendStatus(400)
+			}
+
+			// Input Sanitization
+			req.sanitizeParams('bookingId').escape()
+
+			const bookingId = req.params.bookingId
+
+			switch (req.method) {
+			case 'PUT':
+				{
+					if (!req.body) {
+						return res.sendStatus(400)
+					}
+
+					const body = {
+						...req.body,
+						updatedBy: req.user.userId,
+						updatedDate: moment().format('D/M/YYYY')
+					}
+
+					BookingModel.findOneAndUpdate({ bookingId }, body, (err) => {
+						if (err) {
+							console.error(err)
+							return res.sendStatus(500)
+						}
+
+						return res.sendStatus(200)
+					})
+					break
 				}
-
-				const body = {
-					...req.body,
-					updatedBy: req.user.userId,
-					updatedDate: moment().format('D/M/YYYY')
-				}
-
-				BookingModel.findOneAndUpdate({ bookingId }, body, (err) => {
+			case 'DELETE':
+				BookingModel.remove({ bookingId }, (err) => {
 					if (err) {
 						console.error(err)
 						return res.sendStatus(500)
@@ -162,21 +233,11 @@ const serverRoutes = app => {
 					return res.sendStatus(200)
 				})
 				break
+			default:
+				next() // Route does not handle other request types
+				break
 			}
-		case 'DELETE':
-			BookingModel.remove({ bookingId }, (err) => {
-				if (err) {
-					console.error(err)
-					return res.sendStatus(500)
-				}
-
-				return res.sendStatus(200)
-			})
-			break
-		default:
-			next() // Route does not handle other request types
-			break
-		}
+		})
 	})
 
 	app.post('/api/bookings', (req, res) => {
@@ -190,37 +251,62 @@ const serverRoutes = app => {
 			return res.sendStatus(400)
 		}
 
-		// Retrieve stored bookings for the specified date and check for any overlaps with the new booking entry
-		BookingModel.find({ date: req.body.date }, (err, bookings) => {
-			if (err) {
-				console.error(err)
-				return res.sendStatus(500)
-			}
+		// Input Validation
+		req.checkBody('bookingId', 'Invalid booking ID').notEmpty().isString()
+		req.checkBody('bookingTitle', 'Invalid booking title').notEmpty().isString()
+		req.checkBody('bookingDesc', 'Invalid booking description').notEmpty().isString()
+		req.checkBody('roomId', 'Invalid room ID').notEmpty().isString()
+		req.checkBody('date', 'Invalid date').notEmpty().isString()
+		req.checkBody('timeSlot', 'Invalid time slot').notEmpty().isInt()
+		req.checkBody('duration', 'Invalid duration').notEmpty().isInt()
 
-			// Check whether any bookings overlap with the new booking entry
-			const hasOverlap = bookings.filter((booking) => booking.roomId === req.body.roomId).some((booking) => {
-				return booking.timeSlot <= req.body.timeSlot + (req.body.duration - 1) && req.body.timeSlot <= booking.timeSlot + (booking.duration - 1)
-			})
-
-			if (hasOverlap) {
+		// Get the result of input validation
+		req.getValidationResult().then(result => {
+			if (!result.isEmpty()) {
 				return res.sendStatus(400)
 			}
 
-			const body = {
-				...req.body,
-				createdBy: req.user.userId,
-				createdDate: moment().format('D/M/YYYY'),
-				updatedBy: req.user.userId,
-				updatedDate: moment().format('D/M/YYYY')
-			}
+			// Input Sanitization
+			req.sanitizeBody('bookingId').escape()
+			req.sanitizeBody('bookingTitle').escape()
+			req.sanitizeBody('bookingDesc').escape()
+			req.sanitizeBody('roomId').escape()
+			req.sanitizeBody('date').stripLow()
+			req.sanitizeBody('timeSlot').toInt()
+			req.sanitizeBody('duration').toInt()
 
-			BookingModel.create(body, (err) => {
+			// Retrieve stored bookings for the specified date and check for any overlaps with the new booking entry
+			BookingModel.find({ date: req.body.date }, (err, bookings) => {
 				if (err) {
 					console.error(err)
 					return res.sendStatus(500)
 				}
 
-				return res.sendStatus(201)
+				// Check whether any bookings overlap with the new booking entry
+				const hasOverlap = bookings.filter((booking) => booking.roomId === req.body.roomId).some((booking) => {
+					return booking.timeSlot <= req.body.timeSlot + (req.body.duration - 1) && req.body.timeSlot <= booking.timeSlot + (booking.duration - 1)
+				})
+
+				if (hasOverlap) {
+					return res.sendStatus(400)
+				}
+
+				const body = {
+					...req.body,
+					createdBy: req.user.userId,
+					createdDate: moment().format('D/M/YYYY'),
+					updatedBy: req.user.userId,
+					updatedDate: moment().format('D/M/YYYY')
+				}
+
+				BookingModel.create(body, (err) => {
+					if (err) {
+						console.error(err)
+						return res.sendStatus(500)
+					}
+
+					return res.sendStatus(201)
+				})
 			})
 		})
 	})
@@ -250,52 +336,65 @@ const serverRoutes = app => {
 			return res.sendStatus(403)
 		}
 
-		const roomId = req.params.roomId
+		// Input Validation
+		req.checkParams('roomId', 'Invalid room ID').notEmpty().isString()
 
-		switch (req.method) {
-		case 'PUT':
-			{
-				if (!req.body) {
-					return res.sendStatus(400)
+		// Get the result of input validation
+		req.getValidationResult().then(result => {
+			if (!result.isEmpty()) {
+				return res.sendStatus(400)
+			}
+
+			// Input Sanitization
+			req.sanitizeParams('roomId').escape()
+
+			const roomId = req.params.roomId
+
+			switch (req.method) {
+			case 'PUT':
+				{
+					if (!req.body) {
+						return res.sendStatus(400)
+					}
+
+					const body = {
+						...req.body,
+						updatedBy: req.user.userId,
+						updatedDate: moment().format('D/M/YYYY')
+					}
+
+					RoomModel.findOneAndUpdate({ roomId }, body, (err) => {
+						if (err) {
+							console.error(err)
+							return res.sendStatus(500)
+						}
+
+						return res.sendStatus(200)
+					})
+					break
 				}
-
-				const body = {
-					...req.body,
-					updatedBy: req.user.userId,
-					updatedDate: moment().format('D/M/YYYY')
-				}
-
-				RoomModel.findOneAndUpdate({ roomId }, body, (err) => {
+			case 'DELETE':
+				RoomModel.remove({ roomId }, (err) => {
 					if (err) {
 						console.error(err)
 						return res.sendStatus(500)
 					}
 
-					return res.sendStatus(200)
+					BookingModel.remove({ roomId }, (err) => {
+						if (err) {
+							console.error(err)
+							return res.sendStatus(500)
+						}
+
+						return res.sendStatus(200)
+					})
 				})
 				break
+			default:
+				next() // Route does not handle other request types
+				break
 			}
-		case 'DELETE':
-			RoomModel.remove({ roomId }, (err) => {
-				if (err) {
-					console.error(err)
-					return res.sendStatus(500)
-				}
-
-				BookingModel.remove({ roomId }, (err) => {
-					if (err) {
-						console.error(err)
-						return res.sendStatus(500)
-					}
-
-					return res.sendStatus(200)
-				})
-			})
-			break
-		default:
-			next() // Route does not handle other request types
-			break
-		}
+		})
 	})
 
 	app.post('/api/rooms', (req, res) => {
@@ -309,21 +408,40 @@ const serverRoutes = app => {
 			return res.sendStatus(400)
 		}
 
-		const body = {
-			...req.body,
-			createdBy: req.user.userId,
-			createdDate: moment().format('D/M/YYYY'),
-			updatedBy: req.user.userId,
-			updatedDate: moment().format('D/M/YYYY')
-		}
+		// Input Validation
+		req.checkBody('roomId', 'Invalid room ID').notEmpty().isString()
+		req.checkBody('roomName', 'Invalid room name').notEmpty().isString()
+		req.checkBody('roomDesc', 'Invalid room description').notEmpty().isString()
+		req.checkBody('isAvailable', 'Invalid room availability').notEmpty().isBoolean()
 
-		RoomModel.create(body, (err) => {
-			if (err) {
-				console.error(err)
-				return res.sendStatus(500)
+		// Get the result of input validation
+		req.getValidationResult().then(result => {
+			if (!result.isEmpty()) {
+				return res.sendStatus(400)
 			}
 
-			return res.sendStatus(201)
+			// Input Sanitization
+			req.sanitizeBody('roomId').escape()
+			req.sanitizeBody('roomName').escape()
+			req.sanitizeBody('roomDesc').escape()
+			req.sanitizeBody('isAvailable').toBoolean()
+
+			const body = {
+				...req.body,
+				createdBy: req.user.userId,
+				createdDate: moment().format('D/M/YYYY'),
+				updatedBy: req.user.userId,
+				updatedDate: moment().format('D/M/YYYY')
+			}
+
+			RoomModel.create(body, (err) => {
+				if (err) {
+					console.error(err)
+					return res.sendStatus(500)
+				}
+
+				return res.sendStatus(201)
+			})
 		})
 	})
 
@@ -349,71 +467,84 @@ const serverRoutes = app => {
 			return res.sendStatus(500)
 		}
 
-		const result = {
-			bookings: [],
-			rooms: []
-		}
+		// Input Validation
+		req.checkParams('query', 'Invalid query').notEmpty()
 
-		// Convert the search query into a regular expression
-		const searchQuery = new RegExp(req.params.query)
-
-		// Define the time slots available for booking (including header)
-		const timeSlots = [ '10.30am', '11.30am', '12.30pm', '1.30pm', '2.30pm', '3.30pm', '4.30pm', '5.30pm', '6.30pm', '7.30pm', '8.30pm', '9.30pm', '10.30pm' ]
-
-		// Define the list of time slots that match the search query
-		const timeSlotList = []
-		for (let i = 0; i < timeSlots.length; ++i) {
-			if (timeSlots[i].includes(req.params.query)) {
-				timeSlotList.push(i + 1)
+		// Get the result of input validation
+		req.getValidationResult().then(result => {
+			if (!result.isEmpty()) {
+				return res.sendStatus(400)
 			}
-		}
 
-		// Define the durations available for booking
-		const durations = [ '1 Hour', '2 Hour', '3 Hour' ]
+			// Input Sanitization
+			req.sanitizeParams('query').stripLow()
 
-		// Define the list of durations that match the search query
-		const durationList = []
-		for (let i = 0; i < durations.length; ++i) {
-			if (durations[i].includes(req.params.query)) {
-				durationList.push(i + 1)
+			const search = {
+				bookings: [],
+				rooms: []
 			}
-		}
 
-		// Search database based on query
-		RoomModel.find({
-			$or: [
-				{ roomId: searchQuery },
-				{ roomName: searchQuery },
-				{ roomDesc: searchQuery }
-			]
-		})
-		.select('roomId roomName roomDesc isAvailable')
-		.exec()
-		.then((rooms) => {
-			result.rooms = rooms
+			// Convert the search query into a regular expression
+			const searchQuery = new RegExp(req.params.query)
 
-			return BookingModel.find({
+			// Define the time slots available for booking (including header)
+			const timeSlots = [ '10.30am', '11.30am', '12.30pm', '1.30pm', '2.30pm', '3.30pm', '4.30pm', '5.30pm', '6.30pm', '7.30pm', '8.30pm', '9.30pm', '10.30pm' ]
+
+			// Define the list of time slots that match the search query
+			const timeSlotList = []
+			for (let i = 0; i < timeSlots.length; ++i) {
+				if (timeSlots[i].includes(req.params.query)) {
+					timeSlotList.push(i + 1)
+				}
+			}
+
+			// Define the durations available for booking
+			const durations = [ '1 Hour', '2 Hour', '3 Hour' ]
+
+			// Define the list of durations that match the search query
+			const durationList = []
+			for (let i = 0; i < durations.length; ++i) {
+				if (durations[i].includes(req.params.query)) {
+					durationList.push(i + 1)
+				}
+			}
+
+			// Search database based on query
+			RoomModel.find({
 				$or: [
-					{ bookingId: searchQuery },
-					{ bookingTitle: searchQuery },
-					{ bookingDesc: searchQuery },
-					{ roomId: { $in: rooms.map(room => room.roomId) } },
-					{ date: searchQuery },
-					{ timeSlot: { $in: timeSlotList } },
-					{ duration: { $in: durationList } }
+					{ roomId: searchQuery },
+					{ roomName: searchQuery },
+					{ roomDesc: searchQuery }
 				]
 			})
-			.select('bookingId bookingTitle bookingDesc roomId date timeSlot duration')
+			.select('roomId roomName roomDesc isAvailable')
 			.exec()
-		})
-		.then((bookings) => {
-			result.bookings = bookings
+			.then((rooms) => {
+				search.rooms = rooms
 
-			res.json(result)
-		})
-		.catch(err => {
-			console.error(err)
-			return res.sendStatus(500)
+				return BookingModel.find({
+					$or: [
+						{ bookingId: searchQuery },
+						{ bookingTitle: searchQuery },
+						{ bookingDesc: searchQuery },
+						{ roomId: { $in: rooms.map(room => room.roomId) } },
+						{ date: searchQuery },
+						{ timeSlot: { $in: timeSlotList } },
+						{ duration: { $in: durationList } }
+					]
+				})
+				.select('bookingId bookingTitle bookingDesc roomId date timeSlot duration')
+				.exec()
+			})
+			.then((bookings) => {
+				search.bookings = bookings
+
+				res.json(search)
+			})
+			.catch(err => {
+				console.error(err)
+				return res.sendStatus(500)
+			})
 		})
 	})
 
@@ -623,53 +754,59 @@ const serverRoutes = app => {
 					}
 				}
 
-				// Fetch bookings and rooms from database
-				BookingModel.find({ date: moment().format('D/M/YYYY') })
-					.select('bookingId bookingTitle bookingDesc roomId date timeSlot duration')
-					.exec()
-					.then((bookings) => {
-						defaultState.bookingsByDate[moment().format('D/M/YYYY')] = {
-							isFetching: false,
-							didInvalidate: false,
-							items: bookings
-						}
+				const sendPage = () => {
+					// Create a new Redux store instance
+					const store = configureStore(defaultState)
 
-						return RoomModel.find()
-							.select('roomId roomName roomDesc isAvailable')
-							.exec()
+					// Create the default theme (store the user agent when using SSR)
+					const muiTheme = getMuiTheme({
+						...theme,
+						userAgent: req.get('user-agent')
 					})
-					.then((rooms) => {
-						defaultState.rooms.items = rooms
-					})
-					.then(() => {
-						// Create a new Redux store instance
-						const store = configureStore(defaultState)
 
-						// Create the default theme (store the user agent when using SSR)
-						const muiTheme = getMuiTheme({
-							...theme,
-							userAgent: req.get('user-agent')
+					// Get the React components as a string
+					const html = renderToString(
+						<Provider store={store}>
+							<MuiThemeProvider muiTheme={muiTheme}>
+								<RouterContext {...renderProps} />
+							</MuiThemeProvider>
+						</Provider>
+					)
+
+					// Get the current state of the store
+					const currentState = store.getState()
+
+					// Send the rendered page to the client
+					res.send(renderPage(html, currentState))
+				}
+
+				if (hasDBConnection()) {
+					// Fetch bookings and rooms from database
+					BookingModel.find({ date: moment().format('D/M/YYYY') })
+						.select('bookingId bookingTitle bookingDesc roomId date timeSlot duration')
+						.exec()
+						.then((bookings) => {
+							defaultState.bookingsByDate[moment().format('D/M/YYYY')] = {
+								isFetching: false,
+								didInvalidate: false,
+								items: bookings
+							}
+
+							return RoomModel.find()
+								.select('roomId roomName roomDesc isAvailable')
+								.exec()
 						})
-
-						// Get the React components as a string
-						const html = renderToString(
-							<Provider store={store}>
-								<MuiThemeProvider muiTheme={muiTheme}>
-									<RouterContext {...renderProps} />
-								</MuiThemeProvider>
-							</Provider>
-						)
-
-						// Get the current state of the store
-						const currentState = store.getState()
-
-						// Send the rendered page to the client
-						res.send(renderPage(html, currentState))
-					})
-					.catch(err => {
-						console.error(err)
-						return res.sendStatus(500)
-					})
+						.then((rooms) => {
+							defaultState.rooms.items = rooms
+						})
+						.then(sendPage)
+						.catch(err => {
+							console.error(err)
+							return res.sendStatus(500)
+						})
+				} else {
+					sendPage()
+				}
 			} else {
 				res.status(404).send('Error 404: Not found')
 			}

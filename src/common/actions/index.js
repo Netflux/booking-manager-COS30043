@@ -483,6 +483,7 @@ export const requestLogin = (username, password) => {
 	}
 }
 
+// Action when the log out completes
 export const COMPLETE_LOGOUT = 'COMPLETE_LOGOUT'
 const completeLogout = () => {
 	return {
@@ -545,6 +546,7 @@ const fetchSearchResultsLocal = query => {
 		if (state.search.query !== '') {
 			const regexp = new RegExp(query)
 
+			// Store rooms that match the search query in the results array
 			for (let i = 0; i < state.rooms.items.length; ++i) {
 				const room = state.rooms.items[i]
 
@@ -575,6 +577,7 @@ const fetchSearchResultsLocal = query => {
 				}
 			}
 
+			// Store bookings that match the search query in the results array
 			for (let key in state.bookingsByDate) {
 				for (let i = 0; i < state.bookingsByDate[key].items.length; ++i) {
 					const booking = state.bookingsByDate[key].items[i]
@@ -593,6 +596,7 @@ const fetchSearchResultsLocal = query => {
 			}
 		}
 
+		// Dispatch a 'Receive Search Results' action
 		dispatch(receiveSearchResults(results))
 	}
 }

@@ -1,12 +1,14 @@
 # Booking Manager
 Booking manager powered by NodeJS. The application stack consists of:
 
-| Client                                      | Server                                         | Shared                                           |
-| ------------------------------------------- | ---------------------------------------------- | ------------------------------------------------ |
-| [React](https://facebook.github.io/react/)  | [ExpressJS](http://expressjs.com/)             | [MomentJS](https://momentjs.com/)                |
-| [Redux](http://redux.js.org/)               | [Mongoose](http://mongoosejs.com/)             | [shortid](https://www.npmjs.com/package/shortid) |
-| [Material-UI](http://www.material-ui.com/)  | [PassportJS](http://passportjs.org/)           | -                                                |
-| [ChartJS](http://www.chartjs.org/)          | [Bcrypt](https://www.npmjs.com/package/bcrypt) | -                                                |
+| Client                                      | Server                                         | Shared                                                     |
+| ------------------------------------------- | ---------------------------------------------- | ---------------------------------------------------------- |
+| [React](https://facebook.github.io/react/)  | [ExpressJS](http://expressjs.com/)             | [React Helmet](https://www.npmjs.com/package/react-helmet) |
+| [Redux](http://redux.js.org/)               | [Mongoose](http://mongoosejs.com/)             | [MomentJS](https://momentjs.com/)                          |
+| [Redux Thunk](https://www.npmjs.com/package/redux-thunk) | [PassportJS](http://passportjs.org/) | [shortid](https://www.npmjs.com/package/shortid)        |
+| [Material-UI](http://www.material-ui.com/)  | [Bcrypt](https://www.npmjs.com/package/bcrypt) | -                                                          |
+| [ChartJS](http://www.chartjs.org/)          | [Helmet](https://www.npmjs.com/package/helmet) | -                                                          |
+| -                                | [Express Validator](https://www.npmjs.com/package/express-validator) | -                                               |
 
 ### Table of Contents
 * [Installation](#installation)

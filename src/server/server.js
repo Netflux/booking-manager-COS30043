@@ -1,5 +1,7 @@
 import Express from 'express'
+import Helmet from 'helmet'
 import bodyParser from 'body-parser'
+import ExpressValidator from 'express-validator'
 
 import './database/db'
 import serverAuth from './serverAuth'
@@ -9,9 +11,19 @@ import serverRoutes from './serverRoutes'
 const app = Express()
 const port = process.env.PORT || 3000
 
+// Enable Helmet middleware to set security-related HTTP headers
+app.use(Helmet())
+
 // Enable parsing for application/x-www-form-urlencoded and application/json data
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
+
+// Enable Express Validator for input validation/sanitization
+app.use(ExpressValidator({
+	customValidators: {
+		isString: value => typeof(value) === 'string'
+	}
+}))
 
 // Load the authentication settings for the Express application
 serverAuth(app)
