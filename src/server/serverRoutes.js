@@ -726,6 +726,7 @@ const serverRoutes = app => {
 			case '/static/bundle.js':
 				req.url = req.url + '.gz'
 				res.set('Content-Encoding', 'gzip')
+				res.contentType('js')
 				break
 
 			case '/static/style.css':
