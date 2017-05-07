@@ -176,7 +176,7 @@ class StatisticsListComponent extends Component {
 		// If no statistics are available, display a message
 		if (!this.props.statistics.data) {
 			return (
-				<section>
+				<section className="margin-bottom">
 					<Paper className="paper text-center">
 						<h1>No statistics available!</h1>
 						<p>Statistics will appear here as bookings and rooms are added.</p>
@@ -215,8 +215,8 @@ class StatisticsListComponent extends Component {
 		}
 
 		return (
-			<section>
-				<div className="row center-xs start-sm padding-bottom">
+			<section className="margin-bottom">
+				<div className="row center-xs start-sm">
 					<div className="col-sm-6 col-xs-12 text-center">
 						<Paper className="paper paper-solo paper-fullheight">
 							<h1 className="header">Bookings This Month</h1>

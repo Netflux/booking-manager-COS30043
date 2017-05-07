@@ -74,18 +74,21 @@ section {
 .margin-none {
 	margin: 0 !important;
 }
+.margin-vertical-none {
+	margin-top: 0 !important;
+	margin-bottom: 0 !important;
+}
+.margin-bottom {
+	margin-bottom: 16px;
+}
 .padding-none {
 	padding: 0 !important;
-}
-.padding-bottom {
-	padding-bottom: 16px;
 }
 /* ===== Utility CSS End ===== */
 
 
 /* ===== Home Page CSS Start ===== */
 .booking-table {
-	margin-bottom: 72px;
 	overflow-x: auto;
 }
 .booking-table > .row {
@@ -98,10 +101,12 @@ section {
 	border-right: 1px solid #E0E0E0;
 	border-bottom: 1px solid #E0E0E0;
 }
+.booking-table.booking-room > .row > div, .booking-table > .row > div:first-of-type {
+	min-width: 84px;
+}
 .booking-table > .row > div:first-of-type {
 	position: sticky;
 	left: 0;
-	min-width: 84px;
 	background-color: #FFFFFF;
 	z-index: 6;
 }
@@ -164,9 +169,6 @@ section {
 
 
 /* ===== Rooms Page CSS Start ===== */
-.room-table {
-	margin-bottom: 16px;
-}
 .fab {
 	position: fixed;
 	top: calc(100% - 5vw);
@@ -214,9 +216,15 @@ section {
 	section {
 		padding: 0 5%;
 	}
+	.booking-table, .room-table {
+		margin-bottom: 88px;
+	}
 }
 
 @media (max-width: 767px) {
+	.hide-sm {
+		display: none;
+	}
 	.paper {
 		padding: 8px;
 	}

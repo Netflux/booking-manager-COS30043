@@ -98,7 +98,7 @@ class BookingTableComponent extends Component {
 								<section>
 									<BookingDatePicker />
 
-									<Paper className="booking-table paper text-center padding-none">
+									<Paper className="booking-table booking-room paper text-center margin-bottom padding-none">
 										{
 											timeSlots.map((time, index) => (
 												<div className="row" key={time}>
@@ -154,7 +154,7 @@ class BookingTableComponent extends Component {
 								<section>
 									<BookingDatePicker />
 
-									<Paper className="booking-table paper text-center padding-none">
+									<Paper className="booking-table paper text-center margin-bottom padding-none">
 										{
 											timeSlots.map((time, index) => (
 												<div className="row" key={time}>
@@ -198,7 +198,7 @@ class BookingTableComponent extends Component {
 																	{
 																		// If any booking overlaps the current timeslot, display the total number of bookings for that timeslot
 																		!timeSlotAvailable && (
-																			<Booking booking={{ bookingTitle: `${bookingsByTimeSlot.length} Booking(s)`, duration: 1 }} onTouchTap={() => bookingsListDialog.getWrappedInstance().show({ canAdd: bookingsByTimeSlot.length !== this.props.rooms.items.length, date: getSelectedDate(dayIndex), timeSlot: index })} />
+																			<Booking booking={{ bookingTitle: <span>{bookingsByTimeSlot.length}<span className="hide-sm"> {bookingsByTimeSlot.length === 1 ? 'Entry' : 'Entries'}</span></span>, duration: 1 }} onTouchTap={() => bookingsListDialog.getWrappedInstance().show({ canAdd: bookingsByTimeSlot.length !== this.props.rooms.items.length, date: getSelectedDate(dayIndex), timeSlot: index })} />
 																		)
 																	}
 																</div>

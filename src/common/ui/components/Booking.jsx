@@ -8,7 +8,7 @@ const Booking = ({ booking, onTouchTap }) => (
 		{
 			booking.duration === 1 ? (
 				<Paper className="paper paper-solo">
-					<p className="margin-none"><strong>{booking.bookingTitle}</strong></p>
+					<p className="margin-vertical-none"><strong>{booking.bookingTitle}</strong></p>
 				</Paper>
 			) : (
 				<Paper className="paper paper-solo">

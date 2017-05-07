@@ -38,10 +38,10 @@ class RoomsListComponent extends Component {
 		let roomDialog
 
 		return (
-			<section className="room-table">
+			<section className="room-table margin-bottom">
 				{
 					this.props.rooms.items.length > 0 ? (
-						<div className="row center-xs start-sm padding-bottom">
+						<div className="row center-xs start-sm">
 							{
 								this.props.rooms.items.map((room) => (
 									<div className="col-sm-6 col-xs-12" key={room.roomId}>
