@@ -515,7 +515,7 @@ export const fetchSearchResults = query => {
 		dispatch(requestSearchResults(query))
 
 		// Fetch the search results and dispatch a 'Receive Search Results' action
-		return fetch(`/api/search/${query}`, { credentials: 'include' })
+		return fetch(`/api/search?q=${query}`, { credentials: 'include' })
 			.then(response => {
 				if (response.ok) {
 					return response.json()

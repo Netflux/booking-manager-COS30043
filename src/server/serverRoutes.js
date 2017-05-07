@@ -271,9 +271,12 @@ const serverRoutes = app => {
 			req.sanitizeBody('bookingTitle').escape()
 			req.sanitizeBody('bookingDesc').escape()
 			req.sanitizeBody('roomId').escape()
-			req.sanitizeBody('date').stripLow()
+			req.sanitizeBody('date').escape()
 			req.sanitizeBody('timeSlot').toInt()
 			req.sanitizeBody('duration').toInt()
+
+			// Restore any slashes '/' in the date
+			req.body.date = req.body.date.replace(/&#x2F;/g, '/')
 
 			// Retrieve stored bookings for the specified date and check for any overlaps with the new booking entry
 			BookingModel.find({ date: req.body.date }, (err, bookings) => {
@@ -462,13 +465,13 @@ const serverRoutes = app => {
 			})
 	})
 
-	app.get('/api/search/:query', (req, res) => {
+	app.get('/api/search', (req, res) => {
 		if (!hasDBConnection()) {
 			return res.sendStatus(500)
 		}
 
 		// Input Validation
-		req.checkParams('query', 'Invalid query').notEmpty()
+		req.checkQuery('q', 'Invalid query').notEmpty()
 
 		// Get the result of input validation
 		req.getValidationResult().then(result => {
@@ -477,7 +480,10 @@ const serverRoutes = app => {
 			}
 
 			// Input Sanitization
-			req.sanitizeParams('query').stripLow()
+			req.sanitizeQuery('q').escape()
+
+			// Restore any slashes '/' in the search query
+			req.query.q = req.query.q.replace(/&#x2F;/g, '/')
 
 			const search = {
 				bookings: [],
@@ -485,7 +491,7 @@ const serverRoutes = app => {
 			}
 
 			// Convert the search query into a regular expression
-			const searchQuery = new RegExp(req.params.query)
+			const searchQuery = new RegExp(req.query.q)
 
 			// Define the time slots available for booking (including header)
 			const timeSlots = [ '10.30am', '11.30am', '12.30pm', '1.30pm', '2.30pm', '3.30pm', '4.30pm', '5.30pm', '6.30pm', '7.30pm', '8.30pm', '9.30pm', '10.30pm' ]
@@ -493,7 +499,7 @@ const serverRoutes = app => {
 			// Define the list of time slots that match the search query
 			const timeSlotList = []
 			for (let i = 0; i < timeSlots.length; ++i) {
-				if (timeSlots[i].includes(req.params.query)) {
+				if (timeSlots[i].includes(req.query.q)) {
 					timeSlotList.push(i + 1)
 				}
 			}
@@ -504,7 +510,7 @@ const serverRoutes = app => {
 			// Define the list of durations that match the search query
 			const durationList = []
 			for (let i = 0; i < durations.length; ++i) {
-				if (durations[i].includes(req.params.query)) {
+				if (durations[i].includes(req.query.q)) {
 					durationList.push(i + 1)
 				}
 			}
