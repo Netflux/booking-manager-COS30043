@@ -27,10 +27,10 @@ const AboutPage = () => (
 
 			<Paper className="paper about">
 				<h1 className="header">Disclaimer</h1>
-				<p>This online system is created mainly for educational and non-commercial use only. It is a partial fulfilment for the completion of the unit COS30043 – Interface Design & Development offered in Swinburne University of Technology, Sarawak Campus for Semester 1, 2017. (enter the semester and year)</p>
-				<p>The web-master, designer and developer does not represent the business entity. However, the web develop has obtained consent and approval from the business representative, SSSC on 30 January 2017 to use their information and resources for the purpose of content development.</p>
+				<p>This online system is created mainly for educational and non-commercial use only. It is a partial fulfilment for the completion of the unit COS30043 – Interface Design & Development offered in Swinburne University of Technology, Sarawak Campus for Semester 1, 2017.</p>
+				<p>The web-master, designer and developer does not represent the business entity. However, the web developer has obtained consent and approval from the business representative, SSSC on 30 January 2017 to use their information and resources for the purpose of content development.</p>
 				<p>The content or information of this online system might be out-dated or inaccurate, thus, the web-developer and web-master does not take any responsibility for incorrect information disseminate or cited from this online system.</p>
-				<p>Visitors are advised to visit the <Link to="https://www.facebook.com/swinburnestudentcouncil/" className="text-color-dark">official facebook page</Link> to get the actual information</p>
+				<p>Visitors are advised to visit the <Link to="https://www.facebook.com/swinburnestudentcouncil/" className="text-color-dark">official facebook page</Link> to get the actual information.</p>
 				<p>If you believe that information of any kind on this online system is an infringement of copyright in material in which you either own copyright or are authorized to exercise the rights of a copyright owner, kindly contact the web-developer at ssscsarawak@gmail.com or web-master cum Lecturer, Mr. Ong Chin Ann (cong@swinburne.edu.my) for removal.</p>
 			</Paper>
 		</section>
