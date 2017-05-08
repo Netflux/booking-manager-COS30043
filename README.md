@@ -19,11 +19,12 @@ Booking manager powered by NodeJS. The application stack consists of:
 * [License](#license)
 
 ## Installation
-1. Clone the repository using `git clone https://github.com/Netflux/booking-manager.git`.
+1. Clone the repository using `git clone https://github.com/Netflux/booking-manager-COS30043.git`.
 2. Install NPM dependencies using `npm install`.
 3. Compile the client/server files using `npm run build`.
 4. Start the server using `npm start`. The default port is 3000.
 
+\* Tested on Arch Linux (x64). May not work as intended on non-Linux based OS.
 \* The login system and booking/room storage require a valid MongoDB connection.
 
 ## Commands
@@ -46,7 +47,7 @@ Environment variables can be provided when starting the server with `npm run sta
 | `DB_URI`             | `mongodb://localhost/booking-manager` | URI pointing to the MongoDB database     |
 
 ## License
-Copyright (C) 2017 Netflux
+Copyright (C) 2017
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
