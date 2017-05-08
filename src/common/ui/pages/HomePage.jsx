@@ -10,7 +10,7 @@ const HomePage = () => (
 			<title>SSSC Booking Manager | Home</title>
 		</Helmet>
 
-		<Menubar title="SSSC Booking Manager" />
+		<Menubar title="Booking Manager" />
 
 		<BookingTable />
 	</main>

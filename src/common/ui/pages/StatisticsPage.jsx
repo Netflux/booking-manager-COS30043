@@ -10,7 +10,7 @@ const StatisticsPage = () => (
 			<title>SSSC Booking Manager | Statistics</title>
 		</Helmet>
 
-		<Menubar title="SSSC Booking Manager" />
+		<Menubar title="Booking Manager" />
 
 		<StatisticsList />
 	</main>

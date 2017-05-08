@@ -11,7 +11,7 @@ const AboutPage = () => (
 			<title>SSSC Booking Manager | About</title>
 		</Helmet>
 
-		<Menubar title="SSSC Booking Manager" />
+		<Menubar title="Booking Manager" />
 
 		<section>
 			<Paper className="paper about">

@@ -10,7 +10,7 @@ const RoomsPage = () => (
 			<title>SSSC Booking Manager | Rooms</title>
 		</Helmet>
 
-		<Menubar title="SSSC Booking Manager" />
+		<Menubar title="Booking Manager" />
 
 		<RoomsList />
 	</main>
