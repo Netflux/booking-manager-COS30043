@@ -24,7 +24,9 @@ Booking manager powered by NodeJS. The application stack consists of:
 3. Compile the client/server files using `npm run build`.
 4. Start the server using `npm start`. The default port is 3000.
 
-\* Tested on Arch Linux (x64). May not work as intended on non-Linux based OS.
+\* Tested on Arch Linux (x64) and Ubuntu 16.04 LTS (x64). May not work as intended on non-Linux based OS.
+
+\* On Ubuntu, you may need to run `sudo ln -s "$(which nodejs)" /usr/local/bin/node` before using `npm install`.
 
 \* The login system and booking/room storage require a valid MongoDB connection.
 
