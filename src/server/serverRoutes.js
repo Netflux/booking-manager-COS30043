@@ -38,7 +38,7 @@ const renderPage = (html, defaultState) => {
 				<div id="app">${html}</div>
 
 				<script>window.__DEFAULT_STATE__ = ${JSON.stringify(defaultState).replace(/</g, '\\x3c')}</script>
-				<script src="/static/bundle.js"></script>
+				<script src="/static/js/bundle.js"></script>
 			</body>
 		</html>
 	`

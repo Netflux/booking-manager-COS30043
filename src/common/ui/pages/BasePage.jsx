@@ -24,7 +24,9 @@ const BasePageComponent = ({ children, isOpen, isDocked }) => (
 			<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flexboxgrid/6.3.1/flexboxgrid.min.css" />
 			<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" />
 			<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
-			<link rel="stylesheet" href="/static/style.css" />
+			<link rel="stylesheet" href="/static/css/style.css" />
+			<link rel="shortcut icon" href="/static/images/favicon.ico" type="image/x-icon" />
+			<link rel="icon" href="/static/images/favicon.ico" type="image/x-icon" />
 		</Helmet>
 
 		{children}

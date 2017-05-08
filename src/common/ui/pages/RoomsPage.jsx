@@ -7,10 +7,10 @@ import RoomsList from '../components/RoomsList'
 const RoomsPage = () => (
 	<main>
 		<Helmet>
-			<title>Booking Manager | Rooms</title>
+			<title>SSSC Booking Manager | Rooms</title>
 		</Helmet>
 
-		<Menubar title="Booking Manager" />
+		<Menubar title="SSSC Booking Manager" />
 
 		<RoomsList />
 	</main>

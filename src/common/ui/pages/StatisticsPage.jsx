@@ -7,10 +7,10 @@ import StatisticsList from '../components/StatisticsList'
 const StatisticsPage = () => (
 	<main>
 		<Helmet>
-			<title>Booking Manager | Statistics</title>
+			<title>SSSC Booking Manager | Statistics</title>
 		</Helmet>
 
-		<Menubar title="Booking Manager" />
+		<Menubar title="SSSC Booking Manager" />
 
 		<StatisticsList />
 	</main>

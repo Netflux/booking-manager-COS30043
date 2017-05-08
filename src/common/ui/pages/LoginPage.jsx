@@ -7,10 +7,10 @@ import LoginForm from '../components/LoginForm'
 const LoginPage = () => (
 	<main>
 		<Helmet>
-			<title>Booking Manager | Login</title>
+			<title>SSSC Booking Manager | Login</title>
 		</Helmet>
 
-		<Menubar title="Booking Manager" />
+		<Menubar title="SSSC Booking Manager" />
 
 		<LoginForm />
 	</main>

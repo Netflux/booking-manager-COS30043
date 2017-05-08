@@ -8,10 +8,10 @@ import Menubar from '../components/Menubar'
 const NotFoundPage = () => (
 	<main>
 		<Helmet>
-			<title>Booking Manager | Not Found</title>
+			<title>SSSC Booking Manager | Not Found</title>
 		</Helmet>
 
-		<Menubar title="Booking Manager" />
+		<Menubar title="SSSC Booking Manager" />
 
 		<section>
 			<Paper className="paper text-center">

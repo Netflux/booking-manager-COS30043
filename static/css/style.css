@@ -168,6 +168,23 @@ section {
 /* ===== Home Page CSS End ===== */
 
 
+/* ===== About Page CSS Start ===== */
+.about > p {
+	margin-bottom: 0;
+}
+.sssc {
+	width: 100%;
+}
+.sssc > img {
+	max-width: 240px;
+}
+.sssc > p {
+	margin-top: 0;
+	margin-bottom: 1.33em;
+}
+/* ===== About Page CSS End ===== */
+
+
 /* ===== Rooms Page CSS Start ===== */
 .fab {
 	position: fixed;
