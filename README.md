@@ -1,14 +1,16 @@
 # Booking Manager
 Booking manager powered by NodeJS. The application stack consists of:
 
-| Client                                      | Server                                         | Shared                                                     |
-| ------------------------------------------- | ---------------------------------------------- | ---------------------------------------------------------- |
-| [React](https://facebook.github.io/react/)  | [ExpressJS](http://expressjs.com/)             | [React Helmet](https://www.npmjs.com/package/react-helmet) |
-| [Redux](http://redux.js.org/)               | [Mongoose](http://mongoosejs.com/)             | [MomentJS](https://momentjs.com/)                          |
-| [Redux Thunk](https://www.npmjs.com/package/redux-thunk) | [PassportJS](http://passportjs.org/) | [shortid](https://www.npmjs.com/package/shortid)        |
-| [Material-UI](http://www.material-ui.com/)  | [Bcrypt](https://www.npmjs.com/package/bcrypt) | -                                                          |
-| [ChartJS](http://www.chartjs.org/)          | [Helmet](https://www.npmjs.com/package/helmet) | -                                                          |
-| -                                | [Express Validator](https://www.npmjs.com/package/express-validator) | -                                               |
+| Client & Server                                            | Server                                                               |
+| ---------------------------------------------------------- | -------------------------------------------------------------------- |
+| [React](https://facebook.github.io/react/)                 | [ExpressJS](http://expressjs.com/)                                   |
+| [React Helmet](https://www.npmjs.com/package/react-helmet) | [Mongoose](http://mongoosejs.com/)                                   |
+| [Redux](http://redux.js.org/)                              | [PassportJS](http://passportjs.org/)                                 |
+| [Redux Thunk](https://www.npmjs.com/package/redux-thunk)   | [Bcrypt](https://www.npmjs.com/package/bcrypt)                       |
+| [Material-UI](http://www.material-ui.com/)                 | [Helmet](https://www.npmjs.com/package/helmet)                       |
+| [MomentJS](https://momentjs.com/)                          | [Express Validator](https://www.npmjs.com/package/express-validator) |
+| [shortid](https://www.npmjs.com/package/shortid)           | -                                                                    |
+| [ChartJS](http://www.chartjs.org/)                         | -                                                                    |
 
 ### Table of Contents
 * [Installation](#installation)
