@@ -6,6 +6,7 @@ import BasePage from '../common/ui/pages/BasePage'
 import HomePage from '../common/ui/pages/HomePage'
 import AboutPage from '../common/ui/pages/AboutPage'
 import RoomsPage from '../common/ui/pages/RoomsPage'
+import AccountsPage from '../common/ui/pages/AccountsPage'
 import StatisticsPage from '../common/ui/pages/StatisticsPage'
 import LoginPage from '../common/ui/pages/LoginPage'
 import NotFoundPage from '../common/ui/pages/NotFoundPage'
@@ -16,6 +17,7 @@ const routes = (
 		<IndexRoute component={HomePage} />
 		<Route path="/about" component={AboutPage} />
 		<Route path="/rooms" component={RoomsPage} />
+		<Route path="/accounts" component={AccountsPage} />
 		<Route path="/statistics" component={StatisticsPage} />
 		<Route path="/login" component={LoginPage} />
 

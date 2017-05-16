@@ -3,6 +3,7 @@ import moment from 'moment'
 import { TOGGLE_DRAWER_OPEN, TOGGLE_DRAWER_DOCKED, SELECT_DATE,
 	REQUEST_BOOKINGS, RECEIVE_BOOKINGS, RECEIVE_BOOKINGS_ERROR, INVALIDATE_BOOKINGS, ADD_BOOKING, UPDATE_BOOKING, DELETE_BOOKING,
 	REQUEST_ROOMS, RECEIVE_ROOMS, RECEIVE_ROOMS_ERROR, INVALIDATE_ROOMS, ADD_ROOM, UPDATE_ROOM, DELETE_ROOM,
+	REQUEST_ACCOUNTS, RECEIVE_ACCOUNTS, RECEIVE_ACCOUNTS_ERROR, INVALIDATE_ACCOUNTS, ADD_ACCOUNT, UPDATE_ACCOUNT, DELETE_ACCOUNT,
 	BEGIN_LOGIN, COMPLETE_LOGIN, COMPLETE_LOGIN_ERROR, CLEAR_LOGIN_ERROR, COMPLETE_LOGOUT,
 	REQUEST_SEARCH_RESULTS, REQUEST_SEARCH_RESULTS_LOCAL, RECEIVE_SEARCH_RESULTS, CLEAR_SEARCH_RESULTS,
 	REQUEST_STATISTICS, RECEIVE_STATISTICS, RECEIVE_STATISTICS_ERROR, INVALIDATE_STATISTICS } from '../actions'
@@ -179,10 +180,61 @@ const rooms = (state = {
 	}
 }
 
+// Reducer for account-related actions
+const accounts = (state = {
+	isFetching: false,
+	didInvalidate: false,
+	items: []
+}, action) => {
+	switch (action.type) {
+	case REQUEST_ACCOUNTS:
+		return {
+			...state,
+			isFetching: true
+		}
+	case RECEIVE_ACCOUNTS:
+		return {
+			...state,
+			isFetching: false,
+			didInvalidate: false,
+			items: action.users,
+			lastUpdated: action.receivedAt
+		}
+	case RECEIVE_ACCOUNTS_ERROR:
+		return {
+			...state,
+			isFetching: false
+		}
+	case INVALIDATE_ACCOUNTS:
+		return {
+			...state,
+			didInvalidate: true
+		}
+	case ADD_ACCOUNT:
+		return {
+			...state,
+			items: [...state.items, action.user]
+		}
+	case UPDATE_ACCOUNT:
+		return {
+			...state,
+			items: [...state.items.filter((user) => user.userId !== action.user.userId), action.user]
+		}
+	case DELETE_ACCOUNT:
+		return {
+			...state,
+			items: state.items.filter((user) => user.userId !== action.userId)
+		}
+	default:
+		return state
+	}
+}
+
 // Reducer for user-related actions
 const user = (state = {
 	isLoggingIn: false,
 	isLoggedIn: false,
+	authLevel: 0,
 	loginError: ''
 }, action) => {
 	switch (action.type) {
@@ -197,7 +249,8 @@ const user = (state = {
 			...state,
 			isLoggingIn: false,
 			isLoggedIn: action.response.success,
-			loginError: action.response.error
+			loginError: action.response.error,
+			authLevel: action.response.authLevel
 		}
 	case COMPLETE_LOGIN_ERROR:
 		return {
@@ -213,7 +266,8 @@ const user = (state = {
 	case COMPLETE_LOGOUT:
 		return {
 			...state,
-			isLoggedIn: false
+			isLoggedIn: false,
+			authLevel: 0
 		}
 	default:
 		return state
@@ -332,6 +386,7 @@ const rootReducer = combineReducers({
 	selectedDateHistory,
 	bookingsByDate,
 	rooms,
+	accounts,
 	user,
 	search,
 	statistics

@@ -136,6 +136,11 @@ class BookingDialogComponent extends Component {
 			timeSlotErrorText: '',
 			durationErrorText: ''
 		})
+		
+		// If in 'View' mode, skip validation
+		if (this.state.mode === MODE_VIEW) {
+			return this.dismiss()
+		}
 
 		let hasError = false
 

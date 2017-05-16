@@ -105,6 +105,16 @@ class RoomDialogComponent extends Component {
 	}
 
 	accept() {
+		// Reset all error text
+		this.setState({
+			roomNameErrorText: ''
+		})
+
+		// If in 'View' mode, skip validation
+		if (this.state.mode === MODE_VIEW) {
+			return this.dismiss()
+		}
+
 		let hasError = false
 
 		if (this.state.roomName === '') {

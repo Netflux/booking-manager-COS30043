@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
+import { browserHistory } from 'react-router'
 import { connect } from 'react-redux'
 import { Paper } from 'material-ui'
 
@@ -9,6 +10,7 @@ import { fetchStatisticsIfNeeded } from '../../actions'
 
 const mapStateToProps = state => {
 	return {
+		isLoggedIn: state.user.isLoggedIn,
 		statistics: state.statistics
 	}
 }
@@ -23,9 +25,26 @@ const mapDispatchToProps = dispatch => {
 
 // Define the Statistics List component
 class StatisticsListComponent extends Component {
+	constructor(props) {
+		super(props)
+
+		this.handleIsLoggedIn = (isLoggedIn) => {
+			// If not logged in, navigate to the login page
+			if (!isLoggedIn) {
+				browserHistory.push('/login')
+			}
+		}
+	}
+
 	componentDidMount() {
+		this.handleIsLoggedIn(this.props.isLoggedIn)
+
 		// Fetch the statistics
 		this.props.fetchStatistics()
+	}
+
+	componentWillReceiveProps(nextProps) {
+		this.handleIsLoggedIn(nextProps.isLoggedIn)
 	}
 
 	componentDidUpdate() {
@@ -331,6 +350,7 @@ class StatisticsListComponent extends Component {
 
 // Define the property types that the component expects to receive
 StatisticsListComponent.propTypes = {
+	isLoggedIn: PropTypes.bool.isRequired,
 	statistics: PropTypes.object.isRequired,
 	fetchStatistics: PropTypes.func.isRequired
 }

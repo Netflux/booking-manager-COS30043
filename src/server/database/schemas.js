@@ -4,23 +4,31 @@ import { Schema } from 'mongoose'
 const userSchema = new Schema({
 	userId: {
 		type: String,
+		unique: true,
 		required: [true, 'User ID is required']
 	},
 	username: {
 		type: String,
+		unique: true,
 		required: [true, 'Username is required']
 	},
 	password: {
 		type: String,
 		required: [true, 'Password is required']
 	},
-	authLevel: Number
+	authLevel: {
+		type: Number,
+		min: 1,
+		max: 100,
+		required: [true, 'Authentication Level is required']
+	}
 })
 
 // Schema for the Booking details
 const bookingSchema = new Schema({
 	bookingId: {
 		type: String,
+		unique: true,
 		required: [true, 'Booking ID is required']
 	},
 	bookingTitle: {
@@ -70,10 +78,12 @@ const bookingSchema = new Schema({
 const roomSchema = new Schema({
 	roomId: {
 		type: String,
+		unique: true,
 		required: [true, 'Room ID is required']
 	},
 	roomName: {
 		type: String,
+		unique: true,
 		required: [true, 'Room Name is required']
 	},
 	roomDesc: String,
