@@ -193,12 +193,12 @@ class StatisticsListComponent extends Component {
 		}
 
 		// If no statistics are available, display a message
-		if (!this.props.statistics.data) {
+		if (!this.props.statistics.data || this.props.statistics.data.bookings.total === 0 || this.props.statistics.data.rooms.total === 0) {
 			return (
 				<section className="margin-bottom">
 					<Paper className="paper text-center">
 						<h1>No statistics available!</h1>
-						<p>Statistics will appear here as bookings and rooms are added.</p>
+						<p>Statistics will appear here as bookings are added.</p>
 					</Paper>
 				</section>
 			)
