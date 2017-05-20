@@ -4,11 +4,9 @@ import PropTypes from 'prop-types'
 // Define the Statistics Chart component
 class StatisticsChart extends Component {
 	componentDidMount() {
-		if (window !== 'undefined') {
-			const Chart = require('chart.js')
+		const Chart = require('chart.js')
 
-			this.chart = new Chart(this.canvas, this.props.options)
-		}
+		this.chart = new Chart(this.canvas, this.props.options)
 	}
 
 	componentDidUpdate() {

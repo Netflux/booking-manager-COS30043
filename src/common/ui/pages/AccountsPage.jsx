@@ -3,6 +3,7 @@ import Helmet from 'react-helmet'
 
 import Menubar from '../components/Menubar'
 import AccountsList from '../components/AccountsList'
+import RefreshSpinner from '../components/RefreshSpinner'
 
 const AccountsPage = () => (
 	<main>
@@ -13,6 +14,7 @@ const AccountsPage = () => (
 		<Menubar title="Booking Manager" />
 
 		<AccountsList />
+		<RefreshSpinner top={72} />
 	</main>
 )
 

@@ -3,6 +3,7 @@ import Helmet from 'react-helmet'
 
 import Menubar from '../components/Menubar'
 import StatisticsList from '../components/StatisticsList'
+import RefreshSpinner from '../components/RefreshSpinner'
 
 const StatisticsPage = () => (
 	<main>
@@ -13,6 +14,7 @@ const StatisticsPage = () => (
 		<Menubar title="Booking Manager" />
 
 		<StatisticsList />
+		<RefreshSpinner top={72} />
 	</main>
 )
 
