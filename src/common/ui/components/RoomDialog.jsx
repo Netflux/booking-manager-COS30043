@@ -5,10 +5,11 @@ import moment from 'moment'
 import shortid from 'shortid'
 import { Dialog, FlatButton, TextField, Toggle } from 'material-ui'
 
-import { handleAddRoom, handleUpdateRoom, handleDeleteRoom } from '../../actions'
+import { handleAddRoom, handleUpdateRoom, handleDeleteRoom, fetchAccountsIfNeeded } from '../../actions'
 
 const mapStateToProps = state => {
 	return {
+		accounts: state.accounts,
 		isLoggedIn: state.user.isLoggedIn
 	}
 }
@@ -23,6 +24,9 @@ const mapDispatchToProps = dispatch => {
 		},
 		deleteRoom: (roomId) => {
 			dispatch(handleDeleteRoom(roomId))
+		},
+		fetchAccounts: () => {
+			dispatch(fetchAccountsIfNeeded())
 		}
 	}
 }
@@ -48,6 +52,11 @@ class RoomDialogComponent extends Component {
 			roomDesc: '',
 			isAvailable: true
 		}
+	}
+
+	componentDidMount() {
+		// Fetch the accounts
+		this.props.fetchAccounts()
 	}
 
 	handleChange(value, stateName) {

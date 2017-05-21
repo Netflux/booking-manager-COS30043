@@ -663,7 +663,7 @@ export const clearLoginError = () => {
 
 // Action when the user logs in
 export const requestLogin = (username, password) => {
-	return dispatch => {
+	return (dispatch, getState) => {
 		// Dispatch a 'Begin Login' action
 		dispatch(beginLogin())
 
@@ -683,7 +683,18 @@ export const requestLogin = (username, password) => {
 			}
 			throw new Error(`HTTP Error ${response.status}: Failed to login`)
 		})
-		.then(json => dispatch(completeLogin(json)))
+		.then(json => {
+			dispatch(completeLogin(json))
+
+			// Re-fetch all bookings
+			const bookingsByDate = getState().bookingsByDate
+			for (let key in bookingsByDate) {
+				dispatch(fetchBookings(key))
+			}
+
+			// Re-fetch all rooms
+			dispatch(fetchRooms())
+		})
 		.catch(() => {
 			dispatch(completeLoginError())
 		})
