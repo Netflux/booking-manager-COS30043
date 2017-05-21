@@ -5,7 +5,7 @@ import { FloatingActionButton, FontIcon, Paper, RaisedButton } from 'material-ui
 
 import RoomDialog from './RoomDialog'
 
-import { fetchRoomsIfNeeded, handleDeleteRoom } from '../../actions'
+import { fetchRoomsIfNeeded } from '../../actions'
 
 const mapStateToProps = state => {
 	return {
@@ -18,9 +18,6 @@ const mapDispatchToProps = dispatch => {
 	return {
 		fetchRooms: () => {
 			dispatch(fetchRoomsIfNeeded())
-		},
-		deleteRoom: (roomId) => {
-			dispatch(handleDeleteRoom(roomId))
 		}
 	}
 }
@@ -90,8 +87,7 @@ class RoomsListComponent extends Component {
 RoomsListComponent.propTypes = {
 	rooms: PropTypes.object.isRequired,
 	isLoggedIn: PropTypes.bool.isRequired,
-	fetchRooms: PropTypes.func.isRequired,
-	deleteRoom: PropTypes.func.isRequired
+	fetchRooms: PropTypes.func.isRequired
 }
 
 // Define the container for the Rooms List component (maps state and dispatchers)

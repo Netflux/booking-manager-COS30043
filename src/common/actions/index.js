@@ -129,6 +129,9 @@ export const handleAddBooking = booking => {
 				// Dispatch a 'Invalidate Statistics' action
 				dispatch(invalidateStatistics())
 
+				// Re-fetch all bookings for the current date
+				dispatch(fetchBookings(booking.date))
+
 				return // Add booking succeeded
 			}
 			throw new Error(`HTTP Error ${response.status}: Failed to add booking`)
@@ -169,6 +172,9 @@ export const handleUpdateBooking = booking => {
 			if (response.ok) {
 				// Dispatch a 'Invalidate Statistics' action
 				dispatch(invalidateStatistics())
+
+				// Re-fetch all bookings for the current date
+				dispatch(fetchBookings(booking.date))
 
 				return // Update booking succeeded
 			}
@@ -327,6 +333,9 @@ export const handleAddRoom = room => {
 				// Dispatch a 'Invalidate Statistics' action
 				dispatch(invalidateStatistics())
 
+				// Re-fetch all rooms
+				dispatch(fetchRooms())
+
 				return // Add room succeeded
 			}
 			throw new Error(`HTTP Error ${response.status}: Failed to add room`)
@@ -366,6 +375,12 @@ export const handleUpdateRoom = room => {
 			if (response.ok) {
 				// Dispatch a 'Invalidate Statistics' action
 				dispatch(invalidateStatistics())
+
+				// Re-fetch all rooms
+				dispatch(fetchRooms())
+
+				// Re-fetch all rooms
+				dispatch(fetchRooms())
 
 				return // Update room succeeded
 			}
@@ -421,6 +436,198 @@ const deleteRoom = roomId => {
 	}
 }
 
+// Helper function to determine whether account entries need to be fetched
+const shouldFetchAccounts = state => {
+	const accounts = state.accounts
+
+	if (accounts.items.length === 0) {
+		return true
+	} else if (accounts.isFetching) {
+		return false
+	} else {
+		return accounts.didInvalidate
+	}
+}
+
+// Action when the user needs to fetch account entries
+export const fetchAccountsIfNeeded = () => {
+	return (dispatch, getState) => {
+		// Fetch account entries if not in memory or invalidated, else return a resolved promise
+		if (shouldFetchAccounts(getState())) {
+			return dispatch(fetchAccounts())
+		} else {
+			return Promise.resolve()
+		}
+	}
+}
+
+// Action when the user is fetching account entries
+export const fetchAccounts = () => {
+	return dispatch => {
+		// Dispatch a 'Request Accounts' action
+		dispatch(requestAccounts())
+
+		// Fetch the account entries and dispatch a 'Receive Accounts' action
+		return fetch('/api/accounts', { credentials: 'include' })
+			.then(response => {
+				if (response.ok) {
+					return response.json()
+				}
+				throw new Error(`HTTP Error ${response.status}: Failed to fetch accounts`)
+			})
+			.then(json => dispatch(receiveAccounts(json)))
+			.catch(() => {
+				dispatch(receiveAccountsError())
+			})
+	}
+}
+
+// Action when the user requests account entries
+export const REQUEST_ACCOUNTS = 'REQUEST_ACCOUNTS'
+const requestAccounts = () => {
+	return {
+		type: REQUEST_ACCOUNTS
+	}
+}
+
+// Action when the user receives account entries
+export const RECEIVE_ACCOUNTS = 'RECEIVE_ACCOUNTS'
+const receiveAccounts = json => {
+	return {
+		type: RECEIVE_ACCOUNTS,
+		users: json,
+		receivedAt: Date.now()
+	}
+}
+
+// Action when the account request action encounters an error
+export const RECEIVE_ACCOUNTS_ERROR = 'RECEIVE_ACCOUNTS_ERROR'
+const receiveAccountsError = () => {
+	return {
+		type: RECEIVE_ACCOUNTS_ERROR
+	}
+}
+
+// Action when the account entries have become invalid
+export const INVALIDATE_ACCOUNTS = 'INVALIDATE_ACCOUNTS'
+export const invalidateAccounts = () => {
+	return {
+		type: INVALIDATE_ACCOUNTS
+	}
+}
+
+// Action when the user adds an account entry (server-side)
+export const handleAddAccount = user => {
+	return dispatch => {
+		// Dispatch a 'Add Account' action
+		dispatch(addAccount({ ...user, password: '', confirmPassword: '' }))
+
+		// Send the account entry to the server for storage
+		return fetch('/api/accounts', {
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json'
+			},
+			method: 'POST',
+			credentials: 'include',
+			body: JSON.stringify(user)
+		})
+		.then(response => {
+			if (response.ok) {
+				// Re-fetch all accounts
+				dispatch(fetchAccounts())
+
+				return // Add account succeeded
+			}
+			throw new Error(`HTTP Error ${response.status}: Failed to add account`)
+		})
+		.catch(() => {
+			// Add account failed, no action required
+		})
+	}
+}
+
+// Action when the user adds an account entry (client-side)
+export const ADD_ACCOUNT = 'ADD_ACCOUNT'
+const addAccount = user => {
+	return {
+		type: ADD_ACCOUNT,
+		user
+	}
+}
+
+// Action when the user updates an account entry (server-side)
+export const handleUpdateAccount = user => {
+	return dispatch => {
+		// Dispatch a 'Update Account' action
+		dispatch(updateAccount({ ...user, password: '', confirmPassword: '' }))
+
+		// Send the updated account entry to the server for storage
+		return fetch(`/api/accounts/${user.userId}`, {
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json'
+			},
+			method: 'PUT',
+			credentials: 'include',
+			body: JSON.stringify(user)
+		})
+		.then(response => {
+			if (response.ok) {
+				// Re-fetch all accounts
+				dispatch(fetchAccounts())
+
+				return // Update account succeeded
+			}
+			throw new Error(`HTTP Error ${response.status}: Failed to update account`)
+		})
+		.catch(() => {
+			// Update account failed, no action required
+		})
+	}
+}
+
+// Action when the user updates an account entry (client-side)
+export const UPDATE_ACCOUNT = 'UPDATE_ACCOUNT'
+const updateAccount = user => {
+	return {
+		type: UPDATE_ACCOUNT,
+		user
+	}
+}
+
+// Action when the user deletes an account entry (server-side)
+export const handleDeleteAccount = userId => {
+	return dispatch => {
+		// Dispatch a 'Delete Account' action
+		dispatch(deleteAccount(userId))
+
+		// Delete the account entry on the server
+		return fetch(`/api/accounts/${userId}`, {
+			method: 'DELETE',
+			credentials: 'include'
+		})
+		.then(response => {
+			if (response.ok) {
+				return // Delete account succeeded
+			}
+			throw new Error(`HTTP Error ${response.status}: Failed to delete account`)
+		})
+		.catch(() => {
+			// Delete account failed, no action required
+		})
+	}
+}
+
+// Action when the user deletes an account entry (client-side)
+export const DELETE_ACCOUNT = 'DELETE_ACCOUNT'
+const deleteAccount = userId => {
+	return {
+		type: DELETE_ACCOUNT,
+		userId
+	}
+}
+
 // Action when the login process has begun
 export const BEGIN_LOGIN = 'BEGIN_LOGIN'
 const beginLogin = () => {
@@ -456,7 +663,7 @@ export const clearLoginError = () => {
 
 // Action when the user logs in
 export const requestLogin = (username, password) => {
-	return dispatch => {
+	return (dispatch, getState) => {
 		// Dispatch a 'Begin Login' action
 		dispatch(beginLogin())
 
@@ -476,7 +683,18 @@ export const requestLogin = (username, password) => {
 			}
 			throw new Error(`HTTP Error ${response.status}: Failed to login`)
 		})
-		.then(json => dispatch(completeLogin(json)))
+		.then(json => {
+			dispatch(completeLogin(json))
+
+			// Re-fetch all bookings
+			const bookingsByDate = getState().bookingsByDate
+			for (let key in bookingsByDate) {
+				dispatch(fetchBookings(key))
+			}
+
+			// Re-fetch all rooms
+			dispatch(fetchRooms())
+		})
 		.catch(() => {
 			dispatch(completeLoginError())
 		})

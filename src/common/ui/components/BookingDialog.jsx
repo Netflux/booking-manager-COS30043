@@ -5,13 +5,14 @@ import moment from 'moment'
 import shortid from 'shortid'
 import { DatePicker, Dialog, FlatButton, MenuItem, SelectField, TextField } from 'material-ui'
 
-import { handleAddBooking, handleUpdateBooking, handleDeleteBooking, fetchRoomsIfNeeded } from '../../actions'
+import { handleAddBooking, handleUpdateBooking, handleDeleteBooking, fetchRoomsIfNeeded, fetchAccountsIfNeeded } from '../../actions'
 
 const mapStateToProps = state => {
 	return {
 		selectedDate: state.selectedDate,
 		bookingsByDate: state.bookingsByDate,
 		rooms: state.rooms,
+		accounts: state.accounts,
 		isLoggedIn: state.user.isLoggedIn
 	}
 }
@@ -29,6 +30,9 @@ const mapDispatchToProps = dispatch => {
 		},
 		fetchRooms: () => {
 			dispatch(fetchRoomsIfNeeded())
+		},
+		fetchAccounts: () => {
+			dispatch(fetchAccountsIfNeeded())
 		}
 	}
 }
@@ -63,8 +67,9 @@ class BookingDialogComponent extends Component {
 	}
 
 	componentDidMount() {
-		// Fetch the rooms
+		// Fetch the rooms and accounts
 		this.props.fetchRooms()
+		this.props.fetchAccounts()
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -136,6 +141,11 @@ class BookingDialogComponent extends Component {
 			timeSlotErrorText: '',
 			durationErrorText: ''
 		})
+
+		// If in 'View' mode, skip validation
+		if (this.state.mode === MODE_VIEW) {
+			return this.dismiss()
+		}
 
 		let hasError = false
 
@@ -242,6 +252,29 @@ class BookingDialogComponent extends Component {
 						))
 					}
 				</SelectField>
+				{
+					(() => {
+						if (this.props.isLoggedIn && this.state.mode !== MODE_ADD) {
+							const userCreated = this.props.accounts.items.find(user => user.userId === this.state.createdBy)
+							const userUpdated = this.props.accounts.items.find(user => user.userId === this.state.updatedBy)
+
+							return (
+								<div className="form-label">
+									{
+										userCreated.username && this.state.createdDate && (
+											<p>Created by {userCreated.username} on {this.state.createdDate}</p>
+										)
+									}
+									{
+										userUpdated.username && this.state.updatedDate && (
+											<p>Updated by {userUpdated.username} on {this.state.updatedDate}</p>
+										)
+									}
+								</div>
+							)
+						}
+					})()
+				}
 			</Dialog>
 		)
 	}
@@ -252,11 +285,13 @@ BookingDialogComponent.propTypes = {
 	selectedDate: PropTypes.string.isRequired,
 	bookingsByDate: PropTypes.object.isRequired,
 	rooms: PropTypes.object.isRequired,
+	accounts: PropTypes.object.isRequired,
 	isLoggedIn: PropTypes.bool.isRequired,
 	addBooking: PropTypes.func.isRequired,
 	updateBooking: PropTypes.func.isRequired,
 	deleteBooking: PropTypes.func.isRequired,
-	fetchRooms: PropTypes.func.isRequired
+	fetchRooms: PropTypes.func.isRequired,
+	fetchAccounts: PropTypes.func.isRequired
 }
 
 // Define the container for the Booking Dialog component (maps state and dispatchers)

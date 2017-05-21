@@ -5,10 +5,11 @@ import moment from 'moment'
 import shortid from 'shortid'
 import { Dialog, FlatButton, TextField, Toggle } from 'material-ui'
 
-import { handleAddRoom, handleUpdateRoom, handleDeleteRoom } from '../../actions'
+import { handleAddRoom, handleUpdateRoom, handleDeleteRoom, fetchAccountsIfNeeded } from '../../actions'
 
 const mapStateToProps = state => {
 	return {
+		accounts: state.accounts,
 		isLoggedIn: state.user.isLoggedIn
 	}
 }
@@ -23,6 +24,9 @@ const mapDispatchToProps = dispatch => {
 		},
 		deleteRoom: (roomId) => {
 			dispatch(handleDeleteRoom(roomId))
+		},
+		fetchAccounts: () => {
+			dispatch(fetchAccountsIfNeeded())
 		}
 	}
 }
@@ -48,6 +52,11 @@ class RoomDialogComponent extends Component {
 			roomDesc: '',
 			isAvailable: true
 		}
+	}
+
+	componentDidMount() {
+		// Fetch the accounts
+		this.props.fetchAccounts()
 	}
 
 	handleChange(value, stateName) {
@@ -105,6 +114,16 @@ class RoomDialogComponent extends Component {
 	}
 
 	accept() {
+		// Reset all error text
+		this.setState({
+			roomNameErrorText: ''
+		})
+
+		// If in 'View' mode, skip validation
+		if (this.state.mode === MODE_VIEW) {
+			return this.dismiss()
+		}
+
 		let hasError = false
 
 		if (this.state.roomName === '') {
@@ -152,6 +171,29 @@ class RoomDialogComponent extends Component {
 				<TextField id="name" className="form-input" floatingLabelText="Name" floatingLabelFixed={true} errorText={this.state.roomNameErrorText} disabled={this.state.mode === MODE_VIEW} onChange={(event) => this.handleChange(event.target.value, 'roomName')} value={this.state.roomName} /><br />
 				<TextField id="description" className="form-input" floatingLabelText="Description" floatingLabelFixed={true} disabled={this.state.mode === MODE_VIEW} onChange={(event) => this.handleChange(event.target.value, 'roomDesc')} value={this.state.roomDesc} /><br />
 				<Toggle label="Available for Booking" labelPosition="right" defaultToggled={this.state.isAvailable} disabled={this.state.mode === MODE_VIEW} onToggle={(event, isInputChecked) => this.handleChange(isInputChecked, 'isAvailable')} value={this.state.isAvailable} />
+				{
+					(() => {
+						if (this.props.isLoggedIn && this.state.mode !== MODE_ADD) {
+							const userCreated = this.props.accounts.items.find(user => user.userId === this.state.createdBy)
+							const userUpdated = this.props.accounts.items.find(user => user.userId === this.state.updatedBy)
+
+							return (
+								<div className="form-label">
+									{
+										userCreated.username && this.state.createdDate && (
+											<p>Created by {userCreated.username} on {this.state.createdDate}</p>
+										)
+									}
+									{
+										userUpdated.username && this.state.updatedDate && (
+											<p>Updated by {userUpdated.username} on {this.state.updatedDate}</p>
+										)
+									}
+								</div>
+							)
+						}
+					})()
+				}
 			</Dialog>
 		)
 	}
@@ -159,10 +201,12 @@ class RoomDialogComponent extends Component {
 
 // Define the property types that the component expects to receive
 RoomDialogComponent.propTypes = {
+	accounts: PropTypes.object.isRequired,
 	isLoggedIn: PropTypes.bool.isRequired,
 	addRoom: PropTypes.func.isRequired,
 	updateRoom: PropTypes.func.isRequired,
-	deleteRoom: PropTypes.func.isRequired
+	deleteRoom: PropTypes.func.isRequired,
+	fetchAccounts: PropTypes.func.isRequired
 }
 
 // Define the container for the Room Dialog component (maps state and dispatchers)

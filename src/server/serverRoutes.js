@@ -8,6 +8,7 @@ import injectTapEventPlugin from 'react-tap-event-plugin'
 import moment from 'moment'
 import Mongoose from 'mongoose'
 import Passport from 'passport'
+import Bcrypt from 'bcrypt'
 
 import theme from '../common/ui/theme'
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
@@ -15,7 +16,7 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 
 import configureStore from '../common/store/configureStore'
 import routes from '../common/routes'
-import { BookingModel, RoomModel } from './database/models'
+import { UserModel, BookingModel, RoomModel } from './database/models'
 
 // Helper function to generate the base HTML including the React application
 const renderPage = (html, defaultState) => {
@@ -84,7 +85,7 @@ const serverRoutes = app => {
 						console.error(err)
 						return res.json({ success: false, error: 'An error occured when logging in' })
 					}
-					return res.json({ success: true, error: '' })
+					return res.json({ success: true, authLevel: user.authLevel, error: '' })
 				})
 			})(req, res)
 		})
@@ -165,8 +166,15 @@ const serverRoutes = app => {
 			req.sanitizeParams('month').escape()
 			req.sanitizeParams('day').escape()
 
+			// If logged in, include the created/updated dates
+			const selectColumns = req.user ? (
+				'bookingId bookingTitle bookingDesc roomId date timeSlot duration createdBy createdDate updatedBy updatedDate'
+			) : (
+				'bookingId bookingTitle bookingDesc roomId date timeSlot duration'
+			)
+
 			BookingModel.find({ date: `${req.params.day}/${req.params.month}/${req.params.year}` })
-				.select('bookingId bookingTitle bookingDesc roomId date timeSlot duration')
+				.select(selectColumns)
 				.exec((err, bookings) => {
 					if (err) {
 						console.error(err)
@@ -207,19 +215,47 @@ const serverRoutes = app => {
 						return res.sendStatus(400)
 					}
 
-					const body = {
-						...req.body,
-						updatedBy: req.user.userId,
-						updatedDate: moment().format('D/M/YYYY')
-					}
+					// Input Validation
+					req.checkBody('bookingId', 'Invalid booking ID').notEmpty().isString()
+					req.checkBody('bookingTitle', 'Invalid booking title').notEmpty().isString()
+					req.checkBody('bookingDesc', 'Invalid booking description').notEmpty().isString()
+					req.checkBody('roomId', 'Invalid room ID').notEmpty().isString()
+					req.checkBody('date', 'Invalid date').notEmpty().isString()
+					req.checkBody('timeSlot', 'Invalid time slot').notEmpty().isInt()
+					req.checkBody('duration', 'Invalid duration').notEmpty().isInt()
 
-					BookingModel.findOneAndUpdate({ bookingId }, body, (err) => {
-						if (err) {
-							console.error(err)
-							return res.sendStatus(500)
+					// Get the result of input validation
+					req.getValidationResult().then(result => {
+						if (!result.isEmpty()) {
+							return res.sendStatus(400)
 						}
 
-						return res.sendStatus(200)
+						// Input Sanitization
+						req.sanitizeBody('bookingId').escape()
+						req.sanitizeBody('bookingTitle').escape()
+						req.sanitizeBody('bookingDesc').escape()
+						req.sanitizeBody('roomId').escape()
+						req.sanitizeBody('date').escape()
+						req.sanitizeBody('timeSlot').toInt()
+						req.sanitizeBody('duration').toInt()
+
+						// Restore any slashes '/' in the date
+						req.body.date = req.body.date.replace(/&#x2F;/g, '/')
+
+						const body = {
+							...req.body,
+							updatedBy: req.user.userId,
+							updatedDate: moment().format('D/M/YYYY')
+						}
+
+						BookingModel.findOneAndUpdate({ bookingId }, body, (err) => {
+							if (err) {
+								console.error(err)
+								return res.sendStatus(500)
+							}
+
+							return res.sendStatus(200)
+						})
 					})
 					break
 				}
@@ -319,8 +355,15 @@ const serverRoutes = app => {
 			return res.sendStatus(500)
 		}
 
+		// If logged in, include the created/updated dates
+		const selectColumns = req.user ? (
+			'bookingId bookingTitle bookingDesc roomId date timeSlot duration createdBy createdDate updatedBy updatedDate'
+		) : (
+			'bookingId bookingTitle bookingDesc roomId date timeSlot duration'
+		)
+
 		BookingModel.find()
-			.select('bookingId bookingTitle bookingDesc roomId date timeSlot duration')
+			.select(selectColumns)
 			.exec((err, bookings) => {
 				if (err) {
 					console.error(err)
@@ -360,19 +403,38 @@ const serverRoutes = app => {
 						return res.sendStatus(400)
 					}
 
-					const body = {
-						...req.body,
-						updatedBy: req.user.userId,
-						updatedDate: moment().format('D/M/YYYY')
-					}
+					// Input Validation
+					req.checkBody('roomId', 'Invalid room ID').notEmpty().isString()
+					req.checkBody('roomName', 'Invalid room name').notEmpty().isString()
+					req.checkBody('roomDesc', 'Invalid room description').notEmpty().isString()
+					req.checkBody('isAvailable', 'Invalid room availability').notEmpty().isBoolean()
 
-					RoomModel.findOneAndUpdate({ roomId }, body, (err) => {
-						if (err) {
-							console.error(err)
-							return res.sendStatus(500)
+					// Get the result of input validation
+					req.getValidationResult().then(result => {
+						if (!result.isEmpty()) {
+							return res.sendStatus(400)
 						}
 
-						return res.sendStatus(200)
+						// Input Sanitization
+						req.sanitizeBody('roomId').escape()
+						req.sanitizeBody('roomName').escape()
+						req.sanitizeBody('roomDesc').escape()
+						req.sanitizeBody('isAvailable').toBoolean()
+
+						const body = {
+							...req.body,
+							updatedBy: req.user.userId,
+							updatedDate: moment().format('D/M/YYYY')
+						}
+
+						RoomModel.findOneAndUpdate({ roomId }, body, (err) => {
+							if (err) {
+								console.error(err)
+								return res.sendStatus(500)
+							}
+
+							return res.sendStatus(200)
+						})
 					})
 					break
 				}
@@ -453,8 +515,15 @@ const serverRoutes = app => {
 			return res.sendStatus(500)
 		}
 
+		// If logged in, include the created/updated dates
+		const selectColumns = req.user ? (
+			'roomId roomName roomDesc isAvailable createdBy createdDate updatedBy updatedDate'
+		) : (
+			'roomId roomName roomDesc isAvailable'
+		)
+
 		RoomModel.find()
-			.select('roomId roomName roomDesc isAvailable')
+			.select(selectColumns)
 			.exec((err, rooms) => {
 				if (err) {
 					console.error(err)
@@ -462,6 +531,164 @@ const serverRoutes = app => {
 				}
 
 				return res.json(rooms)
+			})
+	})
+
+	app.all('/api/accounts/:userId', (req, res, next) => {
+		if (!hasDBConnection()) {
+			return res.sendStatus(500)
+		}
+		if (!req.user) {
+			return res.sendStatus(403)
+		}
+
+		// Input Validation
+		req.checkParams('userId', 'Invalid user ID').notEmpty().isString()
+
+		// Get the result of input validation
+		req.getValidationResult().then(result => {
+			if (!result.isEmpty()) {
+				return res.sendStatus(400)
+			}
+
+			// Input Sanitization
+			req.sanitizeParams('userId').escape()
+
+			const userId = req.params.userId
+
+			switch (req.method) {
+			case 'PUT':
+				if (!req.body) {
+					return res.sendStatus(400)
+				}
+
+				// Input Validation
+				req.checkBody('userId', 'Invalid user ID').notEmpty().isString()
+				req.checkBody('password', 'Invalid password').notEmpty().isString()
+				req.checkBody('authLevel', 'Invalid authentication level').notEmpty().isInt()
+
+				// Get the result of input validation
+				req.getValidationResult().then(result => {
+					if (!result.isEmpty()) {
+						return res.sendStatus(400)
+					}
+
+					// Input Sanitization
+					req.sanitizeBody('userId').escape()
+					req.sanitizeBody('password').escape()
+					req.sanitizeBody('authLevel').toInt()
+
+					if (req.body.authLevel > req.user.authLevel) {
+						return res.sendStatus(400)
+					}
+
+					// Hash the password of the user
+					Bcrypt.hash(req.body.password, 12, (err, hash) => {
+						if (err) {
+							console.error(err)
+							return res.sendStatus(500)
+						}
+
+						const body = {
+							userId: req.body.userId,
+							password: hash,
+							authLevel: req.body.authLevel
+						}
+
+						UserModel.findOneAndUpdate({ userId }, body, (err) => {
+							if (err) {
+								console.error(err)
+								return res.sendStatus(500)
+							}
+
+							return res.sendStatus(200)
+						})
+					})
+				})
+				break
+			case 'DELETE':
+				UserModel.remove({ userId }, (err) => {
+					if (err) {
+						console.error(err)
+						return res.sendStatus(500)
+					}
+
+					return res.sendStatus(200)
+				})
+				break
+			default:
+				next() // Route does not handle other request types
+				break
+			}
+		})
+	})
+
+	app.post('/api/accounts', (req, res) => {
+		if (!hasDBConnection()) {
+			return res.sendStatus(500)
+		}
+		if (!req.user) {
+			return res.sendStatus(403)
+		}
+		if (!req.body) {
+			return res.sendStatus(400)
+		}
+
+		// Input Validation
+		req.checkBody('userId', 'Invalid user ID').notEmpty().isString()
+		req.checkBody('username', 'Invalid username').notEmpty().isString()
+		req.checkBody('password', 'Invalid password').notEmpty().isString()
+		req.checkBody('authLevel', 'Invalid authentication level').notEmpty().isInt()
+
+		// Get the result of input validation
+		req.getValidationResult().then(result => {
+			if (!result.isEmpty()) {
+				return res.sendStatus(400)
+			}
+
+			// Input Sanitization
+			req.sanitizeBody('userId').escape()
+			req.sanitizeBody('username').escape()
+			req.sanitizeBody('password').escape()
+			req.sanitizeBody('authLevel').toInt()
+
+			if (req.body.authLevel > req.user.authLevel) {
+				return res.sendStatus(400)
+			}
+
+			// Hash the password of the user
+			Bcrypt.hash(req.body.password, 12, (err, hash) => {
+				if (err) {
+					console.error(err)
+					return res.sendStatus(500)
+				}
+
+				UserModel.create({ ...req.body, password: hash }, (err) => {
+					if (err) {
+						console.error(err)
+						return res.sendStatus(500)
+					}
+
+					return res.sendStatus(201)
+				})
+			})
+		})
+	})
+
+	app.get('/api/accounts', (req, res) => {
+		if (!hasDBConnection()) {
+			return res.sendStatus(500)
+		}
+
+		UserModel.find()
+			.select('userId username authLevel')
+			.exec((err, users) => {
+				if (err) {
+					console.error(err)
+					return res.sendStatus(500)
+				}
+
+				return res.json(users)
 			})
 	})
 
@@ -757,7 +984,8 @@ const serverRoutes = app => {
 					user: {
 						isLoggingIn: false,
 						isLoggedIn: req.user ? true : false,
-						loginError: req.session.loginError ? req.session.loginError : ''
+						loginError: req.session.loginError ? req.session.loginError : '',
+						authLevel: req.user ? req.user.authLevel : 0
 					}
 				}
 
@@ -788,9 +1016,21 @@ const serverRoutes = app => {
 				}
 
 				if (hasDBConnection()) {
+					// If logged in, include the created/updated dates
+					const selectBookingColumns = req.user ? (
+						'bookingId bookingTitle bookingDesc roomId date timeSlot duration createdBy createdDate updatedBy updatedDate'
+					) : (
+						'bookingId bookingTitle bookingDesc roomId date timeSlot duration'
+					)
+					const selectRoomColumns = req.user ? (
+						'roomId roomName roomDesc isAvailable createdBy createdDate updatedBy updatedDate'
+					) : (
+						'roomId roomName roomDesc isAvailable'
+					)
+
 					// Fetch bookings and rooms from database
 					BookingModel.find({ date: moment().format('D/M/YYYY') })
-						.select('bookingId bookingTitle bookingDesc roomId date timeSlot duration')
+						.select(selectBookingColumns)
 						.exec()
 						.then((bookings) => {
 							defaultState.bookingsByDate[moment().format('D/M/YYYY')] = {
@@ -800,7 +1040,7 @@ const serverRoutes = app => {
 							}
 
 							return RoomModel.find()
-								.select('roomId roomName roomDesc isAvailable')
+								.select(selectRoomColumns)
 								.exec()
 						})
 						.then((rooms) => {

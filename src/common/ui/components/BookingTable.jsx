@@ -152,7 +152,7 @@ class BookingTableComponent extends Component {
 
 							<Tab label="Weekly View">
 								<section>
-									<BookingDatePicker />
+									<BookingDatePicker changeDayOffset={7} />
 
 									<Paper className="booking-table paper text-center margin-bottom padding-none">
 										{

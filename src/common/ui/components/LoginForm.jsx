@@ -106,7 +106,7 @@ class LoginFormComponent extends Component {
 								// If logging in, display the circular progress bar
 								// Else, display the login button
 								this.props.isLoggingIn ? (
-									<CircularProgress />
+									<CircularProgress color="#FF9800" />
 								) : (
 									<RaisedButton label="Log In" secondary={true} disabled={this.props.isLoggingIn} type="submit" />
 								)
