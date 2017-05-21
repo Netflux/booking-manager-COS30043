@@ -212,9 +212,6 @@ export const handleDeleteBooking = (date, bookingId) => {
 				// Dispatch a 'Invalidate Statistics' action
 				dispatch(invalidateStatistics())
 
-				// Re-fetch all bookings for the current date
-				dispatch(fetchBookings(booking.date))
-
 				return // Delete booking succeeded
 			}
 			throw new Error(`HTTP Error ${response.status}: Failed to delete booking`)
@@ -420,9 +417,6 @@ export const handleDeleteRoom = roomId => {
 				// Dispatch a 'Invalidate Statistics' action
 				dispatch(invalidateStatistics())
 
-				// Re-fetch all rooms
-				dispatch(fetchRooms())
-
 				return // Delete room succeeded
 			}
 			throw new Error(`HTTP Error ${response.status}: Failed to delete room`)
@@ -615,9 +609,6 @@ export const handleDeleteAccount = userId => {
 		})
 		.then(response => {
 			if (response.ok) {
-				// Re-fetch all accounts
-				dispatch(fetchAccounts())
-
 				return // Delete account succeeded
 			}
 			throw new Error(`HTTP Error ${response.status}: Failed to delete account`)

@@ -192,10 +192,12 @@ class RoomDialogComponent extends Component {
 
 // Define the property types that the component expects to receive
 RoomDialogComponent.propTypes = {
+	accounts: PropTypes.object.isRequired,
 	isLoggedIn: PropTypes.bool.isRequired,
 	addRoom: PropTypes.func.isRequired,
 	updateRoom: PropTypes.func.isRequired,
-	deleteRoom: PropTypes.func.isRequired
+	deleteRoom: PropTypes.func.isRequired,
+	fetchAccounts: PropTypes.func.isRequired
 }
 
 // Define the container for the Room Dialog component (maps state and dispatchers)

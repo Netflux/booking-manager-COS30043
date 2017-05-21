@@ -285,11 +285,13 @@ BookingDialogComponent.propTypes = {
 	selectedDate: PropTypes.string.isRequired,
 	bookingsByDate: PropTypes.object.isRequired,
 	rooms: PropTypes.object.isRequired,
+	accounts: PropTypes.object.isRequired,
 	isLoggedIn: PropTypes.bool.isRequired,
 	addBooking: PropTypes.func.isRequired,
 	updateBooking: PropTypes.func.isRequired,
 	deleteBooking: PropTypes.func.isRequired,
-	fetchRooms: PropTypes.func.isRequired
+	fetchRooms: PropTypes.func.isRequired,
+	fetchAccounts: PropTypes.func.isRequired
 }
 
 // Define the container for the Booking Dialog component (maps state and dispatchers)
