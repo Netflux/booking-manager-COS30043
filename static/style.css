@@ -84,6 +84,9 @@ section {
 .padding-none {
 	padding: 0 !important;
 }
+.form-label {
+	font-size: 12px;
+}
 /* ===== Utility CSS End ===== */
 
 

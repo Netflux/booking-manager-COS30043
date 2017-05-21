@@ -57,7 +57,7 @@ class AccountsListComponent extends Component {
 				{
 					this.props.accounts.items.length > 0 ? (
 						<Paper className="paper">
-							<h1>Accounts</h1>
+							<h1 className="header">Accounts</h1>
 							<Divider />
 							<List>
 								{

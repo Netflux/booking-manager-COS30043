@@ -166,8 +166,15 @@ const serverRoutes = app => {
 			req.sanitizeParams('month').escape()
 			req.sanitizeParams('day').escape()
 
+			// If logged in, include the created/updated dates
+			const selectColumns = req.user ? (
+				'bookingId bookingTitle bookingDesc roomId date timeSlot duration createdBy createdDate updatedBy updatedDate'
+			) : (
+				'bookingId bookingTitle bookingDesc roomId date timeSlot duration'
+			)
+
 			BookingModel.find({ date: `${req.params.day}/${req.params.month}/${req.params.year}` })
-				.select('bookingId bookingTitle bookingDesc roomId date timeSlot duration')
+				.select(selectColumns)
 				.exec((err, bookings) => {
 					if (err) {
 						console.error(err)
@@ -348,8 +355,15 @@ const serverRoutes = app => {
 			return res.sendStatus(500)
 		}
 
+		// If logged in, include the created/updated dates
+		const selectColumns = req.user ? (
+			'bookingId bookingTitle bookingDesc roomId date timeSlot duration createdBy createdDate updatedBy updatedDate'
+		) : (
+			'bookingId bookingTitle bookingDesc roomId date timeSlot duration'
+		)
+
 		BookingModel.find()
-			.select('bookingId bookingTitle bookingDesc roomId date timeSlot duration')
+			.select(selectColumns)
 			.exec((err, bookings) => {
 				if (err) {
 					console.error(err)
@@ -501,8 +515,15 @@ const serverRoutes = app => {
 			return res.sendStatus(500)
 		}
 
+		// If logged in, include the created/updated dates
+		const selectColumns = req.user ? (
+			'roomId roomName roomDesc isAvailable createdBy createdDate updatedBy updatedDate'
+		) : (
+			'roomId roomName roomDesc isAvailable'
+		)
+
 		RoomModel.find()
-			.select('roomId roomName roomDesc isAvailable')
+			.select(selectColumns)
 			.exec((err, rooms) => {
 				if (err) {
 					console.error(err)

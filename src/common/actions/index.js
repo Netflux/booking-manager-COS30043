@@ -129,6 +129,9 @@ export const handleAddBooking = booking => {
 				// Dispatch a 'Invalidate Statistics' action
 				dispatch(invalidateStatistics())
 
+				// Re-fetch all bookings for the current date
+				dispatch(fetchBookings(booking.date))
+
 				return // Add booking succeeded
 			}
 			throw new Error(`HTTP Error ${response.status}: Failed to add booking`)
@@ -170,6 +173,9 @@ export const handleUpdateBooking = booking => {
 				// Dispatch a 'Invalidate Statistics' action
 				dispatch(invalidateStatistics())
 
+				// Re-fetch all bookings for the current date
+				dispatch(fetchBookings(booking.date))
+
 				return // Update booking succeeded
 			}
 			throw new Error(`HTTP Error ${response.status}: Failed to update booking`)
@@ -205,6 +211,9 @@ export const handleDeleteBooking = (date, bookingId) => {
 			if (response.ok) {
 				// Dispatch a 'Invalidate Statistics' action
 				dispatch(invalidateStatistics())
+
+				// Re-fetch all bookings for the current date
+				dispatch(fetchBookings(booking.date))
 
 				return // Delete booking succeeded
 			}
@@ -327,6 +336,9 @@ export const handleAddRoom = room => {
 				// Dispatch a 'Invalidate Statistics' action
 				dispatch(invalidateStatistics())
 
+				// Re-fetch all rooms
+				dispatch(fetchRooms())
+
 				return // Add room succeeded
 			}
 			throw new Error(`HTTP Error ${response.status}: Failed to add room`)
@@ -367,6 +379,12 @@ export const handleUpdateRoom = room => {
 				// Dispatch a 'Invalidate Statistics' action
 				dispatch(invalidateStatistics())
 
+				// Re-fetch all rooms
+				dispatch(fetchRooms())
+
+				// Re-fetch all rooms
+				dispatch(fetchRooms())
+
 				return // Update room succeeded
 			}
 			throw new Error(`HTTP Error ${response.status}: Failed to update room`)
@@ -401,6 +419,9 @@ export const handleDeleteRoom = roomId => {
 			if (response.ok) {
 				// Dispatch a 'Invalidate Statistics' action
 				dispatch(invalidateStatistics())
+
+				// Re-fetch all rooms
+				dispatch(fetchRooms())
 
 				return // Delete room succeeded
 			}
@@ -519,6 +540,9 @@ export const handleAddAccount = user => {
 		})
 		.then(response => {
 			if (response.ok) {
+				// Re-fetch all accounts
+				dispatch(fetchAccounts())
+
 				return // Add account succeeded
 			}
 			throw new Error(`HTTP Error ${response.status}: Failed to add account`)
@@ -556,6 +580,9 @@ export const handleUpdateAccount = user => {
 		})
 		.then(response => {
 			if (response.ok) {
+				// Re-fetch all accounts
+				dispatch(fetchAccounts())
+
 				return // Update account succeeded
 			}
 			throw new Error(`HTTP Error ${response.status}: Failed to update account`)
@@ -588,6 +615,9 @@ export const handleDeleteAccount = userId => {
 		})
 		.then(response => {
 			if (response.ok) {
+				// Re-fetch all accounts
+				dispatch(fetchAccounts())
+
 				return // Delete account succeeded
 			}
 			throw new Error(`HTTP Error ${response.status}: Failed to delete account`)
