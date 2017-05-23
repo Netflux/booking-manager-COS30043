@@ -182,6 +182,8 @@ class BookingTableComponent extends Component {
 																timeSlotAvailable = bookingsByTimeSlot.length === 0
 															}
 
+															const activeRoomCount = this.props.rooms.items.filter(room => room.isAvailable).length
+
 															// If displaying the first row of the table, simply display it as a header
 															// Else, display the total number of bookings for the time slot
 															return index === 0 ? (
@@ -192,13 +194,13 @@ class BookingTableComponent extends Component {
 																<div className={
 																	'col-xs' +
 																	(this.props.isLoggedIn && timeSlotAvailable ? ' selectable' : '') +
-																	(bookingsByTimeSlot.length === this.props.rooms.items.length ? ' booking-red' : '') +
+																	(bookingsByTimeSlot.length === activeRoomCount ? ' booking-red' : '') +
 																	(dayIndex + 1 === moment(this.props.selectedDate, 'D/M/YYYY').isoWeekday() ? ' selected-date' : '')
 																} onTouchTap={() => this.props.isLoggedIn && timeSlotAvailable && bookingDialog.getWrappedInstance().show({ date: getSelectedDate(dayIndex), timeSlot: index })} key={dayIndex}>
 																	{
 																		// If any booking overlaps the current timeslot, display the total number of bookings for that timeslot
 																		!timeSlotAvailable && (
-																			<Booking booking={{ bookingTitle: <span>{bookingsByTimeSlot.length}<span className="hide-sm"> {bookingsByTimeSlot.length === 1 ? 'Entry' : 'Entries'}</span></span>, duration: 1 }} onTouchTap={() => bookingsListDialog.getWrappedInstance().show({ canAdd: bookingsByTimeSlot.length !== this.props.rooms.items.length, date: getSelectedDate(dayIndex), timeSlot: index })} />
+																			<Booking booking={{ bookingTitle: <span>{bookingsByTimeSlot.length}<span className="hide-sm"> {bookingsByTimeSlot.length === 1 ? 'Entry' : 'Entries'}</span></span>, duration: 1 }} onTouchTap={() => bookingsListDialog.getWrappedInstance().show({ canAdd: bookingsByTimeSlot.length < activeRoomCount, date: getSelectedDate(dayIndex), timeSlot: index })} />
 																		)
 																	}
 																</div>
