@@ -218,7 +218,7 @@ const serverRoutes = app => {
 					// Input Validation
 					req.checkBody('bookingId', 'Invalid booking ID').notEmpty().isString()
 					req.checkBody('bookingTitle', 'Invalid booking title').notEmpty().isString()
-					req.checkBody('bookingDesc', 'Invalid booking description').notEmpty().isString()
+					req.checkBody('bookingDesc', 'Invalid booking description').isString()
 					req.checkBody('roomId', 'Invalid room ID').notEmpty().isString()
 					req.checkBody('date', 'Invalid date').notEmpty().isString()
 					req.checkBody('timeSlot', 'Invalid time slot').notEmpty().isInt()
@@ -290,7 +290,7 @@ const serverRoutes = app => {
 		// Input Validation
 		req.checkBody('bookingId', 'Invalid booking ID').notEmpty().isString()
 		req.checkBody('bookingTitle', 'Invalid booking title').notEmpty().isString()
-		req.checkBody('bookingDesc', 'Invalid booking description').notEmpty().isString()
+		req.checkBody('bookingDesc', 'Invalid booking description').isString()
 		req.checkBody('roomId', 'Invalid room ID').notEmpty().isString()
 		req.checkBody('date', 'Invalid date').notEmpty().isString()
 		req.checkBody('timeSlot', 'Invalid time slot').notEmpty().isInt()
@@ -406,7 +406,7 @@ const serverRoutes = app => {
 					// Input Validation
 					req.checkBody('roomId', 'Invalid room ID').notEmpty().isString()
 					req.checkBody('roomName', 'Invalid room name').notEmpty().isString()
-					req.checkBody('roomDesc', 'Invalid room description').notEmpty().isString()
+					req.checkBody('roomDesc', 'Invalid room description').isString()
 					req.checkBody('isAvailable', 'Invalid room availability').notEmpty().isBoolean()
 
 					// Get the result of input validation
@@ -476,7 +476,7 @@ const serverRoutes = app => {
 		// Input Validation
 		req.checkBody('roomId', 'Invalid room ID').notEmpty().isString()
 		req.checkBody('roomName', 'Invalid room name').notEmpty().isString()
-		req.checkBody('roomDesc', 'Invalid room description').notEmpty().isString()
+		req.checkBody('roomDesc', 'Invalid room description').isString()
 		req.checkBody('isAvailable', 'Invalid room availability').notEmpty().isBoolean()
 
 		// Get the result of input validation
