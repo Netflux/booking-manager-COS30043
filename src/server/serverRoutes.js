@@ -679,6 +679,9 @@ const serverRoutes = app => {
 		if (!hasDBConnection()) {
 			return res.sendStatus(500)
 		}
+		if (!req.user) {
+			return res.sendStatus(403)
+		}
 
 		UserModel.find()
 			.select('userId username authLevel')
@@ -782,6 +785,13 @@ const serverRoutes = app => {
 	})
 
 	app.get('/api/statistics', (req, res) => {
+		if (!hasDBConnection()) {
+			return res.sendStatus(500)
+		}
+		if (!req.user) {
+			return res.sendStatus(403)
+		}
+
 		const dbEntries = {
 			bookings: [],
 			rooms: []
