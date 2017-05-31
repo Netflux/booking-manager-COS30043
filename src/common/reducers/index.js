@@ -6,7 +6,8 @@ import { TOGGLE_DRAWER_OPEN, TOGGLE_DRAWER_DOCKED, SELECT_DATE,
 	REQUEST_ACCOUNTS, RECEIVE_ACCOUNTS, RECEIVE_ACCOUNTS_ERROR, INVALIDATE_ACCOUNTS, ADD_ACCOUNT, UPDATE_ACCOUNT, DELETE_ACCOUNT,
 	BEGIN_LOGIN, COMPLETE_LOGIN, COMPLETE_LOGIN_ERROR, CLEAR_LOGIN_ERROR, COMPLETE_LOGOUT,
 	REQUEST_SEARCH_RESULTS, REQUEST_SEARCH_RESULTS_LOCAL, RECEIVE_SEARCH_RESULTS, CLEAR_SEARCH_RESULTS,
-	REQUEST_STATISTICS, RECEIVE_STATISTICS, RECEIVE_STATISTICS_ERROR, INVALIDATE_STATISTICS } from '../actions'
+	REQUEST_STATISTICS, RECEIVE_STATISTICS, RECEIVE_STATISTICS_ERROR, INVALIDATE_STATISTICS,
+	SHOW_SNACKBAR, HIDE_SNACKBAR } from '../actions'
 
 // Reducer for side drawer-related actions
 const sideDrawerState = (state = {
@@ -379,6 +380,35 @@ const statistics = (state = {
 	}
 }
 
+// Reducer for snackbar-related actions
+const snackbar = (state = {
+	open: false,
+	message: '',
+	action: null,
+	onActionTouchTap: null
+}, action) => {
+	switch (action.type) {
+	case SHOW_SNACKBAR:
+		return {
+			...state,
+			open: true,
+			message: action.message,
+			action: action.action,
+			onActionTouchTap: action.onActionTouchTap
+		}
+	case HIDE_SNACKBAR:
+		return {
+			...state,
+			open: false,
+			message: '',
+			action: null,
+			onActionTouchTap: null
+		}
+	default:
+		return state
+	}
+}
+
 // Combine all reducers into a singular root reducer
 const rootReducer = combineReducers({
 	sideDrawerState,
@@ -389,7 +419,8 @@ const rootReducer = combineReducers({
 	accounts,
 	user,
 	search,
-	statistics
+	statistics,
+	snackbar
 })
 
 export default rootReducer

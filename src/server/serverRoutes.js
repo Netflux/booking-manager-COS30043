@@ -745,6 +745,18 @@ const serverRoutes = app => {
 				}
 			}
 
+			// If logged in, include the created/updated dates
+			const selectBookingColumns = req.user ? (
+				'bookingId bookingTitle bookingDesc roomId date timeSlot duration createdBy createdDate updatedBy updatedDate'
+			) : (
+				'bookingId bookingTitle bookingDesc roomId date timeSlot duration'
+			)
+			const selectRoomColumns = req.user ? (
+				'roomId roomName roomDesc isAvailable createdBy createdDate updatedBy updatedDate'
+			) : (
+				'roomId roomName roomDesc isAvailable'
+			)
+
 			// Search database based on query
 			RoomModel.find({
 				$or: [
@@ -753,7 +765,7 @@ const serverRoutes = app => {
 					{ roomDesc: searchQuery }
 				]
 			})
-			.select('roomId roomName roomDesc isAvailable')
+			.select(selectRoomColumns)
 			.exec()
 			.then((rooms) => {
 				search.rooms = rooms
@@ -769,7 +781,7 @@ const serverRoutes = app => {
 						{ duration: { $in: durationList } }
 					]
 				})
-				.select('bookingId bookingTitle bookingDesc roomId date timeSlot duration')
+				.select(selectBookingColumns)
 				.exec()
 			})
 			.then((bookings) => {
