@@ -108,7 +108,7 @@ class SearchDialogComponent extends Component {
 							{
 								this.props.search.bookings.map((booking) => {
 									const room = this.props.rooms.items.find((room) => room.roomId === booking.roomId)
-									const secondaryText = room ? `${room.roomName} -- ${booking.bookingDesc}` : booking.bookingDesc
+									const secondaryText = `${room ? room.roomName + '--' : ''} ${booking.bookingDesc !== '' ? booking.bookingDesc : 'No description provided'}`
 
 									return (
 										<ListItem primaryText={booking.bookingTitle} secondaryText={secondaryText} onTouchTap={() => bookingDialog.getWrappedInstance().show({ mode: 1, ...booking })} key={booking.bookingId} />

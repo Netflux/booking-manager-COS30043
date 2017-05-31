@@ -126,6 +126,15 @@ export const handleAddBooking = booking => {
 		})
 		.then(response => {
 			if (response.ok) {
+				// Dispatch a 'Show Snackbar' action
+				dispatch(showSnackbar({
+					message: `Added Booking: ${booking.bookingTitle}`,
+					action: 'Undo',
+					onActionTouchTap: () => {
+						dispatch(handleDeleteBooking(booking.date, booking.bookingId))
+					}
+				}))
+
 				// Dispatch a 'Invalidate Statistics' action
 				dispatch(invalidateStatistics())
 
@@ -137,7 +146,17 @@ export const handleAddBooking = booking => {
 			throw new Error(`HTTP Error ${response.status}: Failed to add booking`)
 		})
 		.catch(() => {
-			// Add booking failed, no action required
+			// Add booking failed, delete the newly added booking (client-side)
+			dispatch(deleteBooking(booking.date, booking.bookingId))
+
+			// Dispatch a 'Show Snackbar' action
+			dispatch(showSnackbar({
+				message: `Failed to add Booking: ${booking.bookingTitle}`,
+				action: 'Retry',
+				onActionTouchTap: () => {
+					dispatch(handleAddBooking(booking))
+				}
+			}))
 		})
 	}
 }
@@ -154,7 +173,15 @@ const addBooking = (date, booking) => {
 
 // Action when the user updates a booking entry (server-side)
 export const handleUpdateBooking = booking => {
-	return dispatch => {
+	return (dispatch, getState) => {
+		const bookingsByDate = getState().bookingsByDate
+		let defaultBooking
+
+		for (let date in bookingsByDate) {
+			defaultBooking = bookingsByDate[date].items.find(b => b.bookingId === booking.bookingId)
+			if (defaultBooking !== undefined) break
+		}
+
 		// Dispatch a 'Update Booking' action
 		dispatch(updateBooking(booking.date, booking))
 
@@ -170,6 +197,15 @@ export const handleUpdateBooking = booking => {
 		})
 		.then(response => {
 			if (response.ok) {
+				// Dispatch a 'Show Snackbar' action
+				dispatch(showSnackbar({
+					message: `Updated Booking: ${defaultBooking.bookingTitle}`,
+					action: 'Undo',
+					onActionTouchTap: () => {
+						dispatch(handleUpdateBooking(defaultBooking))
+					}
+				}))
+
 				// Dispatch a 'Invalidate Statistics' action
 				dispatch(invalidateStatistics())
 
@@ -181,7 +217,19 @@ export const handleUpdateBooking = booking => {
 			throw new Error(`HTTP Error ${response.status}: Failed to update booking`)
 		})
 		.catch(() => {
-			// Update booking failed, no action required
+			if (defaultBooking !== undefined) {
+				// Update booking failed, reset the newly updated booking (client-side)
+				dispatch(updateBooking(defaultBooking.date, defaultBooking))
+
+				// Dispatch a 'Show Snackbar' action
+				dispatch(showSnackbar({
+					message: `Failed to update Booking: ${booking.bookingTitle}`,
+					action: 'Retry',
+					onActionTouchTap: () => {
+						dispatch(handleUpdateBooking(booking))
+					}
+				}))
+			}
 		})
 	}
 }
@@ -198,7 +246,9 @@ const updateBooking = (date, booking) => {
 
 // Action when the user deletes a booking entry (server-side)
 export const handleDeleteBooking = (date, bookingId) => {
-	return dispatch => {
+	return (dispatch, getState) => {
+		const defaultBooking = getState().bookingsByDate[date].items.find(b => b.bookingId === bookingId)
+
 		// Dispatch a 'Delete Booking' action
 		dispatch(deleteBooking(date, bookingId))
 
@@ -209,15 +259,37 @@ export const handleDeleteBooking = (date, bookingId) => {
 		})
 		.then(response => {
 			if (response.ok) {
+				// Dispatch a 'Show Snackbar' action
+				dispatch(showSnackbar({
+					message: `Removed Booking: ${defaultBooking.bookingTitle}`,
+					action: 'Undo',
+					onActionTouchTap: () => {
+						dispatch(handleAddBooking(defaultBooking))
+					}
+				}))
+
 				// Dispatch a 'Invalidate Statistics' action
 				dispatch(invalidateStatistics())
+
+				// Re-fetch all bookings for the current date
+				dispatch(fetchBookings(date))
 
 				return // Delete booking succeeded
 			}
 			throw new Error(`HTTP Error ${response.status}: Failed to delete booking`)
 		})
 		.catch(() => {
-			// Delete booking failed, no action required
+			// Delete booking failed, add the newly deleted booking (client-side)
+			dispatch(addBooking(defaultBooking.date, defaultBooking))
+
+			// Dispatch a 'Show Snackbar' action
+			dispatch(showSnackbar({
+				message: `Failed to remove Booking: ${defaultBooking.bookingTitle}`,
+				action: 'Retry',
+				onActionTouchTap: () => {
+					dispatch(handleDeleteBooking(date, bookingId))
+				}
+			}))
 		})
 	}
 }
@@ -330,6 +402,15 @@ export const handleAddRoom = room => {
 		})
 		.then(response => {
 			if (response.ok) {
+				// Dispatch a 'Show Snackbar' action
+				dispatch(showSnackbar({
+					message: `Added Room: ${room.roomName}`,
+					action: 'Undo',
+					onActionTouchTap: () => {
+						dispatch(handleDeleteRoom(room.roomId))
+					}
+				}))
+
 				// Dispatch a 'Invalidate Statistics' action
 				dispatch(invalidateStatistics())
 
@@ -341,7 +422,17 @@ export const handleAddRoom = room => {
 			throw new Error(`HTTP Error ${response.status}: Failed to add room`)
 		})
 		.catch(() => {
-			// Add room failed, no action required
+			// Add room failed, delete the newly added room (client-side)
+			dispatch(deleteRoom(room.roomId))
+
+			// Dispatch a 'Show Snackbar' action
+			dispatch(showSnackbar({
+				message: `Failed to add Room: ${room.roomName}`,
+				action: 'Retry',
+				onActionTouchTap: () => {
+					dispatch(handleAddRoom(room))
+				}
+			}))
 		})
 	}
 }
@@ -357,7 +448,9 @@ const addRoom = room => {
 
 // Action when the user updates a room entry (server-side)
 export const handleUpdateRoom = room => {
-	return dispatch => {
+	return (dispatch, getState) => {
+		const defaultRoom = getState().rooms.items.find(r => r.roomId === room.roomId)
+
 		// Dispatch a 'Update Room' action
 		dispatch(updateRoom(room))
 
@@ -373,11 +466,17 @@ export const handleUpdateRoom = room => {
 		})
 		.then(response => {
 			if (response.ok) {
+				// Dispatch a 'Show Snackbar' action
+				dispatch(showSnackbar({
+					message: `Updated Room: ${defaultRoom.roomName}`,
+					action: 'Undo',
+					onActionTouchTap: () => {
+						dispatch(handleUpdateRoom(defaultRoom))
+					}
+				}))
+
 				// Dispatch a 'Invalidate Statistics' action
 				dispatch(invalidateStatistics())
-
-				// Re-fetch all rooms
-				dispatch(fetchRooms())
 
 				// Re-fetch all rooms
 				dispatch(fetchRooms())
@@ -387,7 +486,17 @@ export const handleUpdateRoom = room => {
 			throw new Error(`HTTP Error ${response.status}: Failed to update room`)
 		})
 		.catch(() => {
-			// Update room failed, no action required
+			// Update room failed, reset the newly updated room (client-side)
+			dispatch(updateRoom(defaultRoom))
+
+			// Dispatch a 'Show Snackbar' action
+			dispatch(showSnackbar({
+				message: `Failed to update Room: ${room.roomName}`,
+				action: 'Retry',
+				onActionTouchTap: () => {
+					dispatch(handleUpdateRoom(room))
+				}
+			}))
 		})
 	}
 }
@@ -403,7 +512,9 @@ const updateRoom = room => {
 
 // Action when the user deletes a room entry (server-side)
 export const handleDeleteRoom = roomId => {
-	return dispatch => {
+	return (dispatch, getState) => {
+		const defaultRoom = getState().rooms.items.find(r => r.roomId === roomId)
+
 		// Dispatch a 'Delete Room' action
 		dispatch(deleteRoom(roomId))
 
@@ -414,15 +525,37 @@ export const handleDeleteRoom = roomId => {
 		})
 		.then(response => {
 			if (response.ok) {
+				// Dispatch a 'Show Snackbar' action
+				dispatch(showSnackbar({
+					message: `Removed Room: ${defaultRoom.roomName}`,
+					action: 'Undo',
+					onActionTouchTap: () => {
+						dispatch(handleAddRoom(defaultRoom))
+					}
+				}))
+
 				// Dispatch a 'Invalidate Statistics' action
 				dispatch(invalidateStatistics())
+
+				// Re-fetch all rooms
+				dispatch(fetchRooms())
 
 				return // Delete room succeeded
 			}
 			throw new Error(`HTTP Error ${response.status}: Failed to delete room`)
 		})
 		.catch(() => {
-			// Delete room failed, no action required
+			// Delete room failed, add the newly deleted room (client-side)
+			dispatch(addRoom(defaultRoom))
+
+			// Dispatch a 'Show Snackbar' action
+			dispatch(showSnackbar({
+				message: `Failed to remove Room: ${defaultRoom.roomName}`,
+				action: 'Retry',
+				onActionTouchTap: () => {
+					dispatch(handleDeleteRoom(roomId))
+				}
+			}))
 		})
 	}
 }
@@ -440,7 +573,9 @@ const deleteRoom = roomId => {
 const shouldFetchAccounts = state => {
 	const accounts = state.accounts
 
-	if (accounts.items.length === 0) {
+	if (!state.user.isLoggedIn) {
+		return false
+	} else if (accounts.items.length === 0) {
 		return true
 	} else if (accounts.isFetching) {
 		return false
@@ -462,7 +597,7 @@ export const fetchAccountsIfNeeded = () => {
 }
 
 // Action when the user is fetching account entries
-export const fetchAccounts = () => {
+const fetchAccounts = () => {
 	return dispatch => {
 		// Dispatch a 'Request Accounts' action
 		dispatch(requestAccounts())
@@ -534,6 +669,9 @@ export const handleAddAccount = user => {
 		})
 		.then(response => {
 			if (response.ok) {
+				// Dispatch a 'Show Snackbar' action
+				dispatch(showSnackbar({ message: `Added Account: ${user.username}` }))
+
 				// Re-fetch all accounts
 				dispatch(fetchAccounts())
 
@@ -542,7 +680,17 @@ export const handleAddAccount = user => {
 			throw new Error(`HTTP Error ${response.status}: Failed to add account`)
 		})
 		.catch(() => {
-			// Add account failed, no action required
+			// Add account failed, delete the newly added account (client-side)
+			dispatch(deleteAccount(user.userId))
+
+			// Dispatch a 'Show Snackbar' action
+			dispatch(showSnackbar({
+				message: `Failed to add Account: ${user.username}`,
+				action: 'Retry',
+				onActionTouchTap: () => {
+					dispatch(handleAddAccount(user))
+				}
+			}))
 		})
 	}
 }
@@ -558,7 +706,9 @@ const addAccount = user => {
 
 // Action when the user updates an account entry (server-side)
 export const handleUpdateAccount = user => {
-	return dispatch => {
+	return (dispatch, getState) => {
+		const defaultUser = getState().accounts.items.find(u => u.userId === user.userId)
+
 		// Dispatch a 'Update Account' action
 		dispatch(updateAccount({ ...user, password: '', confirmPassword: '' }))
 
@@ -574,6 +724,9 @@ export const handleUpdateAccount = user => {
 		})
 		.then(response => {
 			if (response.ok) {
+				// Dispatch a 'Show Snackbar' action
+				dispatch(showSnackbar({ message: `Updated Account: ${defaultUser.username}` }))
+
 				// Re-fetch all accounts
 				dispatch(fetchAccounts())
 
@@ -582,7 +735,17 @@ export const handleUpdateAccount = user => {
 			throw new Error(`HTTP Error ${response.status}: Failed to update account`)
 		})
 		.catch(() => {
-			// Update account failed, no action required
+			// Update account failed, reset the newly updated account (client-side)
+			dispatch(updateAccount(defaultUser))
+
+			// Dispatch a 'Show Snackbar' action
+			dispatch(showSnackbar({
+				message: `Failed to update Account: ${user.username}`,
+				action: 'Retry',
+				onActionTouchTap: () => {
+					dispatch(handleUpdateAccount(user))
+				}
+			}))
 		})
 	}
 }
@@ -598,7 +761,9 @@ const updateAccount = user => {
 
 // Action when the user deletes an account entry (server-side)
 export const handleDeleteAccount = userId => {
-	return dispatch => {
+	return (dispatch, getState) => {
+		const defaultUser = getState().accounts.items.find(u => u.userId === userId)
+
 		// Dispatch a 'Delete Account' action
 		dispatch(deleteAccount(userId))
 
@@ -609,12 +774,28 @@ export const handleDeleteAccount = userId => {
 		})
 		.then(response => {
 			if (response.ok) {
+				// Dispatch a 'Show Snackbar' action
+				dispatch(showSnackbar({ message: `Removed Account: ${defaultUser.username}` }))
+
+				// Re-fetch all accounts
+				dispatch(fetchAccounts())
+
 				return // Delete account succeeded
 			}
 			throw new Error(`HTTP Error ${response.status}: Failed to delete account`)
 		})
 		.catch(() => {
-			// Delete account failed, no action required
+			// Delete account failed, add the newly deleted account (client-side)
+			dispatch(addAccount(defaultUser))
+
+			// Dispatch a 'Show Snackbar' action
+			dispatch(showSnackbar({
+				message: `Failed to remove Account: ${defaultUser.username}`,
+				action: 'Retry',
+				onActionTouchTap: () => {
+					dispatch(handleDeleteAccount(userId))
+				}
+			}))
 		})
 	}
 }
@@ -688,8 +869,8 @@ export const requestLogin = (username, password) => {
 
 			// Re-fetch all bookings
 			const bookingsByDate = getState().bookingsByDate
-			for (let key in bookingsByDate) {
-				dispatch(fetchBookings(key))
+			for (let date in bookingsByDate) {
+				dispatch(fetchBookings(date))
 			}
 
 			// Re-fetch all rooms
@@ -931,5 +1112,23 @@ export const INVALIDATE_STATISTICS = 'INVALIDATE_STATISTICS'
 export const invalidateStatistics = () => {
 	return {
 		type: INVALIDATE_STATISTICS
+	}
+}
+
+// Action to show the Snackbar
+export const SHOW_SNACKBAR = 'SHOW_SNACKBAR'
+export const showSnackbar = payload => {
+	return {
+		type: SHOW_SNACKBAR,
+		message: payload.message,
+		action: payload.action,
+		onActionTouchTap: payload.onActionTouchTap
+	}
+}
+
+export const HIDE_SNACKBAR = 'HIDE_SNACKBAR'
+export const hideSnackbar = () => {
+	return {
+		type: HIDE_SNACKBAR
 	}
 }

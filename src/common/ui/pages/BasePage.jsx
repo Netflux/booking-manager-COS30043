@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import Helmet from 'react-helmet'
 
 import SideDrawer from '../components/SideDrawer'
+import Snackbar from '../components/Snackbar'
 
 const mapStateToProps = state => {
 	return {
@@ -30,6 +31,7 @@ const BasePageComponent = ({ children, isOpen, isDocked }) => (
 		{children}
 
 		<SideDrawer />
+		<Snackbar />
 	</div>
 )
 
