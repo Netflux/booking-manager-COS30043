@@ -169,7 +169,7 @@ class RoomDialogComponent extends Component {
 		return (
 			<Dialog contentClassName="dialog" title={this.state.dialogTitle} autoScrollBodyContent={true} actions={actions} open={this.state.open} onRequestClose={() => this.dismiss()}>
 				<TextField id="name" className="form-input" floatingLabelText="Name" floatingLabelFixed={true} errorText={this.state.roomNameErrorText} disabled={this.state.mode === MODE_VIEW} onChange={(event) => this.handleChange(event.target.value, 'roomName')} value={this.state.roomName} /><br />
-				<TextField id="description" className="form-input" floatingLabelText="Description" floatingLabelFixed={true} disabled={this.state.mode === MODE_VIEW} onChange={(event) => this.handleChange(event.target.value, 'roomDesc')} value={this.state.roomDesc} /><br />
+				<TextField id="description" className="form-input" floatingLabelText="Description (Optional)" floatingLabelFixed={true} disabled={this.state.mode === MODE_VIEW} onChange={(event) => this.handleChange(event.target.value, 'roomDesc')} value={this.state.roomDesc} /><br />
 				<Toggle label="Available for Booking" labelPosition="right" defaultToggled={this.state.isAvailable} disabled={this.state.mode === MODE_VIEW} onToggle={(event, isInputChecked) => this.handleChange(isInputChecked, 'isAvailable')} value={this.state.isAvailable} />
 				{
 					(() => {

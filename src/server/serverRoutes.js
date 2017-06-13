@@ -578,7 +578,7 @@ const serverRoutes = app => {
 					req.sanitizeBody('password').escape()
 					req.sanitizeBody('authLevel').toInt()
 
-					if (req.body.authLevel > req.user.authLevel) {
+					if (req.user.authLevel < 25 || req.body.authLevel > req.user.authLevel) {
 						return res.sendStatus(400)
 					}
 
@@ -607,6 +607,14 @@ const serverRoutes = app => {
 				})
 				break
 			case 'DELETE':
+				if (userId === 'root' || userId === req.user.userId) {
+					return res.sendStatus(500)
+				}
+
+				if (req.user.authLevel < 25) {
+					return res.sendStatus(400)
+				}
+
 				UserModel.remove({ userId }, (err) => {
 					if (err) {
 						console.error(err)

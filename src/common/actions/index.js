@@ -764,6 +764,14 @@ export const handleDeleteAccount = userId => {
 	return (dispatch, getState) => {
 		const defaultUser = getState().accounts.items.find(u => u.userId === userId)
 
+		if (userId === 'root') {
+			// Dispatch a 'Show Snackbar' action
+			dispatch(showSnackbar({
+				message: `Unable to remove account: ${defaultUser.username}`
+			}))
+			return
+		}
+
 		// Dispatch a 'Delete Account' action
 		dispatch(deleteAccount(userId))
 
