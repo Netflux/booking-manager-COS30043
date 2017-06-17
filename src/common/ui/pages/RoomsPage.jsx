@@ -11,7 +11,7 @@ const RoomsPage = () => (
 			<title>SSSC Booking Manager | Rooms</title>
 		</Helmet>
 
-		<Menubar title="Booking Manager" />
+		<Menubar title="SSSC Booking Manager" />
 
 		<RoomsList />
 		<RefreshSpinner top={72} />

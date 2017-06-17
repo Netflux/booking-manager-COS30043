@@ -11,7 +11,7 @@ const StatisticsPage = () => (
 			<title>SSSC Booking Manager | Statistics</title>
 		</Helmet>
 
-		<Menubar title="Booking Manager" />
+		<Menubar title="SSSC Booking Manager" />
 
 		<StatisticsList />
 		<RefreshSpinner top={72} />

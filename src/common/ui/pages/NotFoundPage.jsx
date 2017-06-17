@@ -11,7 +11,7 @@ const NotFoundPage = () => (
 			<title>SSSC Booking Manager | Not Found</title>
 		</Helmet>
 
-		<Menubar title="Booking Manager" />
+		<Menubar title="SSSC Booking Manager" />
 
 		<section>
 			<Paper className="paper text-center">

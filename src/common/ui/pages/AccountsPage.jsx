@@ -8,10 +8,10 @@ import RefreshSpinner from '../components/RefreshSpinner'
 const AccountsPage = () => (
 	<main>
 		<Helmet>
-			<title>Booking Manager | Accounts</title>
+			<title>SSSC Booking Manager | Accounts</title>
 		</Helmet>
 
-		<Menubar title="Booking Manager" />
+		<Menubar title="SSSC Booking Manager" />
 
 		<AccountsList />
 		<RefreshSpinner top={72} />

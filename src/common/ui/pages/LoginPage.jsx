@@ -10,7 +10,7 @@ const LoginPage = () => (
 			<title>SSSC Booking Manager | Login</title>
 		</Helmet>
 
-		<Menubar title="Booking Manager" />
+		<Menubar title="SSSC Booking Manager" />
 
 		<LoginForm />
 	</main>
